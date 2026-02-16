@@ -3,6 +3,21 @@ Fagprojekt
 
 TBD
 
+Getting started (uv)
+------------
+
+Create and activate a virtual environment, then install dependencies:
+
+    uv venv .venv
+    source .venv/bin/activate
+    uv pip install -e .
+    python test_environment.py
+
+Lock and sync dependencies (recommended for teams):
+
+    uv lock
+    uv sync
+
 Project Organization
 ------------
 
@@ -28,10 +43,7 @@ Project Organization
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     │   └── figures        <- Generated graphics and figures to be used in reporting
     │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
+    ├── pyproject.toml     <- Project metadata and dependencies
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
     │   │
