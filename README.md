@@ -9,7 +9,7 @@ Getting started (uv)
 Create and activate a virtual environment, then install dependencies:
 
     uv venv .venv
-    source .venv/bin/activate
+    source .venv/bin/activate (or source .venv/Scripts/activate on Windows)
     uv pip install -e .
     python test_environment.py
 
