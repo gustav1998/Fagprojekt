@@ -6,4 +6,5 @@ Spørgsmål til vejleder møde
 4. Hvornår passer dig som vejleder bedst at holde ugentlig møde? Vores gruppe kan bedst enten hele mandag eller torsdag efter kl. 12.
 5. Hvor kan vi læse mere om (MBA) methodologies mht. projektet? For mange af os er det første gang vi hører det udtryk.
 6. Hvor kan vi finde hjælp ift. project canvas, Gannt Chart m.m.?
-7.  
+7. Er det bedst at skrive én eller flere kolonner til rapporten?
+8. 
