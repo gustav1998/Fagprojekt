@@ -18,6 +18,7 @@ def load_raw_dataset(config: dict[str, Any], raw_dir: Path) -> pd.DataFrame:
         names=config.get("column_names"),
         na_values=config.get("missing_tokens", ["?"]),
         keep_default_na=True,
+        skipinitialspace=True,
     )
     return df
 
