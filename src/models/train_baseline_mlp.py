@@ -53,7 +53,7 @@ def evaluate(
 
 
 def main() -> None:
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     dataset_name = "mushroom"
 
     data = load_processed_dataset(dataset_name=dataset_name, processed_dir="data/processed")
