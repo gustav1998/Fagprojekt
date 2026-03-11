@@ -26,7 +26,14 @@ def parse_args():
     choices=["lr", "mlp"],
     help="Model to train"
     )
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=20,
+        help="Number of training epochs"
+    )
     return parser.parse_args()
+
 
 def make_loader(
     X: torch.Tensor,
@@ -117,7 +124,7 @@ def main() -> None:
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
-    num_epochs = 20
+    num_epochs = args.epochs
 
     for epoch in range(1, num_epochs + 1):
         model.train()
