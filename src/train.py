@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
+import argparse
 
 import torch
 from torch import nn
@@ -10,7 +9,24 @@ from torch.utils.data import DataLoader, TensorDataset
 from src.data.load_processed import load_processed_dataset, dataframe_to_tensors
 from src.models.mlp import MLPClassifier
 from src.utils.encoding import one_hot_encode_features
+from src.models.logistic_regression import LogisticRegression
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        required=True,
+        help="Name of processed dataset to load"
+    )
+    parser.add_argument(
+    "--model",
+    type=str,
+    required=True,
+    choices=["lr", "mlp"],
+    help="Model to train"
+    )
+    return parser.parse_args()
 
 def make_loader(
     X: torch.Tensor,
@@ -53,8 +69,16 @@ def evaluate(
 
 
 def main() -> None:
-    device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-    dataset_name = "mushroom"
+    if torch.backends.mps.is_available():
+        device = torch.device("mps")
+    elif torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+    args = parse_args()
+    dataset_name = args.dataset
+
+    print(f"Training {args.model} on dataset: {dataset_name}")
 
     data = load_processed_dataset(dataset_name=dataset_name, processed_dir="data/processed")
     metadata = data["metadata"]
@@ -75,12 +99,20 @@ def main() -> None:
     input_dim = X_train.shape[1]
     num_classes = len(metadata["target_mapping"])
 
-    model = MLPClassifier(
-        input_dim=input_dim,
-        hidden_dim=128,
-        num_classes=num_classes,
-        dropout=0.1,
-    ).to(device)
+    if args.model == "lr":
+        model = LogisticRegression(
+            input_dim=input_dim,
+            num_classes=num_classes,
+        ).to(device)
+    elif args.model == "mlp":
+        model = MLPClassifier(
+            input_dim=input_dim,
+            hidden_dim=128,
+            num_classes=num_classes,
+            dropout=0.1,
+        ).to(device)
+    else:
+        raise ValueError(f"Unsupported model: {args.model}")
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
