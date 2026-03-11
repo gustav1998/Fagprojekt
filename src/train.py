@@ -27,12 +27,43 @@ def parse_args():
     help="Model to train"
     )
     parser.add_argument(
+        "--device",
+        type=str,
+        default="cpu",
+        choices=["cpu", "mps", "cuda", "auto"],
+        help="Device to use for training (default: cpu)",
+    )
+    parser.add_argument(
         "--epochs",
         type=int,
         default=20,
         help="Number of training epochs"
     )
     return parser.parse_args()
+
+
+def resolve_device(device_name: str) -> torch.device:
+    if device_name == "cpu":
+        return torch.device("cpu")
+
+    if device_name == "mps":
+        if not torch.backends.mps.is_available():
+            raise ValueError("MPS requested, but it is not available on this machine.")
+        return torch.device("mps")
+
+    if device_name == "cuda":
+        if not torch.cuda.is_available():
+            raise ValueError("CUDA requested, but it is not available on this machine.")
+        return torch.device("cuda")
+
+    if device_name == "auto":
+        if torch.backends.mps.is_available():
+            return torch.device("mps")
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        return torch.device("cpu")
+
+    raise ValueError(f"Unsupported device: {device_name}")
 
 
 def make_loader(
@@ -53,39 +84,32 @@ def evaluate(
 ) -> tuple[float, float]:
     model.eval()
 
-    total_loss = 0.0
-    total_correct = 0
+    total_loss = torch.zeros((), device=device)
+    total_correct = torch.zeros((), device=device, dtype=torch.long)
     total_examples = 0
 
     with torch.no_grad():
         for X_batch, y_batch in dataloader:
-            X_batch = X_batch.to(device)
-            y_batch = y_batch.to(device)
-
             logits = model(X_batch)
             loss = criterion(logits, y_batch)
 
-            total_loss += loss.item() * X_batch.size(0)
+            batch_size = X_batch.size(0)
+            total_loss += loss.detach() * batch_size
             preds = logits.argmax(dim=1)
-            total_correct += (preds == y_batch).sum().item()
-            total_examples += X_batch.size(0)
+            total_correct += (preds == y_batch).sum()
+            total_examples += batch_size
 
-    avg_loss = total_loss / total_examples
-    accuracy = total_correct / total_examples
+    avg_loss = (total_loss / total_examples).item()
+    accuracy = (total_correct.float() / total_examples).item()
     return avg_loss, accuracy
 
 
 def main() -> None:
-    if torch.backends.mps.is_available():
-        device = torch.device("mps")
-    elif torch.cuda.is_available():
-        device = torch.device("cuda")
-    else:
-        device = torch.device("cpu")
     args = parse_args()
+    device = resolve_device(args.device)
     dataset_name = args.dataset
 
-    print(f"Training {args.model} on dataset: {dataset_name}")
+    print(f"Training {args.model} on dataset: {dataset_name} (device={device.type})")
 
     data = load_processed_dataset(dataset_name=dataset_name, processed_dir="data/processed")
     metadata = data["metadata"]
@@ -98,6 +122,11 @@ def main() -> None:
     X_train = one_hot_encode_features(X_train_int, cardinalities)
     X_val = one_hot_encode_features(X_val_int, cardinalities)
     X_test = one_hot_encode_features(X_test_int, cardinalities)
+
+    # Move full splits once to avoid per-batch transfer overhead.
+    X_train, y_train = X_train.to(device), y_train.to(device)
+    X_val, y_val = X_val.to(device), y_val.to(device)
+    X_test, y_test = X_test.to(device), y_test.to(device)
 
     train_loader = make_loader(X_train, y_train, batch_size=256, shuffle=True)
     val_loader = make_loader(X_val, y_val, batch_size=256, shuffle=False)
@@ -128,27 +157,25 @@ def main() -> None:
 
     for epoch in range(1, num_epochs + 1):
         model.train()
-        total_train_loss = 0.0
-        total_train_correct = 0
+        total_train_loss = torch.zeros((), device=device)
+        total_train_correct = torch.zeros((), device=device, dtype=torch.long)
         total_train_examples = 0
 
         for X_batch, y_batch in train_loader:
-            X_batch = X_batch.to(device)
-            y_batch = y_batch.to(device)
-
             optimizer.zero_grad()
             logits = model(X_batch)
             loss = criterion(logits, y_batch)
             loss.backward()
             optimizer.step()
 
-            total_train_loss += loss.item() * X_batch.size(0)
+            batch_size = X_batch.size(0)
+            total_train_loss += loss.detach() * batch_size
             preds = logits.argmax(dim=1)
-            total_train_correct += (preds == y_batch).sum().item()
-            total_train_examples += X_batch.size(0)
+            total_train_correct += (preds == y_batch).sum()
+            total_train_examples += batch_size
 
-        train_loss = total_train_loss / total_train_examples
-        train_acc = total_train_correct / total_train_examples
+        train_loss = (total_train_loss / total_train_examples).item()
+        train_acc = (total_train_correct.float() / total_train_examples).item()
 
         val_loss, val_acc = evaluate(model, val_loader, criterion, device)
 
