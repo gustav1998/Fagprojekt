@@ -47,14 +47,27 @@ def infer_feature_columns(
     return categorical, numerical
 
 
-def drop_missing_rows(
+def fill_missing_values(
     df: pd.DataFrame,
     target_column: str,
     categorical_columns: list[str],
     numerical_columns: list[str],
+    missing_token: str = "__MISSING__",
 ) -> pd.DataFrame:
-    relevant_columns = [target_column] + categorical_columns + numerical_columns
-    return df.dropna(subset=relevant_columns).reset_index(drop=True)
+    df = df.copy()
+
+    # Preserve all rows by mapping missing target/category values to an explicit token.
+    for col in [target_column] + categorical_columns:
+        df[col] = df[col].fillna(missing_token)
+
+    # Preserve all rows by imputing missing numeric values with the column median.
+    for col in numerical_columns:
+        median = df[col].median(skipna=True)
+        if pd.isna(median):
+            median = 0.0
+        df[col] = df[col].fillna(median)
+
+    return df.reset_index(drop=True)
 
 
 def encode_column(series: pd.Series) -> tuple[pd.Series, dict[str, int]]:
@@ -93,7 +106,7 @@ def process_dataset(
         numerical_columns=config.get("numerical_columns"),
     )
 
-    df = drop_missing_rows(df, target_column, categorical_columns, numerical_columns)
+    df = fill_missing_values(df, target_column, categorical_columns, numerical_columns)
 
     y_encoded, target_mapping = encode_column(df[target_column])
 
@@ -133,20 +146,40 @@ def split_dataset(
     if abs(total - 1.0) > 1e-8:
         raise ValueError(f"train_size + val_size + test_size must sum to 1.0, got {total}")
 
-    train_df, temp_df = train_test_split(
-        df,
-        test_size=(1.0 - train_size),
-        stratify=df[target_column],
-        random_state=random_state,
-    )
+    def split_with_optional_stratify(
+        data: pd.DataFrame,
+        test_fraction: float,
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+        y = data[target_column]
+        class_counts = y.value_counts()
+        can_stratify = y.nunique() > 1 and class_counts.min() >= 2
+
+        if can_stratify:
+            try:
+                return train_test_split(
+                    data,
+                    test_size=test_fraction,
+                    stratify=y,
+                    random_state=random_state,
+                )
+            except ValueError:
+                # Fall back when split proportions make strict stratification infeasible.
+                pass
+
+        return train_test_split(
+            data,
+            test_size=test_fraction,
+            stratify=None,
+            random_state=random_state,
+        )
+
+    train_df, temp_df = split_with_optional_stratify(df, test_fraction=(1.0 - train_size))
 
     relative_test_size = test_size / (val_size + test_size)
 
-    val_df, test_df = train_test_split(
+    val_df, test_df = split_with_optional_stratify(
         temp_df,
-        test_size=relative_test_size,
-        stratify=temp_df[target_column],
-        random_state=random_state,
+        test_fraction=relative_test_size,
     )
 
     return (
