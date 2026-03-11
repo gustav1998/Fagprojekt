@@ -39,10 +39,10 @@ def dataframe_to_tensors(
     target_column: str = "target",
     device: str | torch.device = "cpu",
 ) -> tuple[torch.Tensor, torch.Tensor]:
-    X = df.drop(columns=[target_column]).to_numpy(dtype="int64")
+    X = df.drop(columns=[target_column]).to_numpy(dtype="float32")
     y = df[target_column].to_numpy(dtype="int64")
 
-    X_tensor = torch.tensor(X, dtype=torch.long, device=device)
+    X_tensor = torch.tensor(X, dtype=torch.float32, device=device)
     y_tensor = torch.tensor(y, dtype=torch.long, device=device)
 
     return X_tensor, y_tensor
