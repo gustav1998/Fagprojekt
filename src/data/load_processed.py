@@ -10,14 +10,15 @@ import torch
 
 def load_processed_dataset(
     dataset_name: str,
+    representation: str,
     processed_dir: str | Path = "data/processed",
 ) -> dict[str, Any]:
     processed_dir = Path(processed_dir)
 
-    train_path = processed_dir / f"{dataset_name}_train.csv"
-    val_path = processed_dir / f"{dataset_name}_val.csv"
-    test_path = processed_dir / f"{dataset_name}_test.csv"
-    metadata_path = processed_dir / f"{dataset_name}_metadata.json"
+    train_path = processed_dir / f"{dataset_name}_{representation}_train.csv"
+    val_path = processed_dir / f"{dataset_name}_{representation}_val.csv"
+    test_path = processed_dir / f"{dataset_name}_{representation}_test.csv"
+    metadata_path = processed_dir / f"{dataset_name}_{representation}_metadata.json"
 
     train_df = pd.read_csv(train_path)
     val_df = pd.read_csv(val_path)
