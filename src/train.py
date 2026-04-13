@@ -9,6 +9,7 @@ from src.data.datamodule import TabularDataModule
 from src.models.logistic_regression import LogisticRegression
 from src.models.mlp import MLPClassifier
 from src.models.lightning_module import TabularClassifierModule
+from src.models.cpd import CPDClassifier
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -18,7 +19,7 @@ def parse_args():
         "--model",
         type=str,
         required=True,
-        choices=["lr", "mlp"],
+        choices=["lr", "mlp", "cpd"],
         help="Model to train",
     )
     parser.add_argument("--batch-size", type=int, default=256)
@@ -33,6 +34,7 @@ def parse_args():
         choices=["auto", "cpu", "gpu"],
         help="Lightning accelerator",
     )
+    parser.add_argument("--rank", type=int, default=8, help="CP rank for CPD model")
 
     return parser.parse_args()
 
@@ -58,6 +60,13 @@ def main() -> None:
             hidden_dim=args.hidden_dim,
             num_classes=datamodule.num_classes,
             dropout=args.dropout,
+        )
+
+    elif args.model == "cpd":
+        base_model = CPDClassifier(
+            feature_dims=datamodule.cardinalities,
+            rank=args.rank,
+            num_classes=datamodule.num_classes,
         )
 
     else:
