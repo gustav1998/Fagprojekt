@@ -4,7 +4,12 @@ import lightning as L
 import torch
 from torch import nn
 
+
 class TabularClassifierModule(L.LightningModule):
+    """LightningModule wrapper for tabulære klassifikationsmodeller.
+
+    Håndterer forward, loss-beregning, logging af metrics og optimerer.
+    """
     def __init__(
         self,
         model: nn.Module,
@@ -19,6 +24,10 @@ class TabularClassifierModule(L.LightningModule):
         return self.model(x)
     
     def _shared_step(self, batch: tuple[torch.Tensor, torch.Tensor]) -> tuple[torch.Tensor, torch.Tensor]:
+        """Fælles logik for train/val/test steps.
+
+        Returnerer (loss, accuracy) for batch'en.
+        """
         x, y = batch
         logits = self(x)
         loss = self.criterion(logits, y)

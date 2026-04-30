@@ -3,6 +3,13 @@ from __future__ import annotations
 from typing import Any
 
 
+"""Konfigurationer for rå dataset-filer.
+
+Hver entry beskriver hvordan rå-filen skal indlæses og hvilke kolonner
+der er kategoriske/ numeriske.
+"""
+
+
 DATASET_CONFIGS: dict[str, dict[str, Any]] = {
     "balance_scale": {
         "file_name": "balance+scale/balance-scale.data",

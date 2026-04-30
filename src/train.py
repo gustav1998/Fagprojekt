@@ -1,3 +1,10 @@
+"""Træningsscript for modeller.
+
+Dette modul indeholder CLI for at træne og teste modeller på tabulære datasæt.
+Kommentarer og argumenter er forklaret på dansk så projektgruppen forstår
+hvad hvert trin gør.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -11,7 +18,12 @@ from src.models.mlp import MLPClassifier
 from src.models.lightning_module import TabularClassifierModule
 from src.models.cpd import CPDClassifier
 
+
 def parse_args():
+    """Opret og parse kommandolinje-argumenter.
+
+    Returnerer et argparse Namespace med konfiguration til træning.
+    """
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--dataset", type=str, required=True, help="Dataset name")
@@ -20,7 +32,7 @@ def parse_args():
         type=str,
         required=True,
         choices=["lr", "mlp", "cpd"],
-        help="Model to train",
+        help="Model to train (lr=logistic, mlp=neural net, cpd=faktoriseret)",
     )
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--epochs", type=int, default=20)
@@ -38,9 +50,19 @@ def parse_args():
 
     return parser.parse_args()
 
+
 def main() -> None:
+    """Hovedfunktion: sætter datamodule op, vælger model og kører træning/test.
+
+    Flow:
+    - load data via `TabularDataModule`
+    - opret base model (afhænger af `--model`)
+    - wrap model i LightningModule `TabularClassifierModule`
+    - opret `Trainer` og kør `fit` og `test`
+    """
     args = parse_args()
 
+    # Data loader / forberedelse
     datamodule = TabularDataModule(
         dataset_name=args.dataset,
         batch_size=args.batch_size,
@@ -48,6 +70,7 @@ def main() -> None:
     )
     datamodule.setup()
 
+    # Vælg base model afhængig af argument
     if args.model == "lr":
         base_model = LogisticRegression(
             input_dim=datamodule.input_dim,
@@ -72,11 +95,13 @@ def main() -> None:
     else:
         raise ValueError(f"Unsupported model: {args.model}")
     
+    # Lightning wrapper som håndterer loss, optimering og logging
     model = TabularClassifierModule(
         model=base_model,
         learning_rate=args.learning_rate,
     )
 
+    # Logger gemmer metrics som CSV i `results/` mappen
     logger = CSVLogger(
         save_dir="results",
         name=args.model,
@@ -92,8 +117,10 @@ def main() -> None:
         log_every_n_steps=1,
     )
 
+    # Kør træning og test
     trainer.fit(model, datamodule=datamodule)
     trainer.test(model, datamodule=datamodule)
+
 
 if __name__ == "__main__":
     main()

@@ -13,6 +13,10 @@ def load_processed_dataset(
     representation: str,
     processed_dir: str | Path = "data/processed",
 ) -> dict[str, Any]:
+    """Indlæs forbehandlede CSV-splits og tilhørende metadata.
+
+    Returnerer en dict med pandas DataFrame-objekter og metadata.
+    """
     processed_dir = Path(processed_dir)
 
     train_path = processed_dir / f"{dataset_name}_{representation}_train.csv"
@@ -40,6 +44,10 @@ def dataframe_to_tensors(
     target_column: str = "target",
     device: str | torch.device = "cpu",
 ) -> tuple[torch.Tensor, torch.Tensor]:
+    """Konverter en pandas DataFrame til torch.Tensor (X, y).
+
+    Bemærk: kolonnerne forventes at være i rækkefølgen [features..., target].
+    """
     X = df.drop(columns=[target_column]).to_numpy(dtype="float32")
     y = df[target_column].to_numpy(dtype="int64")
 
