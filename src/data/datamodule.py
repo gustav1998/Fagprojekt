@@ -3,15 +3,32 @@ from __future__ import annotations
 import lightning as L
 from torch.utils.data import DataLoader, TensorDataset
 
-from src.data.load_processed import load_processed_dataset, dataframe_to_tensors
+from src.data.load_processed import (
+    dataframe_to_tensors,
+    load_processed_dataset,
+)
 from src.utils.encoding import one_hot_encode_features
+
+
+ONE_HOT_MODELS = {"lr", "mlp"}
+TENSOR_MODELS = {"cpd", "mba", "tt", "tr"}
+
+
+def representation_for_model(model_type: str) -> str:
+    """Return the processed data representation expected by a model."""
+    if model_type in ONE_HOT_MODELS:
+        return "baseline"
+    if model_type in TENSOR_MODELS:
+        return "tensor"
+    raise ValueError(f"Unsupported model type: {model_type}")
 
 
 class TabularDataModule(L.LightningDataModule):
     """LightningDataModule til tabulære datasæt.
 
     Denne klasse indlæser de forbehandlede CSV-filer, konverterer til tensorer
-    og returnerer PyTorch `DataLoader`-objekter til træning, validering og test.
+    og returnerer PyTorch `DataLoader`-objekter til træning, validering og
+    test.
     """
 
     def __init__(
@@ -48,10 +65,10 @@ class TabularDataModule(L.LightningDataModule):
     def setup(self, stage: str | None = None) -> None:
         """Hent forbehandlede data og forbered tensorer.
 
-        `representation` vælger om vi bruger one-hot (baseline) eller tensor-encoded
-        (f.eks. embeddings) repræsentation, afhængigt af modeltypen.
+        `representation` vælger om vi bruger one-hot (`baseline`) eller integer
+        indices (`tensor`) afhængigt af modeltypen.
         """
-        representation = "baseline" if self.model_type in {"lr", "mlp"} else "tensor"
+        representation = representation_for_model(self.model_type)
 
         data = load_processed_dataset(
             dataset_name=self.dataset_name,
@@ -63,13 +80,21 @@ class TabularDataModule(L.LightningDataModule):
         self.cardinalities = self.metadata["cardinalities"]
 
         # Konverter pandas -> torch tensor
-        X_train_raw, y_train = dataframe_to_tensors(data["train_df"], device="cpu")
+        X_train_raw, y_train = dataframe_to_tensors(
+            data["train_df"],
+            device="cpu",
+        )
         X_val_raw, y_val = dataframe_to_tensors(data["val_df"], device="cpu")
-        X_test_raw, y_test = dataframe_to_tensors(data["test_df"], device="cpu")
+        X_test_raw, y_test = dataframe_to_tensors(
+            data["test_df"],
+            device="cpu",
+        )
 
         # For baseline repræsentation: one-hot encode kategoriske features
-        if self.model_type in {"lr", "mlp"}:
-            categorical_cardinalities = self.metadata["categorical_cardinalities"]
+        if self.model_type in ONE_HOT_MODELS:
+            categorical_cardinalities = self.metadata[
+                "categorical_cardinalities"
+            ]
             num_numerical_features = len(self.metadata["numerical_columns"])
 
             self.X_train = one_hot_encode_features(
@@ -87,13 +112,11 @@ class TabularDataModule(L.LightningDataModule):
                 categorical_cardinalities=categorical_cardinalities,
                 num_numerical_features=num_numerical_features,
             )
-        elif self.model_type in {"cpd", "mba"}:
+        elif self.model_type in TENSOR_MODELS:
             # For tensor-baserede modeller holdes kategorier som indices
             self.X_train = X_train_raw.long()
             self.X_val = X_val_raw.long()
             self.X_test = X_test_raw.long()
-        else:
-            raise ValueError(f"Unsupported model type: {self.model_type}")
 
         self.y_train = y_train
         self.y_val = y_val

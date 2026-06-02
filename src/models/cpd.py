@@ -5,11 +5,15 @@ from torch import nn
 
 
 class CPDClassifier(nn.Module):
-    """CPD-baseret klassifikationsmodel.
+    """Supervised CPD classifier for discrete inputs.
 
-    Hver kategorisk feature har en embedding af størrelse `rank`. Vi multiplicerer
-    embeddings elementvist (CPD-lignende) for at få en samlet repræsentation,
-    som derefter ligneært projiceres til `num_classes` logits.
+    For an input x = (x_1, ..., x_D), the class-c logit is
+
+        z_c(x) = sum_r lambda[c, r] * prod_d A_d[x_d, r] + bias[c]
+
+    This matches the supervised CPD score used in the report: the CPD tensor
+    directly parameterizes class logits, and the Lightning wrapper trains those
+    logits with cross-entropy.
     """
     def __init__(
         self,
@@ -23,35 +27,39 @@ class CPDClassifier(nn.Module):
         self.rank = rank
         self.num_classes = num_classes
 
-        # En embedding per kategorisk feature (dim -> rank)
-        self.embeddings = nn.ModuleList(
-            [nn.Embedding(dim, rank) for dim in feature_dims]
+        # A_d in the report: one factor matrix per feature/mode.
+        self.feature_factors = nn.ParameterList(
+            [nn.Parameter(torch.empty(dim, rank)) for dim in feature_dims]
         )
 
-        # Lineært output fra rank-dimension til klasse-logits
-        self.output = nn.Linear(rank, num_classes)
+        # lambda[c, r] and bias[c]: class-specific CPD component weights.
+        self.class_weights = nn.Parameter(torch.empty(num_classes, rank))
+        self.class_bias = nn.Parameter(torch.empty(num_classes))
 
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
-        for embedding in self.embeddings:
-            nn.init.normal_(embedding.weight, mean=1.0, std=0.01)
+        for factor in self.feature_factors:
+            nn.init.normal_(factor, mean=1.0, std=0.01)
 
-        nn.init.normal_(self.output.weight, mean=0.0, std=0.01)
-        nn.init.zeros_(self.output.bias)
+        nn.init.normal_(self.class_weights, mean=0.0, std=0.01)
+        nn.init.zeros_(self.class_bias)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # Start med en vektor af 1'ere i rank-dimensionen
-        z = torch.ones(
+        if x.shape[1] != len(self.feature_factors):
+            expected = len(self.feature_factors)
+            raise ValueError(
+                f"Expected {expected} features, got {x.shape[1]}."
+            )
+
+        rank_components = torch.ones(
             x.size(0),
             self.rank,
             device=x.device,
         )
 
-        # For hver feature: hent embedding per sample og multiplicer elementvist
-        for j, embedding in enumerate(self.embeddings):
+        for j, factor in enumerate(self.feature_factors):
             feature_values = x[:, j].long()
-            z = z * embedding(feature_values)
+            rank_components = rank_components * factor[feature_values]
 
-        logits = self.output(z)
-        return logits
+        return rank_components @ self.class_weights.T + self.class_bias

@@ -1,69 +1,91 @@
 Fagprojekt
-==============================
+==========
 
-TBD
+This project compares supervised classifiers for discrete/tabular data.
 
-Getting started (uv)
+The current implemented models are:
+
+- `lr`: logistic regression baseline
+- `mlp`: multilayer perceptron baseline
+- `cpd`: supervised CPD tensor classifier
+
+Planned models from the project report are:
+
+- `rf`: random forest baseline
+- `mba`: many-body approximation classifier
+- `tt`: tensor-train classifier
+- `tr`: tensor-ring classifier
+
+Project Idea
 ------------
 
-Create and activate a virtual environment, then install dependencies:
+All models are trained as supervised classifiers. Given an input
+
+    x = (x_1, ..., x_D)
+
+each model returns one logit per class. The class probabilities are computed with
+softmax:
+
+    P(y = c | x) = softmax(logits)_c
+
+The tensor models differ only in how the class logits are parameterized:
+
+- CPD uses a low-rank product of feature factors.
+- MBA should use interaction terms up to a chosen order.
+- TT and TR should replace the CPD score with tensor-train or tensor-ring contractions.
+
+Setup
+-----
+
+Create an environment and install the project:
 
     uv venv .venv
-    source .venv/bin/activate (or source .venv/Scripts/activate on Windows)
+    source .venv/bin/activate
     uv pip install -e .
     python test_environment.py
 
-Lock and sync dependencies (recommended for teams):
+Or sync from the lockfile:
 
-    uv lock
     uv sync
 
-Project Organization
-------------
+Data
+----
 
-    ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
-    │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
-    │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
-    │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-    │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures        <- Generated graphics and figures to be used in reporting
-    │
-    ├── pyproject.toml     <- Project metadata and dependencies
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
+Raw datasets live in `data/raw`. Processed splits live in `data/processed`.
 
+Create processed train/validation/test splits for one dataset:
 
+    uv run python -m src.data.make_dataset --dataset car_evaluation --representation both
+
+The supported dataset names are defined in `src/data/dataset_configs.py`.
+
+Training
 --------
 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+Train and test one model on one dataset:
+
+    uv run python -m src.train --dataset car_evaluation --model cpd --epochs 20
+
+Useful examples:
+
+    uv run python -m src.train --dataset car_evaluation --model lr
+    uv run python -m src.train --dataset car_evaluation --model mlp
+    uv run python -m src.train --dataset car_evaluation --model cpd --rank 8
+
+Model Inputs
+------------
+
+The data module chooses the feature representation from the model name:
+
+- `lr` and `mlp` use the `baseline` representation: categorical features are one-hot encoded and numerical features stay numerical.
+- `cpd`, `mba`, `tt`, and `tr` use the `tensor` representation: all features are integer indices. Numerical features are discretized during preprocessing.
+
+Results
+-------
+
+Lightning writes metrics to:
+
+    results/<model>/<dataset>/metrics.csv
+
+Current results should be treated as preliminary because not all planned models,
+datasets, and metrics have been run yet.
