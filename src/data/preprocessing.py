@@ -10,10 +10,7 @@ from sklearn.model_selection import train_test_split
 
 
 def load_raw_dataset(config: dict[str, Any], raw_dir: Path) -> pd.DataFrame:
-    """Indlæs rå CSV baseret på konfiguration.
-
-    Håndterer separator, header, kolonnenavne og missing-tokens.
-    """
+    """Load a raw dataset from its configuration."""
     file_path = raw_dir / config["file_name"]
 
     df = pd.read_csv(
@@ -40,10 +37,7 @@ def infer_feature_columns(
     categorical_columns: list[str] | str | None,
     numerical_columns: list[str] | None,
 ) -> tuple[list[str], list[str]]:
-    """Bestem hvilke kolonner der er kategoriske og numeriske.
-
-    Acceptér også shorthand `"all_except_target"` for kategoriske.
-    """
+    """Resolve categorical and numerical feature columns."""
     if categorical_columns == "all_except_target":
         categorical = [col for col in df.columns if col != target_column]
     else:
@@ -69,11 +63,7 @@ def fill_missing_values(
     numerical_columns: list[str],
     missing_token: str = "__MISSING__",
 ) -> pd.DataFrame:
-    """Erstat manglende værdier:
-
-    - Kategoriske og target: erstat med `missing_token`
-    - Numeriske: erstat med median (eller 0 hvis median ikke kan beregnes)
-    """
+    """Fill missing target, categorical, and numerical values."""
     df = df.copy()
 
     for col in [target_column] + categorical_columns:
@@ -89,7 +79,7 @@ def fill_missing_values(
 
 
 def encode_column(series: pd.Series) -> tuple[pd.Series, dict[str, int]]:
-    """Encode en enkelt kolonne til integer labels og returner mapping."""
+    """Encode one column as integer labels."""
     categories = sorted(series.astype(str).unique())
     mapping = {value: idx for idx, value in enumerate(categories)}
     encoded = series.astype(str).map(mapping)
@@ -100,7 +90,7 @@ def encode_categorical_dataframe(
     df: pd.DataFrame,
     categorical_columns: list[str],
 ) -> tuple[pd.DataFrame, dict[str, dict[str, int]], list[int]]:
-    """Encode alle kategoriske kolonner og returner mappings + cardinalities."""
+    """Encode categorical columns and return their cardinalities."""
     encoded_df = pd.DataFrame(index=df.index)
     mappings: dict[str, dict[str, int]] = {}
     cardinalities: list[int] = []
@@ -120,7 +110,7 @@ def discretize_numerical_dataframe(
     n_bins: int = 10,
     strategy: str = "quantile",
 ) -> tuple[pd.DataFrame, dict[str, Any], list[int]]:
-    """Diskretisér numeriske kolonner i bins og returner bin-metadata."""
+    """Discretize numerical columns into bins."""
     discretized_df = pd.DataFrame(index=df.index)
     bin_metadata: dict[str, Any] = {}
     cardinalities: list[int] = []
@@ -167,9 +157,7 @@ def process_dataset(
     n_bins: int | None = None,
     binning_strategy: str = "quantile",
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Processér dataset til enten `baseline` (one-hot + numeriske) eller
-    `tensor` (kategorier som indices + diskretiserede numeriske features).
-    """
+    """Process a raw dataset into one model input representation."""
     if representation not in {"baseline", "tensor"}:
         raise ValueError(f"Unsupported representation: {representation}")
 
@@ -242,7 +230,7 @@ def split_dataset(
     test_size: float = 0.15,
     random_state: int = 42,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Split dataset i train/val/test. Forsøger stratified split når muligt."""
+    """Split a dataset into train, validation, and test sets."""
     total = train_size + val_size + test_size
     if abs(total - 1.0) > 1e-8:
         raise ValueError(f"train_size + val_size + test_size must sum to 1.0, got {total}")
@@ -292,7 +280,7 @@ def save_splits(
     dataset_name: str,
     representation: str,
 ) -> dict[str, Path]:
-    """Gem de tre splits som CSV-filer i `output_dir`."""
+    """Save train, validation, and test splits as CSV files."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
     paths = {
@@ -314,7 +302,7 @@ def save_metadata(
     dataset_name: str,
     representation: str,
 ) -> Path:
-    """Gem metadata som JSON i `output_dir`."""
+    """Save processing metadata as JSON."""
     output_dir.mkdir(parents=True, exist_ok=True)
     metadata_path = output_dir / f"{dataset_name}_{representation}_metadata.json"
 

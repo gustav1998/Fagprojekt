@@ -3,10 +3,7 @@ import torch.nn as nn
 
 
 class LogisticRegression(nn.Module):
-    """Simpel logistisk regression (lineært lag).
-
-    Output er logits for `num_classes` klasser.
-    """
+    """Linear classifier that returns one logit per class."""
     def __init__(
             self,
             input_dim: int,

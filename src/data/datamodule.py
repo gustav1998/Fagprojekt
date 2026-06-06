@@ -24,12 +24,7 @@ def representation_for_model(model_type: str) -> str:
 
 
 class TabularDataModule(L.LightningDataModule):
-    """LightningDataModule til tabulære datasæt.
-
-    Denne klasse indlæser de forbehandlede CSV-filer, konverterer til tensorer
-    og returnerer PyTorch `DataLoader`-objekter til træning, validering og
-    test.
-    """
+    """Load processed tabular data into PyTorch DataLoaders."""
 
     def __init__(
         self,
@@ -46,11 +41,9 @@ class TabularDataModule(L.LightningDataModule):
         self.processed_dir = processed_dir
         self.num_workers = num_workers
 
-        # Metadata om dataset (kolonnenavne, cardinalities osv.)
         self.metadata = None
         self.cardinalities = None
 
-        # Tensors for splits
         self.X_train = None
         self.y_train = None
         self.X_val = None
@@ -58,16 +51,11 @@ class TabularDataModule(L.LightningDataModule):
         self.X_test = None
         self.y_test = None
 
-        # Model relaterede størrelser (beregnes i setup)
         self.input_dim = None
         self.num_classes = None
 
     def setup(self, stage: str | None = None) -> None:
-        """Hent forbehandlede data og forbered tensorer.
-
-        `representation` vælger om vi bruger one-hot (`baseline`) eller integer
-        indices (`tensor`) afhængigt af modeltypen.
-        """
+        """Load processed splits and convert them to model inputs."""
         representation = representation_for_model(self.model_type)
 
         data = load_processed_dataset(
@@ -79,7 +67,6 @@ class TabularDataModule(L.LightningDataModule):
         self.metadata = data["metadata"]
         self.cardinalities = self.metadata["cardinalities"]
 
-        # Konverter pandas -> torch tensor
         X_train_raw, y_train = dataframe_to_tensors(
             data["train_df"],
             device="cpu",
@@ -90,7 +77,6 @@ class TabularDataModule(L.LightningDataModule):
             device="cpu",
         )
 
-        # For baseline repræsentation: one-hot encode kategoriske features
         if self.model_type in ONE_HOT_MODELS:
             categorical_cardinalities = self.metadata[
                 "categorical_cardinalities"
@@ -113,7 +99,6 @@ class TabularDataModule(L.LightningDataModule):
                 num_numerical_features=num_numerical_features,
             )
         elif self.model_type in TENSOR_MODELS:
-            # For tensor-baserede modeller holdes kategorier som indices
             self.X_train = X_train_raw.long()
             self.X_val = X_val_raw.long()
             self.X_test = X_test_raw.long()
@@ -122,12 +107,11 @@ class TabularDataModule(L.LightningDataModule):
         self.y_val = y_val
         self.y_test = y_test
 
-        # Input-dimension til modeller og antal klasser
         self.input_dim = self.X_train.shape[1]
         self.num_classes = len(self.metadata["target_mapping"])
 
     def train_dataloader(self) -> DataLoader:
-        """Returner trænings-DataLoader."""
+        """Return the training DataLoader."""
         dataset = TensorDataset(self.X_train, self.y_train)
         return DataLoader(
             dataset,
@@ -137,7 +121,7 @@ class TabularDataModule(L.LightningDataModule):
         )
 
     def val_dataloader(self) -> DataLoader:
-        """Returner validerings-DataLoader."""
+        """Return the validation DataLoader."""
         dataset = TensorDataset(self.X_val, self.y_val)
         return DataLoader(
             dataset,
@@ -147,7 +131,7 @@ class TabularDataModule(L.LightningDataModule):
         )
 
     def test_dataloader(self) -> DataLoader:
-        """Returner test-DataLoader."""
+        """Return the test DataLoader."""
         dataset = TensorDataset(self.X_test, self.y_test)
         return DataLoader(
             dataset,

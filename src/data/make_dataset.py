@@ -71,14 +71,7 @@ def main(
     n_bins: int | None,
     binning_strategy: str,
 ) -> None:
-    """Kør pipeline for at opbygge og gemme forbehandlede datasæt.
-
-    Skriptet:
-    - læser råt data
-    - processerer (encode, discretize)
-    - splitter i train/val/test
-    - gemmer CSV-splits og metadata
-    """
+    """Create processed train, validation, and test splits."""
     logger = logging.getLogger(__name__)
     config = DATASET_CONFIGS[dataset_name]
 

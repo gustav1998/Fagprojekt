@@ -5,10 +5,7 @@ from torch import nn
 
 
 class MLPClassifier(nn.Module):
-    """Et simpelt feed-forward MLP til klassifikation.
-
-    Består af to skjulte lag med ReLU aktivering og dropout.
-    """
+    """Feed-forward classifier with two hidden layers."""
     def __init__(
         self,
         input_dim: int,

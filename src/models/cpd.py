@@ -5,16 +5,7 @@ from torch import nn
 
 
 class CPDClassifier(nn.Module):
-    """Supervised CPD classifier for discrete inputs.
-
-    For an input x = (x_1, ..., x_D), the class-c logit is
-
-        z_c(x) = sum_r lambda[c, r] * prod_d A_d[x_d, r] + bias[c]
-
-    This matches the supervised CPD score used in the report: the CPD tensor
-    directly parameterizes class logits, and the Lightning wrapper trains those
-    logits with cross-entropy.
-    """
+    """Supervised CPD classifier for discrete inputs."""
     def __init__(
         self,
         feature_dims: list[int],
@@ -27,12 +18,10 @@ class CPDClassifier(nn.Module):
         self.rank = rank
         self.num_classes = num_classes
 
-        # A_d in the report: one factor matrix per feature/mode.
         self.feature_factors = nn.ParameterList(
             [nn.Parameter(torch.empty(dim, rank)) for dim in feature_dims]
         )
 
-        # lambda[c, r] and bias[c]: class-specific CPD component weights.
         self.class_weights = nn.Parameter(torch.empty(num_classes, rank))
         self.class_bias = nn.Parameter(torch.empty(num_classes))
 
