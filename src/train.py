@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 import lightning as L
 from lightning.pytorch.loggers import CSVLogger
@@ -60,6 +61,12 @@ def parse_args():
     )
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument(
+        "--processed-dir",
+        type=Path,
+        default=Path("data/processed"),
+        help="Directory containing processed dataset splits.",
+    )
+    parser.add_argument(
         "--epochs",
         type=int,
         default=None,
@@ -86,6 +93,18 @@ def parse_args():
         default=None,
         help="Tensor rank for CPD, TT, and TR. Defaults depend on model.",
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Random seed for model initialization and data shuffling.",
+    )
+    parser.add_argument(
+        "--result-version",
+        type=str,
+        default=None,
+        help="Result folder name under results/<model>/.",
+    )
 
     return parser.parse_args()
 
@@ -107,11 +126,15 @@ def apply_model_defaults(args: argparse.Namespace) -> argparse.Namespace:
 def main() -> None:
     """Run training and testing for one model on one dataset."""
     args = apply_model_defaults(parse_args())
+    if args.seed is not None:
+        L.seed_everything(args.seed, workers=True)
 
     datamodule = TabularDataModule(
         dataset_name=args.dataset,
         batch_size=args.batch_size,
         model_type=args.model,
+        processed_dir=args.processed_dir,
+        seed=args.seed,
     )
     datamodule.setup()
 
@@ -158,10 +181,18 @@ def main() -> None:
         learning_rate=args.learning_rate,
     )
 
+    result_version = args.result_version
+    if result_version is None:
+        result_version = (
+            f"{args.dataset}_seed{args.seed}"
+            if args.seed is not None
+            else args.dataset
+        )
+
     logger = CSVLogger(
         save_dir="results",
         name=args.model,
-        version=f"{args.dataset}",
+        version=result_version,
     )
 
     trainer = L.Trainer(

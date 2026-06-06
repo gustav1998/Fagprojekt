@@ -112,6 +112,27 @@ Useful examples:
     uv run python -m src.train --dataset car_evaluation --model tt --rank 32
     uv run python -m src.train --dataset car_evaluation --model tr --rank 32
 
+Run a seeded experiment. This writes results to
+`results/<model>/<dataset>_seed<seed>/metrics.csv`:
+
+    uv run python -m src.train --dataset car_evaluation --model cpd --seed 42
+
+Run multiple datasets, models, and seeds:
+
+    uv run python -m src.run_experiments --seed 1 --seed 2 --seed 3
+
+Limit a multi-seed run to selected datasets or models by repeating options:
+
+    uv run python -m src.run_experiments \
+      --dataset car_evaluation \
+      --dataset asia_lung \
+      --model cpd \
+      --model tt \
+      --model tr \
+      --seed 1 \
+      --seed 2 \
+      --seed 3
+
 Model Inputs
 ------------
 
@@ -145,6 +166,10 @@ Build a summary table with test accuracy, majority-class baseline, and best
 model per dataset:
 
     uv run python -m src.summarize_results
+
+When seeded result folders are present, the summary also writes:
+
+    results/benchmark_summary_aggregate.csv
 
 Current results should be treated as preliminary because not all planned models,
 datasets, and metrics have been run yet.

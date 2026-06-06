@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import lightning as L
+import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 from src.data.load_processed import (
@@ -33,6 +34,7 @@ class TabularDataModule(L.LightningDataModule):
         model_type: str = "lr",
         processed_dir: str = "data/processed",
         num_workers: int = 0,
+        seed: int | None = None,
     ) -> None:
         super().__init__()
         self.dataset_name = dataset_name
@@ -40,6 +42,7 @@ class TabularDataModule(L.LightningDataModule):
         self.model_type = model_type
         self.processed_dir = processed_dir
         self.num_workers = num_workers
+        self.seed = seed
 
         self.metadata = None
         self.cardinalities = None
@@ -113,11 +116,17 @@ class TabularDataModule(L.LightningDataModule):
     def train_dataloader(self) -> DataLoader:
         """Return the training DataLoader."""
         dataset = TensorDataset(self.X_train, self.y_train)
+        generator = None
+        if self.seed is not None:
+            generator = torch.Generator()
+            generator.manual_seed(self.seed)
+
         return DataLoader(
             dataset,
             batch_size=self.batch_size,
             shuffle=True,
             num_workers=self.num_workers,
+            generator=generator,
         )
 
     def val_dataloader(self) -> DataLoader:
