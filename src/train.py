@@ -1,9 +1,4 @@
-"""Træningsscript for modeller.
-
-Dette modul indeholder CLI for at træne og teste modeller på tabulære datasæt.
-Kommentarer og argumenter er forklaret på dansk så projektgruppen forstår
-hvad hvert trin gør.
-"""
+"""Command-line training script for tabular classifiers."""
 
 from __future__ import annotations
 
@@ -17,13 +12,39 @@ from src.models.logistic_regression import LogisticRegression
 from src.models.mlp import MLPClassifier
 from src.models.lightning_module import TabularClassifierModule
 from src.models.cpd import CPDClassifier
+from src.models.tt import TTClassifier
+from src.models.tr import TRClassifier
+
+
+DEFAULT_TRAINING_CONFIGS = {
+    "lr": {
+        "epochs": 100,
+        "learning_rate": 1e-3,
+    },
+    "mlp": {
+        "epochs": 100,
+        "learning_rate": 1e-3,
+    },
+    "cpd": {
+        "epochs": 60,
+        "learning_rate": 1e-2,
+        "rank": 16,
+    },
+    "tt": {
+        "epochs": 60,
+        "learning_rate": 1e-2,
+        "rank": 16,
+    },
+    "tr": {
+        "epochs": 60,
+        "learning_rate": 1e-2,
+        "rank": 16,
+    },
+}
 
 
 def parse_args():
-    """Opret og parse kommandolinje-argumenter.
-
-    Returnerer et argparse Namespace med konfiguration til træning.
-    """
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--dataset", type=str, required=True, help="Dataset name")
@@ -31,12 +52,25 @@ def parse_args():
         "--model",
         type=str,
         required=True,
-        choices=["lr", "mlp", "cpd"],
-        help="Model to train (lr=logistic, mlp=neural net, cpd=faktoriseret)",
+        choices=["lr", "mlp", "cpd", "tt", "tr"],
+        help=(
+            "Model to train (lr=logistic, mlp=neural net, "
+            "cpd/tt/tr=tensor classifiers)"
+        ),
     )
     parser.add_argument("--batch-size", type=int, default=256)
-    parser.add_argument("--epochs", type=int, default=20)
-    parser.add_argument("--learning-rate", type=float, default=1e-3)
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=None,
+        help="Training epochs. Defaults depend on model.",
+    )
+    parser.add_argument(
+        "--learning-rate",
+        type=float,
+        default=None,
+        help="Learning rate. Defaults depend on model.",
+    )
     parser.add_argument("--hidden-dim", type=int, default=128)
     parser.add_argument("--dropout", type=float, default=0.1)
     parser.add_argument(
@@ -46,23 +80,34 @@ def parse_args():
         choices=["auto", "cpu", "gpu"],
         help="Lightning accelerator",
     )
-    parser.add_argument("--rank", type=int, default=8, help="CP rank for CPD model")
+    parser.add_argument(
+        "--rank",
+        type=int,
+        default=None,
+        help="Tensor rank for CPD, TT, and TR. Defaults depend on model.",
+    )
 
     return parser.parse_args()
 
 
+def apply_model_defaults(args: argparse.Namespace) -> argparse.Namespace:
+    """Fill unset hyperparameters from model-specific defaults."""
+    defaults = DEFAULT_TRAINING_CONFIGS[args.model]
+
+    if args.epochs is None:
+        args.epochs = defaults["epochs"]
+    if args.learning_rate is None:
+        args.learning_rate = defaults["learning_rate"]
+    if args.rank is None:
+        args.rank = defaults.get("rank", 8)
+
+    return args
+
+
 def main() -> None:
-    """Hovedfunktion: sætter datamodule op, vælger model og kører træning/test.
+    """Run training and testing for one model on one dataset."""
+    args = apply_model_defaults(parse_args())
 
-    Flow:
-    - load data via `TabularDataModule`
-    - opret base model (afhænger af `--model`)
-    - wrap model i LightningModule `TabularClassifierModule`
-    - opret `Trainer` og kør `fit` og `test`
-    """
-    args = parse_args()
-
-    # Data loader / forberedelse
     datamodule = TabularDataModule(
         dataset_name=args.dataset,
         batch_size=args.batch_size,
@@ -70,7 +115,6 @@ def main() -> None:
     )
     datamodule.setup()
 
-    # Vælg base model afhængig af argument
     if args.model == "lr":
         base_model = LogisticRegression(
             input_dim=datamodule.input_dim,
@@ -92,16 +136,28 @@ def main() -> None:
             num_classes=datamodule.num_classes,
         )
 
+    elif args.model == "tt":
+        base_model = TTClassifier(
+            feature_dims=datamodule.cardinalities,
+            rank=args.rank,
+            num_classes=datamodule.num_classes,
+        )
+
+    elif args.model == "tr":
+        base_model = TRClassifier(
+            feature_dims=datamodule.cardinalities,
+            rank=args.rank,
+            num_classes=datamodule.num_classes,
+        )
+
     else:
         raise ValueError(f"Unsupported model: {args.model}")
-    
-    # Lightning wrapper som håndterer loss, optimering og logging
+
     model = TabularClassifierModule(
         model=base_model,
         learning_rate=args.learning_rate,
     )
 
-    # Logger gemmer metrics som CSV i `results/` mappen
     logger = CSVLogger(
         save_dir="results",
         name=args.model,
@@ -117,7 +173,6 @@ def main() -> None:
         log_every_n_steps=1,
     )
 
-    # Kør træning og test
     trainer.fit(model, datamodule=datamodule)
     trainer.test(model, datamodule=datamodule)
 
