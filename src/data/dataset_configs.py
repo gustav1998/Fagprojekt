@@ -3,11 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 
-"""Konfigurationer for rå dataset-filer.
-
-Hver entry beskriver hvordan rå-filen skal indlæses og hvilke kolonner
-der er kategoriske/ numeriske.
-"""
+"""Raw dataset loading configurations."""
 
 
 DATASET_CONFIGS: dict[str, dict[str, Any]] = {
@@ -166,16 +162,108 @@ DATASET_CONFIGS: dict[str, dict[str, Any]] = {
 
     "lenses": {
         "file_name": "lenses/lenses.data",
-        "sep": ",",
+        "sep": r"\s+",
+        "engine": "python",
         "header": None,
         "target_column": "class",
         "column_names": [
+            "id",
             "age",
             "spectacle_prescription",
             "astigmatic",
             "tear_production_rate",
             "class",
         ],
+        "drop_columns": ["id"],
+        "categorical_columns": "all_except_target",
+        "numerical_columns": [],
+        "missing_tokens": ["?"],
+        "task": "classification",
+    },
+
+    "hayesroth": {
+        "file_name": "hayes+roth/hayes-roth.data",
+        "sep": ",",
+        "header": None,
+        "target_column": "class",
+        "column_names": [
+            "id",
+            "hobby",
+            "age",
+            "educational_level",
+            "marital_status",
+            "class",
+        ],
+        "drop_columns": ["id"],
+        "categorical_columns": "all_except_target",
+        "numerical_columns": [],
+        "missing_tokens": ["?"],
+        "task": "classification",
+    },
+
+    "monk_1": {
+        "file_name": "monk+s+problems/monks-1.test",
+        "sep": r"\s+",
+        "engine": "python",
+        "header": None,
+        "target_column": "class",
+        "column_names": [
+            "class",
+            "a1",
+            "a2",
+            "a3",
+            "a4",
+            "a5",
+            "a6",
+            "sample_id",
+        ],
+        "drop_columns": ["sample_id"],
+        "categorical_columns": "all_except_target",
+        "numerical_columns": [],
+        "missing_tokens": ["?"],
+        "task": "classification",
+    },
+
+    "monk_2": {
+        "file_name": "monk+s+problems/monks-2.test",
+        "sep": r"\s+",
+        "engine": "python",
+        "header": None,
+        "target_column": "class",
+        "column_names": [
+            "class",
+            "a1",
+            "a2",
+            "a3",
+            "a4",
+            "a5",
+            "a6",
+            "sample_id",
+        ],
+        "drop_columns": ["sample_id"],
+        "categorical_columns": "all_except_target",
+        "numerical_columns": [],
+        "missing_tokens": ["?"],
+        "task": "classification",
+    },
+
+    "monk_3": {
+        "file_name": "monk+s+problems/monks-3.test",
+        "sep": r"\s+",
+        "engine": "python",
+        "header": None,
+        "target_column": "class",
+        "column_names": [
+            "class",
+            "a1",
+            "a2",
+            "a3",
+            "a4",
+            "a5",
+            "a6",
+            "sample_id",
+        ],
+        "drop_columns": ["sample_id"],
         "categorical_columns": "all_except_target",
         "numerical_columns": [],
         "missing_tokens": ["?"],
@@ -235,3 +323,32 @@ DATASET_CONFIGS: dict[str, dict[str, Any]] = {
         "task": "classification",
     },
 }
+
+
+for _dataset_name in [
+    "asia_lung",
+    "cleveland",
+    "conf_ad",
+    "coronary",
+    "dmft",
+    "german_gss",
+    "led7",
+    "mofn",
+    "parity5p5",
+    "ppd",
+    "ptumor",
+    "sensory",
+    "three_of_nine",
+    "vehicle",
+    "xd6",
+]:
+    DATASET_CONFIGS[_dataset_name] = {
+        "file_name": f"report_datasets/{_dataset_name}.csv",
+        "sep": ",",
+        "header": "infer",
+        "target_column": "class",
+        "categorical_columns": "all_except_target",
+        "numerical_columns": [],
+        "missing_tokens": ["?"],
+        "task": "classification",
+    }
