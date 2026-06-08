@@ -15,16 +15,16 @@
   "numerical_columns": [],
   "representation": "baseline",
   "cardinalities": [
-    2,
-    2,
-    2,
-    6
+    4,
+    4,
+    4,
+    8
   ],
   "categorical_cardinalities": [
-    2,
-    2,
-    2,
-    6
+    4,
+    4,
+    4,
+    8
   ],
   "numerical_cardinalities": [],
   "target_mapping": {
@@ -34,15 +34,21 @@
   "feature_mappings": {
     "Alcohol_related": {
       "No": 0,
-      "Yes": 1
+      "Yes": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Gender": {
       "Female": 0,
-      "Male": 1
+      "Male": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Type": {
       "Passenger": 0,
-      "Pedestrian/bicyclist": 1
+      "Pedestrian/bicyclist": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Age": {
       "0-2": 0,
@@ -50,14 +56,20 @@
       "14-15": 2,
       "3-5": 3,
       "6-8": 4,
-      "9-11": 5
+      "9-11": 5,
+      "__MISSING__": 6,
+      "__UNKNOWN__": 7
     }
   },
+  "numerical_fill_values": {},
   "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
   "n_features": 4,
   "dataset_name": "vehicle",
   "task": "classification",
   "seed": 42,
+  "official_test_split": false,
   "n_train": 33,
   "n_val": 7,
   "n_test": 8

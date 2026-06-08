@@ -39,40 +39,40 @@
   "numerical_columns": [],
   "representation": "baseline",
   "cardinalities": [
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
   "categorical_cardinalities": [
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3,
-    3
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
   "numerical_cardinalities": [],
   "target_mapping": {
@@ -82,90 +82,110 @@
   "feature_mappings": {
     "handicapped_infants": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "water_project_cost_sharing": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "adoption_of_the_budget_resolution": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "physician_fee_freeze": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "el_salvador_aid": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "religious_groups_in_schools": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "anti_satellite_test_ban": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "aid_to_nicaraguan_contras": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "mx_missile": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "immigration": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "synfuels_corporation_cutback": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "education_spending": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "superfund_right_to_sue": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "crime": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "duty_free_exports": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     },
     "export_administration_act_south_africa": {
       "__MISSING__": 0,
-      "n": 1,
-      "y": 2
+      "__UNKNOWN__": 1,
+      "n": 2,
+      "y": 3
     }
   },
+  "numerical_fill_values": {},
   "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
   "n_features": 16,
   "dataset_name": "house_votes_84",
   "task": "classification",
   "seed": 3,
+  "official_test_split": false,
   "n_train": 304,
   "n_val": 65,
   "n_test": 66

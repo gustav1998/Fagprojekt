@@ -43,11 +43,24 @@ test
 The baseline representation is used by logistic regression and the MLP. The
 tensor representation is used by CPD, MBA, TT, and TR.
 
+Preprocessing is fitted on the training split only. The fitted category
+mappings, numerical fill values, and tensor discretization bins are then reused
+for validation and test splits.
+
+Rows with missing target labels are dropped before splitting. Datasets can also
+define a minimum target-class count when very rare classes cannot be split
+reliably.
+
 Seeded experiment splits are stored in folders such as:
 
 ```text
 data/processed/seed_42/
 ```
+
+The MONK datasets use their official test files. A validation split is carved
+out of the official training file. Hayes-Roth keeps using the labeled
+`hayes-roth.data` file because the companion `hayes-roth.test` file does not
+include labels in the same supervised-learning format.
 
 ## Regenerating Processed Splits
 
@@ -62,4 +75,3 @@ For seeded experiment folders, use the experiment runner:
 ```bash
 uv run python -m src.run_experiments --dataset car_evaluation --seed 42
 ```
-

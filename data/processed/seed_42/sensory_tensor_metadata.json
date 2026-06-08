@@ -29,30 +29,30 @@
   "numerical_columns": [],
   "representation": "tensor",
   "cardinalities": [
-    2,
+    4,
+    8,
+    5,
     6,
-    3,
+    6,
     4,
+    5,
+    6,
     4,
-    2,
-    3,
-    4,
-    2,
-    4,
-    2
+    6,
+    4
   ],
   "categorical_cardinalities": [
-    2,
+    4,
+    8,
+    5,
     6,
-    3,
+    6,
     4,
+    5,
+    6,
     4,
-    2,
-    3,
-    4,
-    2,
-    4,
-    2
+    6,
+    4
   ],
   "numerical_cardinalities": [],
   "target_mapping": {
@@ -62,7 +62,9 @@
   "feature_mappings": {
     "Occasion": {
       "1": 0,
-      "2": 1
+      "2": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Judges": {
       "1": 0,
@@ -70,60 +72,84 @@
       "3": 2,
       "4": 3,
       "5": 4,
-      "6": 5
+      "6": 5,
+      "__MISSING__": 6,
+      "__UNKNOWN__": 7
     },
     "Interval": {
       "1": 0,
       "2": 1,
-      "3": 2
+      "3": 2,
+      "__MISSING__": 3,
+      "__UNKNOWN__": 4
     },
     "Sittings": {
       "1": 0,
       "2": 1,
       "3": 2,
-      "4": 3
+      "4": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
     },
     "Position": {
       "1": 0,
       "2": 1,
       "3": 2,
-      "4": 3
+      "4": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
     },
     "Squares": {
       "1": 0,
-      "2": 1
+      "2": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Rows": {
       "1": 0,
       "2": 1,
-      "3": 2
+      "3": 2,
+      "__MISSING__": 3,
+      "__UNKNOWN__": 4
     },
     "Columns": {
       "1": 0,
       "2": 1,
       "3": 2,
-      "4": 3
+      "4": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
     },
     "Halfplot": {
       "1": 0,
-      "2": 1
+      "2": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Trellis": {
       "1": 0,
       "2": 1,
       "3": 2,
-      "4": 3
+      "4": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
     },
     "Method": {
       "1": 0,
-      "2": 1
+      "2": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     }
   },
+  "numerical_fill_values": {},
   "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
   "n_features": 11,
   "dataset_name": "sensory",
   "task": "classification",
   "seed": 42,
+  "official_test_split": false,
   "n_train": 403,
   "n_val": 86,
   "n_test": 87

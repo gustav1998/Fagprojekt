@@ -19,20 +19,20 @@
   "numerical_columns": [],
   "representation": "tensor",
   "cardinalities": [
-    4,
-    4,
-    4,
-    3,
-    3,
-    3
+    6,
+    6,
+    6,
+    5,
+    5,
+    5
   ],
   "categorical_cardinalities": [
-    4,
-    4,
-    4,
-    3,
-    3,
-    3
+    6,
+    6,
+    6,
+    5,
+    5,
+    5
   ],
   "numerical_cardinalities": [],
   "target_mapping": {
@@ -43,44 +43,60 @@
   },
   "feature_mappings": {
     "buying": {
-      "high": 0,
-      "low": 1,
-      "med": 2,
-      "vhigh": 3
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "high": 2,
+      "low": 3,
+      "med": 4,
+      "vhigh": 5
     },
     "maint": {
-      "high": 0,
-      "low": 1,
-      "med": 2,
-      "vhigh": 3
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "high": 2,
+      "low": 3,
+      "med": 4,
+      "vhigh": 5
     },
     "doors": {
       "2": 0,
       "3": 1,
       "4": 2,
-      "5more": 3
+      "5more": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
     },
     "persons": {
       "2": 0,
       "4": 1,
-      "more": 2
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3,
+      "more": 4
     },
     "lug_boot": {
-      "big": 0,
-      "med": 1,
-      "small": 2
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "big": 2,
+      "med": 3,
+      "small": 4
     },
     "safety": {
-      "high": 0,
-      "low": 1,
-      "med": 2
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "high": 2,
+      "low": 3,
+      "med": 4
     }
   },
+  "numerical_fill_values": {},
   "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
   "n_features": 6,
   "dataset_name": "car_evaluation",
   "task": "classification",
   "seed": 42,
+  "official_test_split": false,
   "n_train": 1209,
   "n_val": 259,
   "n_test": 260

@@ -9,11 +9,14 @@ from dotenv import find_dotenv, load_dotenv
 
 from src.data.dataset_configs import DATASET_CONFIGS
 from src.data.preprocessing import (
-    load_raw_dataset,
-    process_dataset,
+    clean_targets,
+    fit_preprocessor,
+    load_raw_dataset_splits,
     save_metadata,
     save_splits,
     split_dataset,
+    split_train_val,
+    transform_dataset,
 )
 
 
@@ -54,7 +57,10 @@ from src.data.preprocessing import (
     "--n-bins",
     type=int,
     default=None,
-    help="Number of bins used when discretizing numerical features for tensor representation.",
+    help=(
+        "Number of bins used when discretizing numerical features for tensor "
+        "representation."
+    ),
 )
 @click.option(
     "--binning-strategy",
@@ -76,27 +82,64 @@ def main(
     config = DATASET_CONFIGS[dataset_name]
 
     logger.info("Processing dataset: %s", dataset_name)
-    raw_df = load_raw_dataset(config=config, raw_dir=raw_dir)
-    logger.info("Raw shape: %s", raw_df.shape)
+    raw_train_source, raw_test_source = load_raw_dataset_splits(
+        config=config,
+        raw_dir=raw_dir,
+    )
 
-    representations = ["baseline", "tensor"] if representation == "both" else [representation]
+    target_column = config["target_column"]
+    raw_train_source = clean_targets(
+        raw_train_source,
+        target_column=target_column,
+        min_target_count=config.get("min_target_count"),
+    )
+
+    if raw_test_source is None:
+        logger.info("Raw shape: %s", raw_train_source.shape)
+        raw_train_df, raw_val_df, raw_test_df = split_dataset(
+            df=raw_train_source,
+            target_column=target_column,
+            random_state=seed,
+        )
+        official_test = False
+    else:
+        raw_test_source = clean_targets(
+            raw_test_source,
+            target_column=target_column,
+        )
+        logger.info(
+            "Raw official train/test shapes: %s / %s",
+            raw_train_source.shape,
+            raw_test_source.shape,
+        )
+        raw_train_df, raw_val_df = split_train_val(
+            df=raw_train_source,
+            target_column=target_column,
+            random_state=seed,
+        )
+        raw_test_df = raw_test_source.reset_index(drop=True)
+        official_test = True
+
+    representations = (
+        ["baseline", "tensor"]
+        if representation == "both"
+        else [representation]
+    )
 
     for rep in representations:
         logger.info("Creating representation: %s", rep)
 
-        processed_df, metadata = process_dataset(
-            df=raw_df,
+        metadata = fit_preprocessor(
+            train_df=raw_train_df,
             config=config,
             representation=rep,
             n_bins=n_bins,
             binning_strategy=binning_strategy,
         )
 
-        train_df, val_df, test_df = split_dataset(
-            df=processed_df,
-            target_column="target",
-            random_state=seed,
-        )
+        train_df = transform_dataset(raw_train_df, metadata)
+        val_df = transform_dataset(raw_val_df, metadata)
+        test_df = transform_dataset(raw_test_df, metadata)
 
         split_paths = save_splits(
             train_df=train_df,
@@ -112,6 +155,7 @@ def main(
                 "dataset_name": dataset_name,
                 "task": config.get("task", "classification"),
                 "seed": seed,
+                "official_test_split": official_test,
                 "n_train": len(train_df),
                 "n_val": len(val_df),
                 "n_test": len(test_df),

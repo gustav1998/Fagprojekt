@@ -21,22 +21,22 @@
   "numerical_columns": [],
   "representation": "tensor",
   "cardinalities": [
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
   "categorical_cardinalities": [
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
   "numerical_cardinalities": [],
   "target_mapping": {
@@ -45,39 +45,57 @@
   },
   "feature_mappings": {
     "A": {
-      "no": 0,
-      "yes": 1
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
     },
     "S": {
-      "no": 0,
-      "yes": 1
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
     },
     "T": {
-      "no": 0,
-      "yes": 1
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
     },
     "B": {
-      "no": 0,
-      "yes": 1
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
     },
     "E": {
-      "no": 0,
-      "yes": 1
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
     },
     "X": {
-      "no": 0,
-      "yes": 1
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
     },
     "D": {
-      "no": 0,
-      "yes": 1
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
     }
   },
+  "numerical_fill_values": {},
   "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
   "n_features": 7,
   "dataset_name": "asia_lung",
   "task": "classification",
   "seed": 42,
+  "official_test_split": false,
   "n_train": 3499,
   "n_val": 750,
   "n_test": 751

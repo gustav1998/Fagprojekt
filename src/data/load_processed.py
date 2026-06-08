@@ -19,7 +19,9 @@ def load_processed_dataset(
     train_path = processed_dir / f"{dataset_name}_{representation}_train.csv"
     val_path = processed_dir / f"{dataset_name}_{representation}_val.csv"
     test_path = processed_dir / f"{dataset_name}_{representation}_test.csv"
-    metadata_path = processed_dir / f"{dataset_name}_{representation}_metadata.json"
+    metadata_path = (
+        processed_dir / f"{dataset_name}_{representation}_metadata.json"
+    )
 
     train_df = pd.read_csv(train_path)
     val_df = pd.read_csv(val_path)

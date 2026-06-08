@@ -27,28 +27,28 @@
   "numerical_columns": [],
   "representation": "tensor",
   "cardinalities": [
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
   "categorical_cardinalities": [
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
   "numerical_cardinalities": [],
   "target_mapping": {
@@ -58,50 +58,74 @@
   "feature_mappings": {
     "Bit_0": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Bit_1": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Bit_2": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Bit_3": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Bit_4": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Bit_5": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Bit_6": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Bit_7": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Bit_8": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "Bit_9": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     }
   },
+  "numerical_fill_values": {},
   "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
   "n_features": 10,
   "dataset_name": "mofn",
   "task": "classification",
   "seed": 42,
+  "official_test_split": false,
   "n_train": 926,
   "n_val": 199,
   "n_test": 199

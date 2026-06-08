@@ -25,26 +25,26 @@
   "numerical_columns": [],
   "representation": "tensor",
   "cardinalities": [
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
   "categorical_cardinalities": [
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2,
-    2
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
   "numerical_cardinalities": [],
   "target_mapping": {
@@ -54,46 +54,68 @@
   "feature_mappings": {
     "F1": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "F2": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "F3": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "F4": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "F5": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "F6": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "F7": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "F8": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     },
     "F9": {
       "0": 0,
-      "1": 1
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
     }
   },
+  "numerical_fill_values": {},
   "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
   "n_features": 9,
   "dataset_name": "three_of_nine",
   "task": "classification",
   "seed": 42,
+  "official_test_split": false,
   "n_train": 358,
   "n_val": 77,
   "n_test": 77

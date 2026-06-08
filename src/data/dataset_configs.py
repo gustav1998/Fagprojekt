@@ -202,7 +202,8 @@ DATASET_CONFIGS: dict[str, dict[str, Any]] = {
     },
 
     "monk_1": {
-        "file_name": "monk+s+problems/monks-1.test",
+        "train_file_name": "monk+s+problems/monks-1.train",
+        "test_file_name": "monk+s+problems/monks-1.test",
         "sep": r"\s+",
         "engine": "python",
         "header": None,
@@ -225,7 +226,8 @@ DATASET_CONFIGS: dict[str, dict[str, Any]] = {
     },
 
     "monk_2": {
-        "file_name": "monk+s+problems/monks-2.test",
+        "train_file_name": "monk+s+problems/monks-2.train",
+        "test_file_name": "monk+s+problems/monks-2.test",
         "sep": r"\s+",
         "engine": "python",
         "header": None,
@@ -248,7 +250,8 @@ DATASET_CONFIGS: dict[str, dict[str, Any]] = {
     },
 
     "monk_3": {
-        "file_name": "monk+s+problems/monks-3.test",
+        "train_file_name": "monk+s+problems/monks-3.train",
+        "test_file_name": "monk+s+problems/monks-3.test",
         "sep": r"\s+",
         "engine": "python",
         "header": None,
@@ -320,6 +323,7 @@ DATASET_CONFIGS: dict[str, dict[str, Any]] = {
         "categorical_columns": "all_except_target",
         "numerical_columns": [],
         "missing_tokens": ["?"],
+        "min_target_count": 3,
         "task": "classification",
     },
 }
