@@ -193,7 +193,7 @@ The project is packaged with setuptools.
 name = "src"
 version = "0.1.0"
 description = "Discrete tabular classification experiments"
-requires-python = ">=3.8"
+requires-python = ">=3.10,<3.13"
 ```
 
 This defines the package name, version, project description, and supported
@@ -206,8 +206,8 @@ dependencies = [
   "click",
   "flake8",
   "python-dotenv>=0.5.1",
-  "numpy>=1.24.4",
-  "pandas>=2.0.3",
+  "numpy>=1.26.4,<2",
+  "pandas>=2.2,<3",
   "scikit-learn>=1.3.2",
   "torch>=2.5.1",
   "lightning>=2.3.3",
@@ -260,4 +260,3 @@ Run it with:
 ```bash
 uv run python test_environment.py
 ```
-

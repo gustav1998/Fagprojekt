@@ -52,6 +52,10 @@ The code documentation is split by area:
 Setup
 -----
 
+The repository includes `.python-version` with Python 3.12. This avoids
+bleeding-edge Python compatibility issues while still working on older Intel
+Macs through the PyTorch version markers in `pyproject.toml`.
+
 Create an environment and install the project:
 
     uv venv .venv
