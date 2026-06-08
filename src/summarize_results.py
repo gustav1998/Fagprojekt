@@ -7,7 +7,7 @@ import click
 import pandas as pd
 
 
-MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"]
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"] # models used for comparison
 SEEDED_VERSION_PATTERN = re.compile(r"(?P<dataset>.+)_seed(?P<seed>-?\d+)$")
 
 
