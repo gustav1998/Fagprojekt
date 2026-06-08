@@ -1,0 +1,172 @@
+{
+  "target_column": "party",
+  "feature_names": [
+    "handicapped_infants",
+    "water_project_cost_sharing",
+    "adoption_of_the_budget_resolution",
+    "physician_fee_freeze",
+    "el_salvador_aid",
+    "religious_groups_in_schools",
+    "anti_satellite_test_ban",
+    "aid_to_nicaraguan_contras",
+    "mx_missile",
+    "immigration",
+    "synfuels_corporation_cutback",
+    "education_spending",
+    "superfund_right_to_sue",
+    "crime",
+    "duty_free_exports",
+    "export_administration_act_south_africa"
+  ],
+  "categorical_columns": [
+    "handicapped_infants",
+    "water_project_cost_sharing",
+    "adoption_of_the_budget_resolution",
+    "physician_fee_freeze",
+    "el_salvador_aid",
+    "religious_groups_in_schools",
+    "anti_satellite_test_ban",
+    "aid_to_nicaraguan_contras",
+    "mx_missile",
+    "immigration",
+    "synfuels_corporation_cutback",
+    "education_spending",
+    "superfund_right_to_sue",
+    "crime",
+    "duty_free_exports",
+    "export_administration_act_south_africa"
+  ],
+  "numerical_columns": [],
+  "representation": "baseline",
+  "cardinalities": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  ],
+  "categorical_cardinalities": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "democrat": 0,
+    "republican": 1
+  },
+  "feature_mappings": {
+    "handicapped_infants": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "water_project_cost_sharing": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "adoption_of_the_budget_resolution": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "physician_fee_freeze": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "el_salvador_aid": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "religious_groups_in_schools": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "anti_satellite_test_ban": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "aid_to_nicaraguan_contras": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "mx_missile": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "immigration": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "synfuels_corporation_cutback": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "education_spending": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "superfund_right_to_sue": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "crime": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "duty_free_exports": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    },
+    "export_administration_act_south_africa": {
+      "__MISSING__": 0,
+      "n": 1,
+      "y": 2
+    }
+  },
+  "numerical_bin_metadata": {},
+  "n_features": 16,
+  "dataset_name": "house_votes_84",
+  "task": "classification",
+  "seed": 42,
+  "n_train": 304,
+  "n_val": 65,
+  "n_test": 66
+}

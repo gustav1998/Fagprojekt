@@ -1,0 +1,172 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "age",
+    "sex",
+    "histologic_type",
+    "degree_of_diffe",
+    "bone",
+    "bone_marrow",
+    "lung",
+    "pleura",
+    "peritoneum",
+    "liver",
+    "brain",
+    "skin",
+    "neck",
+    "supraclavicular",
+    "axillar",
+    "mediastinum",
+    "abdominal"
+  ],
+  "categorical_columns": [
+    "age",
+    "sex",
+    "histologic_type",
+    "degree_of_diffe",
+    "bone",
+    "bone_marrow",
+    "lung",
+    "pleura",
+    "peritoneum",
+    "liver",
+    "brain",
+    "skin",
+    "neck",
+    "supraclavicular",
+    "axillar",
+    "mediastinum",
+    "abdominal"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    3,
+    3,
+    4,
+    4,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    2,
+    2,
+    3,
+    2,
+    2
+  ],
+  "categorical_cardinalities": [
+    3,
+    3,
+    4,
+    4,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    2,
+    2,
+    3,
+    2,
+    2
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "N": 0,
+    "P": 1
+  },
+  "feature_mappings": {
+    "age": {
+      "30-59": 0,
+      "<30": 1,
+      ">=60": 2
+    },
+    "sex": {
+      "__MISSING__": 0,
+      "female": 1,
+      "male": 2
+    },
+    "histologic_type": {
+      "__MISSING__": 0,
+      "adeno": 1,
+      "anaplastic": 2,
+      "epidermoid": 3
+    },
+    "degree_of_diffe": {
+      "__MISSING__": 0,
+      "fairly": 1,
+      "poorly": 2,
+      "well": 3
+    },
+    "bone": {
+      "no": 0,
+      "yes": 1
+    },
+    "bone_marrow": {
+      "no": 0,
+      "yes": 1
+    },
+    "lung": {
+      "no": 0,
+      "yes": 1
+    },
+    "pleura": {
+      "no": 0,
+      "yes": 1
+    },
+    "peritoneum": {
+      "no": 0,
+      "yes": 1
+    },
+    "liver": {
+      "no": 0,
+      "yes": 1
+    },
+    "brain": {
+      "no": 0,
+      "yes": 1
+    },
+    "skin": {
+      "__MISSING__": 0,
+      "no": 1,
+      "yes": 2
+    },
+    "neck": {
+      "no": 0,
+      "yes": 1
+    },
+    "supraclavicular": {
+      "no": 0,
+      "yes": 1
+    },
+    "axillar": {
+      "__MISSING__": 0,
+      "no": 1,
+      "yes": 2
+    },
+    "mediastinum": {
+      "no": 0,
+      "yes": 1
+    },
+    "abdominal": {
+      "no": 0,
+      "yes": 1
+    }
+  },
+  "numerical_bin_metadata": {},
+  "n_features": 17,
+  "dataset_name": "ptumor",
+  "task": "classification",
+  "seed": 42,
+  "n_train": 237,
+  "n_val": 51,
+  "n_test": 51
+}

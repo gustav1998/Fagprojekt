@@ -1,0 +1,84 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "A",
+    "S",
+    "T",
+    "B",
+    "E",
+    "X",
+    "D"
+  ],
+  "categorical_columns": [
+    "A",
+    "S",
+    "T",
+    "B",
+    "E",
+    "X",
+    "D"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "categorical_cardinalities": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "no": 0,
+    "yes": 1
+  },
+  "feature_mappings": {
+    "A": {
+      "no": 0,
+      "yes": 1
+    },
+    "S": {
+      "no": 0,
+      "yes": 1
+    },
+    "T": {
+      "no": 0,
+      "yes": 1
+    },
+    "B": {
+      "no": 0,
+      "yes": 1
+    },
+    "E": {
+      "no": 0,
+      "yes": 1
+    },
+    "X": {
+      "no": 0,
+      "yes": 1
+    },
+    "D": {
+      "no": 0,
+      "yes": 1
+    }
+  },
+  "numerical_bin_metadata": {},
+  "n_features": 7,
+  "dataset_name": "asia_lung",
+  "task": "classification",
+  "seed": 42,
+  "n_train": 3499,
+  "n_val": 750,
+  "n_test": 751
+}

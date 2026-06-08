@@ -1,0 +1,100 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "L_CORE",
+    "L_SURF",
+    "L_O2",
+    "L_BP",
+    "SURF_STBL",
+    "CORE_STBL",
+    "BP_STBL",
+    "COMFORT"
+  ],
+  "categorical_columns": [
+    "L_CORE",
+    "L_SURF",
+    "L_O2",
+    "L_BP",
+    "SURF_STBL",
+    "CORE_STBL",
+    "BP_STBL",
+    "COMFORT"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    3,
+    3,
+    2,
+    3,
+    2,
+    3,
+    3,
+    5
+  ],
+  "categorical_cardinalities": [
+    3,
+    3,
+    2,
+    3,
+    2,
+    3,
+    3,
+    5
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "0": 0,
+    "2": 1
+  },
+  "feature_mappings": {
+    "L_CORE": {
+      "0": 0,
+      "1": 1,
+      "2": 2
+    },
+    "L_SURF": {
+      "0": 0,
+      "1": 1,
+      "2": 2
+    },
+    "L_O2": {
+      "0": 0,
+      "1": 1
+    },
+    "L_BP": {
+      "0": 0,
+      "1": 1,
+      "2": 2
+    },
+    "SURF_STBL": {
+      "0": 0,
+      "1": 1
+    },
+    "CORE_STBL": {
+      "0": 0,
+      "1": 1,
+      "2": 2
+    },
+    "BP_STBL": {
+      "0": 0,
+      "1": 1,
+      "2": 2
+    },
+    "COMFORT": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4
+    }
+  },
+  "numerical_bin_metadata": {},
+  "n_features": 8,
+  "dataset_name": "ppd",
+  "task": "classification",
+  "seed": 42,
+  "n_train": 61,
+  "n_val": 13,
+  "n_test": 14
+}

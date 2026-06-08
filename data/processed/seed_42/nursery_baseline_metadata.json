@@ -1,0 +1,106 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "parents",
+    "has_nurs",
+    "form",
+    "children",
+    "housing",
+    "finance",
+    "social",
+    "health"
+  ],
+  "categorical_columns": [
+    "parents",
+    "has_nurs",
+    "form",
+    "children",
+    "housing",
+    "finance",
+    "social",
+    "health"
+  ],
+  "numerical_columns": [],
+  "representation": "baseline",
+  "cardinalities": [
+    3,
+    5,
+    4,
+    4,
+    3,
+    2,
+    3,
+    3
+  ],
+  "categorical_cardinalities": [
+    3,
+    5,
+    4,
+    4,
+    3,
+    2,
+    3,
+    3
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "not_recom": 0,
+    "priority": 1,
+    "recommend": 2,
+    "spec_prior": 3,
+    "very_recom": 4
+  },
+  "feature_mappings": {
+    "parents": {
+      "great_pret": 0,
+      "pretentious": 1,
+      "usual": 2
+    },
+    "has_nurs": {
+      "critical": 0,
+      "improper": 1,
+      "less_proper": 2,
+      "proper": 3,
+      "very_crit": 4
+    },
+    "form": {
+      "complete": 0,
+      "completed": 1,
+      "foster": 2,
+      "incomplete": 3
+    },
+    "children": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "more": 3
+    },
+    "housing": {
+      "convenient": 0,
+      "critical": 1,
+      "less_conv": 2
+    },
+    "finance": {
+      "convenient": 0,
+      "inconv": 1
+    },
+    "social": {
+      "nonprob": 0,
+      "problematic": 1,
+      "slightly_prob": 2
+    },
+    "health": {
+      "not_recom": 0,
+      "priority": 1,
+      "recommended": 2
+    }
+  },
+  "numerical_bin_metadata": {},
+  "n_features": 8,
+  "dataset_name": "nursery",
+  "task": "classification",
+  "seed": 42,
+  "n_train": 9071,
+  "n_val": 1944,
+  "n_test": 1945
+}

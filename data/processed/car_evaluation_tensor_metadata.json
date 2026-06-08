@@ -1,0 +1,87 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "buying",
+    "maint",
+    "doors",
+    "persons",
+    "lug_boot",
+    "safety"
+  ],
+  "categorical_columns": [
+    "buying",
+    "maint",
+    "doors",
+    "persons",
+    "lug_boot",
+    "safety"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    4,
+    4,
+    4,
+    3,
+    3,
+    3
+  ],
+  "categorical_cardinalities": [
+    4,
+    4,
+    4,
+    3,
+    3,
+    3
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "acc": 0,
+    "good": 1,
+    "unacc": 2,
+    "vgood": 3
+  },
+  "feature_mappings": {
+    "buying": {
+      "high": 0,
+      "low": 1,
+      "med": 2,
+      "vhigh": 3
+    },
+    "maint": {
+      "high": 0,
+      "low": 1,
+      "med": 2,
+      "vhigh": 3
+    },
+    "doors": {
+      "2": 0,
+      "3": 1,
+      "4": 2,
+      "5more": 3
+    },
+    "persons": {
+      "2": 0,
+      "4": 1,
+      "more": 2
+    },
+    "lug_boot": {
+      "big": 0,
+      "med": 1,
+      "small": 2
+    },
+    "safety": {
+      "high": 0,
+      "low": 1,
+      "med": 2
+    }
+  },
+  "numerical_bin_metadata": {},
+  "n_features": 6,
+  "dataset_name": "car_evaluation",
+  "task": "classification",
+  "seed": 42,
+  "n_train": 1209,
+  "n_val": 259,
+  "n_test": 260
+}

@@ -1,0 +1,68 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "Smoking",
+    "M._Work",
+    "P._Work",
+    "Pressure",
+    "Proteins"
+  ],
+  "categorical_columns": [
+    "Smoking",
+    "M._Work",
+    "P._Work",
+    "Pressure",
+    "Proteins"
+  ],
+  "numerical_columns": [],
+  "representation": "baseline",
+  "cardinalities": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "categorical_cardinalities": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "neg": 0,
+    "pos": 1
+  },
+  "feature_mappings": {
+    "Smoking": {
+      "no": 0,
+      "yes": 1
+    },
+    "M._Work": {
+      "no": 0,
+      "yes": 1
+    },
+    "P._Work": {
+      "no": 0,
+      "yes": 1
+    },
+    "Pressure": {
+      "<140": 0,
+      ">140": 1
+    },
+    "Proteins": {
+      "<3": 0,
+      ">3": 1
+    }
+  },
+  "numerical_bin_metadata": {},
+  "n_features": 5,
+  "dataset_name": "coronary",
+  "task": "classification",
+  "seed": 42,
+  "n_train": 1288,
+  "n_val": 276,
+  "n_test": 277
+}

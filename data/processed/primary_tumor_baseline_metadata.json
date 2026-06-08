@@ -1,0 +1,191 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "age",
+    "sex",
+    "histologic_type",
+    "degree_of_diffe",
+    "bone",
+    "bone_marrow",
+    "lung",
+    "pleura",
+    "peritoneum",
+    "liver",
+    "brain",
+    "skin",
+    "neck",
+    "supraclavicular",
+    "axillar",
+    "mediastinum",
+    "abdominal"
+  ],
+  "categorical_columns": [
+    "age",
+    "sex",
+    "histologic_type",
+    "degree_of_diffe",
+    "bone",
+    "bone_marrow",
+    "lung",
+    "pleura",
+    "peritoneum",
+    "liver",
+    "brain",
+    "skin",
+    "neck",
+    "supraclavicular",
+    "axillar",
+    "mediastinum",
+    "abdominal"
+  ],
+  "numerical_columns": [],
+  "representation": "baseline",
+  "cardinalities": [
+    3,
+    3,
+    4,
+    4,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    2,
+    2,
+    3,
+    2,
+    2
+  ],
+  "categorical_cardinalities": [
+    3,
+    3,
+    4,
+    4,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    2,
+    2,
+    3,
+    2,
+    2
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "1": 0,
+    "10": 1,
+    "11": 2,
+    "12": 3,
+    "13": 4,
+    "14": 5,
+    "15": 6,
+    "16": 7,
+    "17": 8,
+    "18": 9,
+    "19": 10,
+    "2": 11,
+    "20": 12,
+    "21": 13,
+    "22": 14,
+    "3": 15,
+    "4": 16,
+    "5": 17,
+    "6": 18,
+    "7": 19,
+    "8": 20
+  },
+  "feature_mappings": {
+    "age": {
+      "1": 0,
+      "2": 1,
+      "3": 2
+    },
+    "sex": {
+      "1.0": 0,
+      "2.0": 1,
+      "__MISSING__": 2
+    },
+    "histologic_type": {
+      "1.0": 0,
+      "2.0": 1,
+      "3.0": 2,
+      "__MISSING__": 3
+    },
+    "degree_of_diffe": {
+      "1.0": 0,
+      "2.0": 1,
+      "3.0": 2,
+      "__MISSING__": 3
+    },
+    "bone": {
+      "1": 0,
+      "2": 1
+    },
+    "bone_marrow": {
+      "1": 0,
+      "2": 1
+    },
+    "lung": {
+      "1": 0,
+      "2": 1
+    },
+    "pleura": {
+      "1": 0,
+      "2": 1
+    },
+    "peritoneum": {
+      "1": 0,
+      "2": 1
+    },
+    "liver": {
+      "1": 0,
+      "2": 1
+    },
+    "brain": {
+      "1": 0,
+      "2": 1
+    },
+    "skin": {
+      "1.0": 0,
+      "2.0": 1,
+      "__MISSING__": 2
+    },
+    "neck": {
+      "1": 0,
+      "2": 1
+    },
+    "supraclavicular": {
+      "1": 0,
+      "2": 1
+    },
+    "axillar": {
+      "1.0": 0,
+      "2.0": 1,
+      "__MISSING__": 2
+    },
+    "mediastinum": {
+      "1": 0,
+      "2": 1
+    },
+    "abdominal": {
+      "1": 0,
+      "2": 1
+    }
+  },
+  "numerical_bin_metadata": {},
+  "n_features": 17,
+  "dataset_name": "primary_tumor",
+  "task": "classification",
+  "seed": 42,
+  "n_train": 237,
+  "n_val": 51,
+  "n_test": 51
+}

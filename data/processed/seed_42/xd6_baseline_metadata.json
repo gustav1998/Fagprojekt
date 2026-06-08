@@ -1,0 +1,100 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "Attribute_1",
+    "Attribute_2",
+    "Attribute_3",
+    "Attribute_4",
+    "Attribute_5",
+    "Attribute_6",
+    "Attribute_7",
+    "Attribute_8",
+    "Attribute_9"
+  ],
+  "categorical_columns": [
+    "Attribute_1",
+    "Attribute_2",
+    "Attribute_3",
+    "Attribute_4",
+    "Attribute_5",
+    "Attribute_6",
+    "Attribute_7",
+    "Attribute_8",
+    "Attribute_9"
+  ],
+  "numerical_columns": [],
+  "representation": "baseline",
+  "cardinalities": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "categorical_cardinalities": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "0": 0,
+    "1": 1
+  },
+  "feature_mappings": {
+    "Attribute_1": {
+      "0": 0,
+      "1": 1
+    },
+    "Attribute_2": {
+      "0": 0,
+      "1": 1
+    },
+    "Attribute_3": {
+      "0": 0,
+      "1": 1
+    },
+    "Attribute_4": {
+      "0": 0,
+      "1": 1
+    },
+    "Attribute_5": {
+      "0": 0,
+      "1": 1
+    },
+    "Attribute_6": {
+      "0": 0,
+      "1": 1
+    },
+    "Attribute_7": {
+      "0": 0,
+      "1": 1
+    },
+    "Attribute_8": {
+      "0": 0,
+      "1": 1
+    },
+    "Attribute_9": {
+      "0": 0,
+      "1": 1
+    }
+  },
+  "numerical_bin_metadata": {},
+  "n_features": 9,
+  "dataset_name": "xd6",
+  "task": "classification",
+  "seed": 42,
+  "n_train": 681,
+  "n_val": 146,
+  "n_test": 146
+}
