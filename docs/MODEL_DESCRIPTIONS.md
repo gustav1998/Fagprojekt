@@ -95,11 +95,17 @@ self.network = nn.Sequential(
     nn.Linear(hidden_dim, hidden_dim),
     nn.ReLU(),
     nn.Dropout(dropout),
+    nn.Linear(hidden_dim, hidden_dim),
+    nn.ReLU(),
+    nn.Dropout(dropout),
+    nn.Linear(hidden_dim, hidden_dim),
+    nn.ReLU(),
+    nn.Dropout(dropout),
     nn.Linear(hidden_dim, num_classes),
 )
 ```
 
-This builds a feed-forward neural network with two hidden layers. The linear
+This builds a feed-forward neural network with four hidden layers. The linear
 layers learn affine maps, while the ReLU layers add nonlinearity.
 
 The computation is:
@@ -107,15 +113,19 @@ The computation is:
 ```text
 h_1 = ReLU(W_1 x + b_1)
 h_2 = ReLU(W_2 h_1 + b_2)
-z   = W_3 h_2 + b_3.
+h_3 = ReLU(W_3 h_2 + b_3)
+h_4 = ReLU(W_4 h_3 + b_4)
+z   = W_5 h_4 + b_5.
 ```
 
-The hidden dimension controls the width of the two hidden layers:
+The hidden dimension controls the width of all four hidden layers:
 
 ```text
 W_1 in R^{H x D}
 W_2 in R^{H x H}
-W_3 in R^{C x H}
+W_3 in R^{H x H}
+W_4 in R^{H x H}
+W_5 in R^{C x H}
 ```
 
 where `H = hidden_dim`.
@@ -571,7 +581,47 @@ return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
 ```
 
 This creates the Adam optimizer over all trainable parameters in the selected
-model.
+model. Adam is a first-order gradient optimizer, so it updates parameters using
+the gradients of the loss with respect to each parameter.
+
+For a trainable parameter vector `theta`, the gradient at step `t` is:
+
+```text
+g_t = grad_theta L_t(theta_{t-1}).
+```
+
+Adam keeps two moving averages for each parameter. The first moment `m_t`
+tracks the average gradient direction:
+
+```text
+m_t = beta_1 m_{t-1} + (1 - beta_1) g_t.
+```
+
+The second moment `v_t` tracks the average squared gradient magnitude:
+
+```text
+v_t = beta_2 v_{t-1} + (1 - beta_2) g_t^2.
+```
+
+Because both averages start at zero, Adam applies bias correction:
+
+```text
+m_hat_t = m_t / (1 - beta_1^t)
+v_hat_t = v_t / (1 - beta_2^t).
+```
+
+The parameter update is then:
+
+```text
+theta_t = theta_{t-1} - alpha * m_hat_t / (sqrt(v_hat_t) + epsilon).
+```
+
+Here `alpha` is the learning rate passed as `self.learning_rate`. The division
+by `sqrt(v_hat_t)` makes the effective step size smaller for parameters with
+large recent gradients and larger for parameters with small recent gradients.
+This is useful for the tensor models because different factor rows, cores, and
+interaction tables may receive gradients of different magnitudes depending on
+how often the corresponding feature values appear in the data.
 
 
 ## Input Representations

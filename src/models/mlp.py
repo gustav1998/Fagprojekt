@@ -5,7 +5,8 @@ from torch import nn
 
 
 class MLPClassifier(nn.Module):
-    """Feed-forward classifier with two hidden layers."""
+    """Feed-forward classifier with four hidden layers."""
+
     def __init__(
         self,
         input_dim: int,
@@ -17,6 +18,12 @@ class MLPClassifier(nn.Module):
 
         self.network = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
             nn.Dropout(dropout),
             nn.Linear(hidden_dim, hidden_dim),

@@ -35,8 +35,19 @@ The tensor models differ only in how the class logits are parameterized:
 - TT uses a tensor-train contraction of feature cores.
 - TR uses a tensor-ring contraction with class-specific closing matrices.
 
-See `MODEL_DESCRIPTIONS.md` for a code-by-code explanation of the implemented
+See `docs/MODEL_DESCRIPTIONS.md` for a code-by-code explanation of the implemented
 models and the corresponding mathematical formulas.
+
+Documentation
+-------------
+
+The code documentation is split by area:
+
+- `docs/MODEL_DESCRIPTIONS.md`: model definitions, forward passes, loss, and optimizer.
+- `docs/DATA_PIPELINE.md`: raw loading, preprocessing, splitting, processed data loading, and DataLoaders.
+- `docs/TRAINING_AND_EXPERIMENTS.md`: single training runs and multi-run experiments.
+- `docs/RESULTS_AND_SUMMARIES.md`: metric logs, majority baselines, and benchmark summaries.
+- `docs/CONFIGURATION_AND_UTILITIES.md`: dataset configs, one-hot encoding, package setup, and environment checks.
 
 Setup
 -----
