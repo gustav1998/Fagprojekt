@@ -13,6 +13,7 @@ from src.models.logistic_regression import LogisticRegression
 from src.models.mlp import MLPClassifier
 from src.models.lightning_module import TabularClassifierModule
 from src.models.cpd import CPDClassifier
+from src.models.mba import MBAClassifier
 from src.models.tt import TTClassifier
 from src.models.tr import TRClassifier
 
@@ -30,6 +31,11 @@ DEFAULT_TRAINING_CONFIGS = {
         "epochs": 60,
         "learning_rate": 1e-2,
         "rank": 16,
+    },
+    "mba": {
+        "epochs": 60,
+        "learning_rate": 1e-2,
+        "interaction_order": 3,
     },
     "tt": {
         "epochs": 60,
@@ -53,10 +59,10 @@ def parse_args():
         "--model",
         type=str,
         required=True,
-        choices=["lr", "mlp", "cpd", "tt", "tr"],
+        choices=["lr", "mlp", "cpd", "mba", "tt", "tr"],
         help=(
             "Model to train (lr=logistic, mlp=neural net, "
-            "cpd/tt/tr=tensor classifiers)"
+            "cpd/mba/tt/tr=tensor classifiers)"
         ),
     )
     parser.add_argument("--batch-size", type=int, default=256)
@@ -94,6 +100,12 @@ def parse_args():
         help="Tensor rank for CPD, TT, and TR. Defaults depend on model.",
     )
     parser.add_argument(
+        "--interaction-order",
+        type=int,
+        default=None,
+        help="Maximum MBA interaction order. Defaults depend on model.",
+    )
+    parser.add_argument(
         "--seed",
         type=int,
         default=None,
@@ -119,6 +131,8 @@ def apply_model_defaults(args: argparse.Namespace) -> argparse.Namespace:
         args.learning_rate = defaults["learning_rate"]
     if args.rank is None:
         args.rank = defaults.get("rank", 8)
+    if args.interaction_order is None:
+        args.interaction_order = defaults.get("interaction_order", 3)
 
     return args
 
@@ -156,6 +170,13 @@ def main() -> None:
         base_model = CPDClassifier(
             feature_dims=datamodule.cardinalities,
             rank=args.rank,
+            num_classes=datamodule.num_classes,
+        )
+
+    elif args.model == "mba":
+        base_model = MBAClassifier(
+            feature_dims=datamodule.cardinalities,
+            interaction_order=args.interaction_order,
             num_classes=datamodule.num_classes,
         )
 

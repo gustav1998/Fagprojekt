@@ -10,7 +10,7 @@ from src.data.dataset_configs import DATASET_CONFIGS
 from src.train import DEFAULT_TRAINING_CONFIGS
 
 
-MODELS = ["lr", "mlp", "cpd", "tt", "tr"]
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"]
 
 
 def run_command(command: list[str]) -> None:
@@ -59,6 +59,7 @@ def run_command(command: list[str]) -> None:
 @click.option("--epochs", type=int, default=None)
 @click.option("--learning-rate", type=float, default=None)
 @click.option("--rank", type=int, default=None)
+@click.option("--interaction-order", type=int, default=None)
 def main(
     datasets: tuple[str, ...],
     models: tuple[str, ...],
@@ -69,6 +70,7 @@ def main(
     epochs: int | None,
     learning_rate: float | None,
     rank: int | None,
+    interaction_order: int | None,
 ) -> None:
     """Run preprocessing and training for multiple seeds."""
     selected_datasets = datasets or tuple(sorted(DATASET_CONFIGS))
@@ -122,6 +124,16 @@ def main(
 
                 if model in {"cpd", "tt", "tr"}:
                     command.extend(["--rank", str(rank or config["rank"])])
+                if model == "mba":
+                    command.extend(
+                        [
+                            "--interaction-order",
+                            str(
+                                interaction_order
+                                or config["interaction_order"]
+                            ),
+                        ]
+                    )
 
                 run_command(command)
 

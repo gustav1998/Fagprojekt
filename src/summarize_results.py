@@ -7,7 +7,7 @@ import click
 import pandas as pd
 
 
-MODELS = ["lr", "mlp", "cpd", "tt", "tr"]
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"]
 SEEDED_VERSION_PATTERN = re.compile(r"(?P<dataset>.+)_seed(?P<seed>-?\d+)$")
 
 
@@ -74,6 +74,8 @@ def read_majority_baselines(
         test_path = seed_dir / f"{run.dataset}_tensor_test.csv"
         if not test_path.exists():
             test_path = seed_dir / f"{run.dataset}_baseline_test.csv"
+        if not test_path.exists():
+            continue
 
         test_df = pd.read_csv(test_path)
         targets = test_df["target"]

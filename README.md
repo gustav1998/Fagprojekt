@@ -8,13 +8,13 @@ The current implemented models are:
 - `lr`: logistic regression baseline
 - `mlp`: multilayer perceptron baseline
 - `cpd`: supervised CPD tensor classifier
+- `mba`: supervised many-body approximation classifier
 - `tt`: supervised tensor-train classifier
 - `tr`: supervised tensor-ring classifier
 
 Planned models from the project report are:
 
 - `rf`: random forest baseline
-- `mba`: many-body approximation classifier
 
 Project Idea
 ------------
@@ -31,7 +31,7 @@ softmax:
 The tensor models differ only in how the class logits are parameterized:
 
 - CPD uses a low-rank product of feature factors.
-- MBA should use interaction terms up to a chosen order.
+- MBA uses interaction terms up to a chosen order.
 - TT uses a tensor-train contraction of feature cores.
 - TR uses a tensor-ring contraction with class-specific closing matrices.
 
@@ -109,6 +109,7 @@ Useful examples:
     uv run python -m src.train --dataset car_evaluation --model lr
     uv run python -m src.train --dataset car_evaluation --model mlp
     uv run python -m src.train --dataset car_evaluation --model cpd --rank 32
+    uv run python -m src.train --dataset car_evaluation --model mba --interaction-order 3
     uv run python -m src.train --dataset car_evaluation --model tt --rank 32
     uv run python -m src.train --dataset car_evaluation --model tr --rank 32
 
@@ -127,6 +128,7 @@ Limit a multi-seed run to selected datasets or models by repeating options:
       --dataset car_evaluation \
       --dataset asia_lung \
       --model cpd \
+      --model mba \
       --model tt \
       --model tr \
       --seed 1 \
@@ -139,7 +141,7 @@ Model Inputs
 The data module chooses the feature representation from the model name:
 
 - `lr` and `mlp` use the `baseline` representation: categorical features are one-hot encoded and numerical features stay numerical.
-- `cpd`, `tt`, `tr`, and `mba` use the `tensor` representation: all features are integer indices. Numerical features are discretized during preprocessing.
+- `cpd`, `mba`, `tt`, and `tr` use the `tensor` representation: all features are integer indices. Numerical features are discretized during preprocessing.
 
 Default Hyperparameters
 -----------------------
@@ -149,6 +151,7 @@ The training CLI uses model-specific defaults:
 - `lr`: 100 epochs, learning rate `1e-3`
 - `mlp`: 100 epochs, learning rate `1e-3`
 - `cpd`: 60 epochs, learning rate `1e-2`, rank 16
+- `mba`: 60 epochs, learning rate `1e-2`, interaction order 3
 - `tt`: 60 epochs, learning rate `1e-2`, rank 16
 - `tr`: 60 epochs, learning rate `1e-2`, rank 16
 

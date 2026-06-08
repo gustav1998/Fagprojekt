@@ -244,6 +244,105 @@ z_c(x) = sum_r lambda_{c,r} prod_d A^{(d)}_{x_d,r} + b_c.
 ```
 
 
+## MBA Classifier
+
+File: `src/models/mba.py`
+
+The MBA classifier is a supervised model for discrete inputs. It does not learn
+a joint density over features and labels. Instead, it directly parameterizes one
+class logit with interaction tables up to a chosen order.
+
+### Interaction Sets
+
+```python
+for order in range(1, self.interaction_order + 1):
+    for interaction in combinations(range(len(feature_dims)), order):
+        dims = [feature_dims[index] for index in interaction]
+```
+
+This enumerates all feature subsets up to the maximum interaction order. If the
+order is `K`, the model includes every subset `S` with:
+
+```text
+1 <= |S| <= K.
+```
+
+For example, order `1` uses only main effects. Order `2` uses main effects and
+pairwise interactions. Order `3` also adds three-way interactions.
+
+### Interaction Tables
+
+```python
+tables.append(
+    nn.Parameter(
+        torch.empty(num_classes, prod(dims))
+    )
+)
+```
+
+Each subset gets a class-specific table. If subset `S` contains features with
+cardinalities `I_d`, the table has one entry for every value combination:
+
+```text
+theta^{(S)} in R^{C x prod_{d in S} I_d}.
+```
+
+This is the supervised “one MBA per class” form from the supervisor feedback:
+the class dimension is part of every interaction table.
+
+### Mixed-Radix Indexing
+
+```python
+def _make_strides(dims: list[int]) -> torch.Tensor:
+    strides: list[int] = []
+    current = 1
+    for dim in reversed(dims):
+        strides.append(current)
+        current *= dim
+    return torch.tensor(list(reversed(strides)), dtype=torch.long)
+```
+
+The table is stored as a flat vector, so a tuple of feature values must be
+converted into a single index. For subset `S = (d_1, ..., d_k)`, the flat index
+is:
+
+```text
+i_S(x) = sum_{m=1}^k x_{d_m} s_m,
+```
+
+where `s_m` is the product of the cardinalities after feature `d_m` in the
+subset.
+
+### Logits
+
+```python
+logits = self.class_bias.unsqueeze(0).expand(x.size(0), -1)
+
+for idx, (interaction, table) in enumerate(
+    zip(self.interactions, self.interaction_tables)
+):
+    values = x[:, interaction].long()
+    strides = getattr(self, f"_stride_{idx}").to(x.device)
+    flat_index = (values * strides).sum(dim=1)
+    logits = logits + table[:, flat_index].T
+
+return logits
+```
+
+The model starts with one bias per class and adds the selected interaction
+score from every included subset. The resulting class logit is:
+
+```text
+z_c(x) = b_c + sum_{S: 1 <= |S| <= K} theta^{(S)}_{c, i_S(x)}.
+```
+
+The class probabilities are then:
+
+```text
+P(y = c | x) = exp(z_c(x)) / sum_{c'} exp(z_{c'}(x)).
+```
+
+
 ## Tensor-Train Classifier
 
 File: `src/models/tt.py`
@@ -481,14 +580,15 @@ The data module selects the representation from the model name:
 
 ```text
 lr, mlp       -> baseline
-cpd, tt, tr   -> tensor
+cpd, mba, tt, tr -> tensor
 ```
 
 The baseline representation is used by logistic regression and the MLP. It
 one-hot encodes categorical features before the model sees them.
 
-The tensor representation is used by CPD, TT, and TR. It keeps feature values
-as integer indices so the models can perform factor or core lookups such as:
+The tensor representation is used by CPD, MBA, TT, and TR. It keeps feature
+values as integer indices so the models can perform factor, interaction-table,
+or core lookups such as:
 
 ```text
 A^{(d)}_{x_d,:}
