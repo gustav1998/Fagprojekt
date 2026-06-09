@@ -15,6 +15,8 @@ code snippets first, then explain what the code computes or controls.
   benchmark summary tables.
 - `docs/CONFIGURATION_AND_UTILITIES.md` explains dataset configuration,
   one-hot encoding, package configuration, and the environment smoke test.
+- `docs/AI_USAGE.md` records how AI assistance was used and verified during
+  the project.
 
 ## Project Flow
 
