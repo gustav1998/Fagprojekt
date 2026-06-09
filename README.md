@@ -173,6 +173,22 @@ The training CLI uses model-specific defaults:
 The CPD defaults are intentionally stronger than the old smoke-test settings.
 With `1e-3`, CPD tended to collapse to the majority class.
 
+Training uses early stopping by default. The best validation checkpoint is
+tested instead of the final epoch:
+
+    uv run python -m src.train --dataset car_evaluation --model cpd --epochs 150 --patience 15
+
+Disable early stopping only for controlled comparisons:
+
+    uv run python -m src.train --dataset car_evaluation --model cpd --disable-early-stopping
+
+Optional hyperparameter tuning is separate from normal training:
+
+    uv run python -m src.tune_hyperparameters --dataset car_evaluation --model cpd --trials 25
+
+The tuning script optimizes validation performance and writes best parameters
+under `results/tuning/`. Final benchmarks should use fixed settings.
+
 Results
 -------
 

@@ -10,7 +10,7 @@ code snippets first, then explain what the code computes or controls.
 - `docs/DATA_PIPELINE.md` explains raw dataset loading, preprocessing,
   splitting, processed data loading, and the Lightning data module.
 - `docs/TRAINING_AND_EXPERIMENTS.md` explains the command-line training script
-  and the multi-run experiment script.
+  the multi-run experiment script, early stopping, and optional tuning.
 - `docs/RESULTS_AND_SUMMARIES.md` explains how logged metrics are turned into
   benchmark summary tables.
 - `docs/CONFIGURATION_AND_UTILITIES.md` explains dataset configuration,

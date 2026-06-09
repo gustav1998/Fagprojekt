@@ -317,6 +317,70 @@ CPD, TT, and TR use tensor rank. MBA uses interaction order. Logistic
 regression and the MLP do not use either parameter.
 
 
+## Early Stopping
+
+Normal training uses early stopping by default. The trainer watches a validation
+metric, saves the best checkpoint, and tests that checkpoint instead of blindly
+testing the final epoch.
+
+```bash
+uv run python -m src.train \
+  --dataset house_votes_84 \
+  --model cpd \
+  --epochs 150 \
+  --patience 15 \
+  --monitor val_loss \
+  --accelerator cpu
+```
+
+The default monitor is `val_loss`, so smaller is better. Metrics such as
+`val_acc` or `val_macro_f1` should use `--monitor-mode max`.
+
+```bash
+uv run python -m src.train \
+  --dataset house_votes_84 \
+  --model cpd \
+  --monitor val_macro_f1 \
+  --monitor-mode max
+```
+
+For controlled comparisons, early stopping can be disabled:
+
+```bash
+uv run python -m src.train \
+  --dataset house_votes_84 \
+  --model cpd \
+  --disable-early-stopping
+```
+
+
+## Optional Hyperparameter Tuning
+
+Bayesian hyperparameter tuning is kept separate from normal training.
+`src.tune_hyperparameters` uses Optuna to optimize validation performance for
+one dataset and one model at a time.
+
+```bash
+uv run python -m src.tune_hyperparameters \
+  --dataset house_votes_84 \
+  --model cpd \
+  --trials 25 \
+  --epochs 100 \
+  --patience 15 \
+  --accelerator cpu
+```
+
+The script creates processed data for the selected seed, runs validation-only
+training trials, and writes the best parameters to:
+
+```text
+results/tuning/<model>_<dataset>_seed<seed>_best_params.json
+```
+
+The final benchmark should use fixed hyperparameters selected before looking at
+the test results.
+
+
 ## Example Commands
 
 ### One Dataset, One Model

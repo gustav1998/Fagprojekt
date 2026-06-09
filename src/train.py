@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 
 import lightning as L
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
 
 from src.data.datamodule import TabularDataModule
@@ -50,6 +51,11 @@ DEFAULT_TRAINING_CONFIGS = {
         "rank": 16,
     },
 }
+
+
+def infer_monitor_mode(metric: str) -> str:
+    """Infer whether a validation metric should be minimized or maximized."""
+    return "min" if metric.endswith("loss") else "max"
 
 
 def parse_args():
@@ -123,6 +129,42 @@ def parse_args():
         type=str,
         default=None,
         help="Result folder name under results/<model>/.",
+    )
+    parser.add_argument(
+        "--early-stopping",
+        dest="early_stopping",
+        action="store_true",
+        default=True,
+        help="Use early stopping and test the best validation checkpoint.",
+    )
+    parser.add_argument(
+        "--disable-early-stopping",
+        dest="early_stopping",
+        action="store_false",
+        help="Train for all epochs and test the final model.",
+    )
+    parser.add_argument(
+        "--patience",
+        type=int,
+        default=15,
+        help="Early-stopping patience in validation epochs.",
+    )
+    parser.add_argument(
+        "--monitor",
+        type=str,
+        default="val_loss",
+        help="Validation metric monitored by checkpointing/early stopping.",
+    )
+    parser.add_argument(
+        "--monitor-mode",
+        choices=["min", "max"],
+        default=None,
+        help="Whether the monitored metric should be minimized or maximized.",
+    )
+    parser.add_argument(
+        "--skip-test",
+        action="store_true",
+        help="Only train/validate. Useful for hyperparameter tuning.",
     )
 
     return parser.parse_args()
@@ -224,21 +266,50 @@ def main() -> None:
         version=result_version,
     )
 
+    monitor_mode = args.monitor_mode or infer_monitor_mode(args.monitor)
+    callbacks = []
+    checkpoint_callback = None
+    if args.early_stopping:
+        checkpoint_callback = ModelCheckpoint(
+            dirpath=Path(logger.log_dir) / "checkpoints",
+            filename="best",
+            monitor=args.monitor,
+            mode=monitor_mode,
+            save_top_k=1,
+        )
+        callbacks.extend(
+            [
+                checkpoint_callback,
+                EarlyStopping(
+                    monitor=args.monitor,
+                    mode=monitor_mode,
+                    patience=args.patience,
+                ),
+            ]
+        )
+
     trainer = L.Trainer(
         max_epochs=args.epochs,
         accelerator=args.accelerator,
         devices=1,
         logger=logger,
-        enable_checkpointing=False,
+        enable_checkpointing=args.early_stopping,
+        callbacks=callbacks,
         log_every_n_steps=1,
     )
 
     start_time = time.perf_counter()
     trainer.fit(model, datamodule=datamodule)
     fit_seconds = time.perf_counter() - start_time
-    test_start_time = time.perf_counter()
-    trainer.test(model, datamodule=datamodule)
-    test_seconds = time.perf_counter() - test_start_time
+    test_seconds = None
+    if not args.skip_test:
+        test_start_time = time.perf_counter()
+        trainer.test(
+            model,
+            datamodule=datamodule,
+            ckpt_path="best" if args.early_stopping else None,
+        )
+        test_seconds = time.perf_counter() - test_start_time
 
     metadata = {
         "dataset": args.dataset,
@@ -252,6 +323,23 @@ def main() -> None:
         ),
         "batch_size": args.batch_size,
         "accelerator": args.accelerator,
+        "early_stopping": args.early_stopping,
+        "patience": args.patience if args.early_stopping else None,
+        "monitor": args.monitor if args.early_stopping else None,
+        "monitor_mode": monitor_mode if args.early_stopping else None,
+        "best_model_path": (
+            checkpoint_callback.best_model_path
+            if checkpoint_callback is not None
+            else None
+        ),
+        "best_model_score": (
+            float(checkpoint_callback.best_model_score)
+            if checkpoint_callback is not None
+            and checkpoint_callback.best_model_score is not None
+            else None
+        ),
+        "stopped_epoch": trainer.current_epoch,
+        "skip_test": args.skip_test,
         "num_classes": datamodule.num_classes,
         "input_dim": datamodule.input_dim,
         "trainable_parameters": sum(

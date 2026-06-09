@@ -60,6 +60,18 @@ def run_command(command: list[str]) -> None:
 @click.option("--learning-rate", type=float, default=None)
 @click.option("--rank", type=int, default=None)
 @click.option("--interaction-order", type=int, default=None)
+@click.option(
+    "--early-stopping/--disable-early-stopping",
+    default=True,
+    show_default=True,
+)
+@click.option("--patience", type=int, default=15, show_default=True)
+@click.option("--monitor", type=str, default="val_loss", show_default=True)
+@click.option(
+    "--monitor-mode",
+    type=click.Choice(["min", "max"]),
+    default=None,
+)
 def main(
     datasets: tuple[str, ...],
     models: tuple[str, ...],
@@ -71,6 +83,10 @@ def main(
     learning_rate: float | None,
     rank: int | None,
     interaction_order: int | None,
+    early_stopping: bool,
+    patience: int,
+    monitor: str,
+    monitor_mode: str | None,
 ) -> None:
     """Run preprocessing and training for multiple seeds."""
     selected_datasets = datasets or tuple(sorted(DATASET_CONFIGS))
@@ -120,8 +136,16 @@ def main(
                     str(epochs or config["epochs"]),
                     "--learning-rate",
                     str(learning_rate or config["learning_rate"]),
+                    "--patience",
+                    str(patience),
+                    "--monitor",
+                    monitor,
                 ]
 
+                if not early_stopping:
+                    command.append("--disable-early-stopping")
+                if monitor_mode is not None:
+                    command.extend(["--monitor-mode", monitor_mode])
                 if model in {"cpd", "tt", "tr"}:
                     command.extend(["--rank", str(rank or config["rank"])])
                 if model == "mba":
