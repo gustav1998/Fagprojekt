@@ -56,16 +56,32 @@ The repository includes `.python-version` with Python 3.12. This avoids
 bleeding-edge Python compatibility issues while still working on older Intel
 Macs through the PyTorch version markers in `pyproject.toml`.
 
-Create an environment and install the project:
-
-    uv venv .venv
-    source .venv/bin/activate
-    uv pip install -e .
-    python test_environment.py
-
-Or sync from the lockfile:
+The simplest cross-platform setup is to sync the locked environment and run the
+smoke test through `uv`:
 
     uv sync
+    uv run python test_environment.py
+
+If you prefer to activate the virtual environment manually, create it first:
+
+    uv venv .venv
+
+On macOS/Linux:
+
+    source .venv/bin/activate
+
+On Windows PowerShell:
+
+    .venv\Scripts\Activate.ps1
+
+On Windows Command Prompt:
+
+    .venv\Scripts\activate.bat
+
+Then install the project and run the environment check:
+
+    uv pip install -e .
+    python test_environment.py
 
 Data
 ----

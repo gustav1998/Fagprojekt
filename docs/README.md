@@ -9,7 +9,7 @@ code snippets first, then explain what the code computes or controls.
   training wrapper.
 - `docs/DATA_PIPELINE.md` explains raw dataset loading, preprocessing,
   splitting, processed data loading, and the Lightning data module.
-- `docs/TRAINING_AND_EXPERIMENTS.md` explains the command-line training script
+- `docs/TRAINING_AND_EXPERIMENTS.md` explains the command-line training script,
   the multi-run experiment script, early stopping, and optional tuning.
 - `docs/RESULTS_AND_SUMMARIES.md` explains how logged metrics are turned into
   benchmark summary tables.
@@ -17,6 +17,8 @@ code snippets first, then explain what the code computes or controls.
   one-hot encoding, package configuration, and the environment smoke test.
 - `docs/AI_USAGE.md` records how AI assistance was used and verified during
   the project.
+- `docs/CODING_CHECKLIST.md` tracks coding tasks that remain before the project
+  is ready.
 
 ## Project Flow
 
