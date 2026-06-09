@@ -12,9 +12,8 @@ from src.train import DEFAULT_TRAINING_CONFIGS
 
 MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"]
 
-
+# run one subprocess command and stop on failure
 def run_command(command: list[str]) -> None:
-    """Run one subprocess command and stop on failure."""
     print(" ".join(command), flush=True)
     subprocess.run(command, check=True)
 
@@ -72,6 +71,8 @@ def run_command(command: list[str]) -> None:
     type=click.Choice(["min", "max"]),
     default=None,
 )
+
+# Note: This script runs the full pipeline for multiple seeds, datasets, and models. It first preprocesses the data for each seed and dataset, then trains each model on the processed data. 
 def main(
     datasets: tuple[str, ...],
     models: tuple[str, ...],
@@ -88,10 +89,12 @@ def main(
     monitor: str,
     monitor_mode: str | None,
 ) -> None:
-    """Run preprocessing and training for multiple seeds."""
+    
+    # Run preprocessing and training for multiple seeds
     selected_datasets = datasets or tuple(sorted(DATASET_CONFIGS))
     selected_models = models or tuple(MODELS)
 
+    # For each seed, preprocess the data for each dataset, then train each model on the processed data. The processed data is stored in a separate directory for each seed to avoid conflicts.
     for seed in seeds:
         processed_dir = processed_root / f"seed_{seed}"
 
@@ -112,6 +115,7 @@ def main(
                 ]
             )
 
+            # After preprocessing, train each selected model on the processed data for the current seed and dataset. The training command includes all relevant hyperparameters, with defaults taken from DEFAULT_TRAINING_CONFIGS if not specified.
             for model in selected_models:
                 config = DEFAULT_TRAINING_CONFIGS[model]
                 command = [
@@ -142,12 +146,13 @@ def main(
                     monitor,
                 ]
 
-                if not early_stopping:
+                if not early_stopping: # checks for early stopping and adds the appropriate flag to the command
                     command.append("--disable-early-stopping")
-                if monitor_mode is not None:
+                if monitor_mode is not None: # checks for monitor mode and adds the appropriate flag to the command
                     command.extend(["--monitor-mode", monitor_mode])
                 if model in {"cpd", "tt", "tr"}:
-                    command.extend(["--rank", str(rank or config["rank"])])
+                    command.extend(["--rank", str(rank or config["rank"])]) # checks if the model is one of the factorization models and adds the appropriate rank flag to the command
+                
                 if model == "mba":
                     command.extend(
                         [
@@ -157,10 +162,9 @@ def main(
                                 or config["interaction_order"]
                             ),
                         ]
-                    )
+                    ) # checks if the model is mba and adds the appropriate interaction order flag to the command
 
-                run_command(command)
-
+                run_command(command) # runs the training command for the current model, dataset, and seed
 
 if __name__ == "__main__":
     main()

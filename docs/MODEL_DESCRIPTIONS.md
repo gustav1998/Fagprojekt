@@ -29,6 +29,121 @@ For a training example with true label `y`, the loss is cross-entropy:
 L(x, y) = -log p(y | x).
 ```
 
+## Training Wrapper
+
+File: `src/models/lightning_module.py`
+
+All model classes only define the forward pass. Training logic is shared by
+`TabularClassifierModule`.
+
+### Loss
+
+```python
+self.criterion = nn.CrossEntropyLoss()
+```
+
+This creates the loss function used for all models:
+
+```text
+L = (1 / B) sum_i -log p(y_i | x_i).
+```
+
+### Shared Step
+
+```python
+logits = self(x)
+loss = self.criterion(logits, y)
+preds = logits.argmax(dim=1)
+acc = (preds == y).float().mean()
+```
+
+This computes logits, loss, predicted labels, and accuracy for one batch.
+Epoch-level predictions are also stored so the wrapper can compute balanced
+accuracy, macro precision, macro recall, macro F1, weighted F1, and test
+confusion matrices after the epoch.
+
+The prediction rule is:
+
+```text
+y_hat = argmax_c z_c(x).
+```
+
+Batch accuracy is:
+
+```text
+accuracy = (1 / B) sum_i 1[y_hat_i = y_i].
+```
+
+### Optimizer
+
+```python
+return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+```
+
+This creates the Adam optimizer over all trainable parameters in the selected
+model. Adam is a first-order gradient optimizer, so it updates parameters using
+the gradients of the loss with respect to each parameter.
+
+For a trainable parameter vector `theta`, the gradient at step `t` is:
+
+```text
+g_t = grad_theta L_t(theta_{t-1}).
+```
+
+Adam keeps two moving averages for each parameter. The first moment `m_t`
+tracks the average gradient direction:
+
+```text
+m_t = beta_1 m_{t-1} + (1 - beta_1) g_t.
+```
+
+The second moment `v_t` tracks the average squared gradient magnitude:
+
+```text
+v_t = beta_2 v_{t-1} + (1 - beta_2) g_t^2.
+```
+
+Because both averages start at zero, Adam applies bias correction:
+
+```text
+m_hat_t = m_t / (1 - beta_1^t)
+v_hat_t = v_t / (1 - beta_2^t).
+```
+
+The parameter update is then:
+
+```text
+theta_t = theta_{t-1} - alpha * m_hat_t / (sqrt(v_hat_t) + epsilon).
+```
+
+Here `alpha` is the learning rate passed as `self.learning_rate`. The division
+by `sqrt(v_hat_t)` makes the effective step size smaller for parameters with
+large recent gradients and larger for parameters with small recent gradients.
+This is useful for the tensor models because different factor rows, cores, and
+interaction tables may receive gradients of different magnitudes depending on
+how often the corresponding feature values appear in the data.
+
+
+## Input Representations
+
+The data module selects the representation from the model name:
+
+```text
+lr, mlp       -> baseline
+cpd, mba, tt, tr -> tensor
+```
+
+The baseline representation is used by logistic regression and the MLP. It
+one-hot encodes categorical features before the model sees them.
+
+The tensor representation is used by CPD, MBA, TT, and TR. It keeps feature
+values as integer indices so the models can perform factor, interaction-table,
+or core lookups such as:
+
+```text
+A^{(d)}_{x_d,:}
+G^{(d)}[x_d].
+```
 
 ## Logistic Regression
 
@@ -254,104 +369,6 @@ z_c(x) = sum_r lambda_{c,r} prod_d A^{(d)}_{x_d,r} + b_c.
 ```
 
 
-## MBA Classifier
-
-File: `src/models/mba.py`
-
-The MBA classifier is a supervised model for discrete inputs. It does not learn
-a joint density over features and labels. Instead, it directly parameterizes one
-class logit with interaction tables up to a chosen order.
-
-### Interaction Sets
-
-```python
-for order in range(1, self.interaction_order + 1):
-    for interaction in combinations(range(len(feature_dims)), order):
-        dims = [feature_dims[index] for index in interaction]
-```
-
-This enumerates all feature subsets up to the maximum interaction order. If the
-order is `K`, the model includes every subset `S` with:
-
-```text
-1 <= |S| <= K.
-```
-
-For example, order `1` uses only main effects. Order `2` uses main effects and
-pairwise interactions. Order `3` also adds three-way interactions.
-
-### Interaction Tables
-
-```python
-tables.append(
-    nn.Parameter(
-        torch.empty(num_classes, prod(dims))
-    )
-)
-```
-
-Each subset gets a class-specific table. If subset `S` contains features with
-cardinalities `I_d`, the table has one entry for every value combination:
-
-```text
-theta^{(S)} in R^{C x prod_{d in S} I_d}.
-```
-
-This is the supervised “one MBA per class” form from the supervisor feedback:
-the class dimension is part of every interaction table.
-
-### Mixed-Radix Indexing
-
-```python
-def _make_strides(dims: list[int]) -> torch.Tensor:
-    strides: list[int] = []
-    current = 1
-    for dim in reversed(dims):
-        strides.append(current)
-        current *= dim
-    return torch.tensor(list(reversed(strides)), dtype=torch.long)
-```
-
-The table is stored as a flat vector, so a tuple of feature values must be
-converted into a single index. For subset `S = (d_1, ..., d_k)`, the flat index
-is:
-
-```text
-i_S(x) = sum_{m=1}^k x_{d_m} s_m,
-```
-
-where `s_m` is the product of the cardinalities after feature `d_m` in the
-subset.
-
-### Logits
-
-```python
-logits = self.class_bias.unsqueeze(0).expand(x.size(0), -1)
-
-for idx, (interaction, table) in enumerate(
-    zip(self.interactions, self.interaction_tables)
-):
-    values = x[:, interaction].long()
-    strides = getattr(self, f"_stride_{idx}").to(x.device)
-    flat_index = (values * strides).sum(dim=1)
-    logits = logits + table[:, flat_index].T
-
-return logits
-```
-
-The model starts with one bias per class and adds the selected interaction
-score from every included subset. The resulting class logit is:
-
-```text
-z_c(x) = b_c + sum_{S: 1 <= |S| <= K} theta^{(S)}_{c, i_S(x)}.
-```
-
-The class probabilities are then:
-
-```text
-P(y = c | x) = exp(z_c(x)) / sum_{c'} exp(z_{c'}(x)).
-```
-
 
 ## Tensor-Train Classifier
 
@@ -531,119 +548,102 @@ the trace-style ring closure:
 z_c(x) = trace(Q(x) W_c) + b_c.
 ```
 
+## MBA classifier
 
-## Training Wrapper
+File: `src/models/mba.py`
 
-File: `src/models/lightning_module.py`
+The MBA classifier is a supervised model for discrete inputs. It does not learn
+a joint density over features and labels. Instead, it directly parameterizes one
+class logit with interaction tables up to a chosen order.
 
-All model classes only define the forward pass. Training logic is shared by
-`TabularClassifierModule`.
-
-### Loss
-
-```python
-self.criterion = nn.CrossEntropyLoss()
-```
-
-This creates the loss function used for all models:
-
-```text
-L = (1 / B) sum_i -log p(y_i | x_i).
-```
-
-### Shared Step
+### Interaction Sets
 
 ```python
-logits = self(x)
-loss = self.criterion(logits, y)
-preds = logits.argmax(dim=1)
-acc = (preds == y).float().mean()
+for order in range(1, self.interaction_order + 1):
+    for interaction in combinations(range(len(feature_dims)), order):
+        dims = [feature_dims[index] for index in interaction]
 ```
 
-This computes logits, loss, predicted labels, and accuracy for one batch.
-Epoch-level predictions are also stored so the wrapper can compute balanced
-accuracy, macro precision, macro recall, macro F1, weighted F1, and test
-confusion matrices after the epoch.
-
-The prediction rule is:
+This enumerates all feature subsets up to the maximum interaction order. If the
+order is `K`, the model includes every subset `S` with:
 
 ```text
-y_hat = argmax_c z_c(x).
+1 <= |S| <= K.
 ```
 
-Batch accuracy is:
+For example, order `1` uses only main effects. Order `2` uses main effects and
+pairwise interactions. Order `3` also adds three-way interactions.
 
-```text
-accuracy = (1 / B) sum_i 1[y_hat_i = y_i].
-```
-
-### Optimizer
+### Interaction Tables
 
 ```python
-return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+tables.append(
+    nn.Parameter(
+        torch.empty(num_classes, prod(dims))
+    )
+)
 ```
 
-This creates the Adam optimizer over all trainable parameters in the selected
-model. Adam is a first-order gradient optimizer, so it updates parameters using
-the gradients of the loss with respect to each parameter.
-
-For a trainable parameter vector `theta`, the gradient at step `t` is:
+Each subset gets a class-specific table. If subset `S` contains features with
+cardinalities `I_d`, the table has one entry for every value combination:
 
 ```text
-g_t = grad_theta L_t(theta_{t-1}).
+theta^{(S)} in R^{C x prod_{d in S} I_d}.
 ```
 
-Adam keeps two moving averages for each parameter. The first moment `m_t`
-tracks the average gradient direction:
+This is the supervised “one MBA per class” form from the supervisor feedback:
+the class dimension is part of every interaction table.
 
-```text
-m_t = beta_1 m_{t-1} + (1 - beta_1) g_t.
+### Mixed-Radix Indexing
+
+```python
+def _make_strides(dims: list[int]) -> torch.Tensor:
+    strides: list[int] = []
+    current = 1
+    for dim in reversed(dims):
+        strides.append(current)
+        current *= dim
+    return torch.tensor(list(reversed(strides)), dtype=torch.long)
 ```
 
-The second moment `v_t` tracks the average squared gradient magnitude:
+The table is stored as a flat vector, so a tuple of feature values must be
+converted into a single index. For subset `S = (d_1, ..., d_k)`, the flat index
+is:
 
 ```text
-v_t = beta_2 v_{t-1} + (1 - beta_2) g_t^2.
+i_S(x) = sum_{m=1}^k x_{d_m} s_m,
 ```
 
-Because both averages start at zero, Adam applies bias correction:
+where `s_m` is the product of the cardinalities after feature `d_m` in the
+subset.
 
-```text
-m_hat_t = m_t / (1 - beta_1^t)
-v_hat_t = v_t / (1 - beta_2^t).
+### Logits
+
+```python
+logits = self.class_bias.unsqueeze(0).expand(x.size(0), -1)
+
+for idx, (interaction, table) in enumerate(
+    zip(self.interactions, self.interaction_tables)
+):
+    values = x[:, interaction].long()
+    strides = getattr(self, f"_stride_{idx}").to(x.device)
+    flat_index = (values * strides).sum(dim=1)
+    logits = logits + table[:, flat_index].T
+
+return logits
 ```
 
-The parameter update is then:
+The model starts with one bias per class and adds the selected interaction
+score from every included subset. The resulting class logit is:
 
 ```text
-theta_t = theta_{t-1} - alpha * m_hat_t / (sqrt(v_hat_t) + epsilon).
+z_c(x) = b_c + sum_{S: 1 <= |S| <= K} theta^{(S)}_{c, i_S(x)}.
 ```
 
-Here `alpha` is the learning rate passed as `self.learning_rate`. The division
-by `sqrt(v_hat_t)` makes the effective step size smaller for parameters with
-large recent gradients and larger for parameters with small recent gradients.
-This is useful for the tensor models because different factor rows, cores, and
-interaction tables may receive gradients of different magnitudes depending on
-how often the corresponding feature values appear in the data.
-
-
-## Input Representations
-
-The data module selects the representation from the model name:
+The class probabilities are then:
 
 ```text
-lr, mlp       -> baseline
-cpd, mba, tt, tr -> tensor
+P(y = c | x) = exp(z_c(x)) / sum_{c'} exp(z_{c'}(x)).
 ```
 
-The baseline representation is used by logistic regression and the MLP. It
-one-hot encodes categorical features before the model sees them.
-
-The tensor representation is used by CPD, MBA, TT, and TR. It keeps feature
-values as integer indices so the models can perform factor, interaction-table,
-or core lookups such as:
-
-```text
-A^{(d)}_{x_d,:}
-G^{(d)}[x_d].
 ```

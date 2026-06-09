@@ -9,7 +9,10 @@ import pandas as pd
 
 
 MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"]
-SEEDED_VERSION_PATTERN = re.compile(r"(?P<dataset>.+)_seed(?P<seed>-?\d+)$")
+
+SEEDED_VERSION_PATTERN = re.compile(r"(?P<dataset>.+)_seed(?P<seed>-?\d+)$") # Pattern to extract dataset name and seed from Lightning result version strings, e.g. "dataset_seed42"
+
+# Metrics to extract from Lightning logs for the final test epoch of each run. These will be included in the summary table.
 TEST_METRICS = [
     "test_acc",
     "test_loss",
@@ -19,26 +22,28 @@ TEST_METRICS = [
     "test_macro_f1",
     "test_weighted_f1",
 ]
+
+# Metadata fields to extract from Lightning run metadata, if available. These include the number of trainable parameters, training time, and testing time for each run.
 METADATA_FIELDS = [
     "trainable_parameters",
     "fit_seconds",
     "test_seconds",
 ]
 
-
 def split_result_version(version: str) -> tuple[str, int | None]:
-    """Split a Lightning result version into dataset name and seed."""
+    # Split a Lightning result version into dataset name and seed
     match = SEEDED_VERSION_PATTERN.fullmatch(version)
     if match is None:
         return version, None
 
     return match.group("dataset"), int(match.group("seed"))
 
-
 def read_final_test_metrics(results_dir: Path) -> pd.DataFrame:
-    """Read final test metrics from Lightning CSV logs."""
+    # Read final test metrics from Lightning CSV logs
     rows: list[dict[str, float | str]] = []
 
+    # Iterate over all metrics.csv files in the results directory, extract the model name, dataset name, seed, and final test metrics for each run. 
+    # If available, also extract metadata fields from the corresponding run_metadata.json file.
     for path in sorted(results_dir.glob("*/*/metrics.csv")):
         model, version = path.parts[-3], path.parts[-2]
         if model not in MODELS:
@@ -76,7 +81,7 @@ def read_final_test_metrics(results_dir: Path) -> pd.DataFrame:
 
     return pd.DataFrame(rows)
 
-
+# Compute majority-class accuracy from processed test splits
 def read_majority_baselines(
     processed_dir: Path,
     runs: pd.DataFrame,
@@ -115,7 +120,8 @@ def read_majority_baselines(
 
     return pd.DataFrame(rows)
 
-
+# Build a summary table by merging the final test metrics with the majority-class baselines for each dataset and seed. 
+# The summary includes the test accuracy for each model, as well as the best model and its accuracy compared to the majority baseline
 def build_summary(results_dir: Path, processed_dir: Path) -> pd.DataFrame:
     """Build one benchmark summary table."""
     metrics = read_final_test_metrics(results_dir)
@@ -163,7 +169,8 @@ def build_summary(results_dir: Path, processed_dir: Path) -> pd.DataFrame:
 
     return summary.reset_index()
 
-
+# Build an aggregate summary by grouping the seeded benchmark results by dataset and computing the mean and standard deviation for each metric across seeds. 
+# The aggregate summary includes the average test accuracy for each model, as well as the average best model and its accuracy compared to the majority baseline, along with the number of runs for each dataset.
 def build_aggregate_summary(summary: pd.DataFrame) -> pd.DataFrame:
     """Aggregate seeded benchmark results by dataset."""
     metric_columns = [
