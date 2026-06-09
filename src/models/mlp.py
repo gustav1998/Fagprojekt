@@ -5,14 +5,13 @@ from torch import nn
 
 
 class MLPClassifier(nn.Module):
-    """Feed-forward classifier with four hidden layers."""
 
     def __init__(
         self,
-        input_dim: int,
-        hidden_dim: int = 128,
-        num_classes: int = 2,
-        dropout: float = 0.1,
+        input_dim: int, # number of input features
+        hidden_dim: int = 128, # number of hidden units in each layer
+        num_classes: int = 2, # number of output classes
+        dropout: float = 0.1, # dropout rate for regularization
     ) -> None:
         super().__init__()
 
@@ -32,5 +31,6 @@ class MLPClassifier(nn.Module):
             nn.Linear(hidden_dim, num_classes),
         )
 
+    # forward pass
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.network(x)
