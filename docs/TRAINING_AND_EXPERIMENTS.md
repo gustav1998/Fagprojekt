@@ -179,8 +179,9 @@ The base model defines only:
 x -> logits
 ```
 
-The Lightning wrapper defines the shared loss, optimizer, accuracy logging, and
-balanced accuracy logging. The model-specific math is described in
+The Lightning wrapper defines the shared loss, optimizer, accuracy logging,
+balanced accuracy logging, macro/weighted F1 logging, and confusion matrix
+export. The model-specific math is described in
 `docs/MODEL_DESCRIPTIONS.md`.
 
 

@@ -180,8 +180,8 @@ Lightning writes metrics to:
 
     results/<model>/<dataset>/metrics.csv
 
-Build a summary table with test accuracy, majority-class baseline, and best
-model per dataset:
+Build a summary table with test accuracy, balanced accuracy, macro/weighted F1,
+majority-class baseline, parameter counts, timings, and best model per dataset:
 
     uv run python -m src.summarize_results
 

@@ -561,6 +561,9 @@ acc = (preds == y).float().mean()
 ```
 
 This computes logits, loss, predicted labels, and accuracy for one batch.
+Epoch-level predictions are also stored so the wrapper can compute balanced
+accuracy, macro precision, macro recall, macro F1, weighted F1, and test
+confusion matrices after the epoch.
 
 The prediction rule is:
 

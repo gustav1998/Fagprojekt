@@ -76,12 +76,17 @@ rows.append(
         "test_acc": float(final_test["test_acc"]),
         "test_loss": float(final_test["test_loss"]),
         "test_balanced_acc": (...),
+        "test_macro_precision": (...),
+        "test_macro_recall": (...),
+        "test_macro_f1": (...),
+        "test_weighted_f1": (...),
     }
 )
 ```
 
-The summary keeps ordinary test accuracy, test loss, and balanced accuracy when
-balanced accuracy is available.
+The summary keeps ordinary test accuracy, test loss, balanced accuracy, macro
+precision, macro recall, macro F1, weighted F1, parameter count, and timings
+when those values are available.
 
 Accuracy is:
 
@@ -98,6 +103,43 @@ recall_c = true positives for class c / examples with class c.
 
 Balanced accuracy is useful when the majority class is much larger than the
 minority classes.
+
+Macro precision is the unweighted mean precision over present classes:
+
+```text
+macro_precision = (1 / C) sum_c precision_c
+precision_c = true positives for class c / predictions of class c.
+```
+
+Macro recall is equal to balanced accuracy:
+
+```text
+macro_recall = balanced_accuracy.
+```
+
+Macro F1 computes F1 for each class and then averages:
+
+```text
+F1_c = 2 precision_c recall_c / (precision_c + recall_c)
+macro_F1 = (1 / C) sum_c F1_c.
+```
+
+Weighted F1 averages class F1 scores using class frequencies:
+
+```text
+weighted_F1 = sum_c (support_c / N) F1_c.
+```
+
+Macro F1 is useful when all classes should matter equally. Weighted F1 is useful
+when the score should reflect the actual class distribution.
+
+Each test run also writes a confusion matrix:
+
+```text
+results/<model>/<version>/test_confusion_matrix.csv
+```
+
+Rows are true classes and columns are predicted classes.
 
 
 ## Majority-Class Baseline
@@ -151,24 +193,36 @@ dataset | seed | lr | mlp | cpd | mba | tt | tr
 
 Each model column contains test accuracy.
 
-### Balanced Accuracy Pivot
+### Extra Metric Pivots
 
 ```python
-balanced_accuracy_table = metrics.pivot(
+metric_table = metrics.pivot(
     index=["dataset", "seed"],
     columns="model",
-    values="test_balanced_acc",
+    values=metric,
 ).reindex(columns=MODELS)
-balanced_accuracy_table = balanced_accuracy_table.add_suffix("_balanced_acc")
+summary = summary.join(metric_table.add_suffix(f"_{suffix}"))
 ```
 
-Balanced accuracy is added in separate columns:
+Additional metrics are added in separate columns:
 
 ```text
 lr_balanced_acc
 mlp_balanced_acc
 cpd_balanced_acc
+lr_macro_f1
+mlp_macro_f1
+cpd_macro_f1
+lr_weighted_f1
 ...
+```
+
+Run metadata is also added when available:
+
+```text
+lr_parameters
+lr_fit_seconds
+lr_test_seconds
 ```
 
 ### Best Model and Improvement
@@ -245,4 +299,3 @@ The script writes:
 results/benchmark_summary.csv
 results/benchmark_summary_aggregate.csv
 ```
-

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import re
 
@@ -7,8 +8,22 @@ import click
 import pandas as pd
 
 
-MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"] # models used for comparison
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"]
 SEEDED_VERSION_PATTERN = re.compile(r"(?P<dataset>.+)_seed(?P<seed>-?\d+)$")
+TEST_METRICS = [
+    "test_acc",
+    "test_loss",
+    "test_balanced_acc",
+    "test_macro_precision",
+    "test_macro_recall",
+    "test_macro_f1",
+    "test_weighted_f1",
+]
+METADATA_FIELDS = [
+    "trainable_parameters",
+    "fit_seconds",
+    "test_seconds",
+]
 
 
 def split_result_version(version: str) -> tuple[str, int | None]:
@@ -39,21 +54,25 @@ def read_final_test_metrics(results_dir: Path) -> pd.DataFrame:
             continue
 
         final_test = test_rows.iloc[-1]
-        rows.append(
-            {
-                "dataset": dataset,
-                "seed": seed,
-                "model": model,
-                "test_acc": float(final_test["test_acc"]),
-                "test_loss": float(final_test["test_loss"]),
-                "test_balanced_acc": (
-                    float(final_test["test_balanced_acc"])
-                    if "test_balanced_acc" in final_test
-                    and pd.notna(final_test["test_balanced_acc"])
-                    else None
-                ),
-            }
-        )
+        row = {
+            "dataset": dataset,
+            "seed": seed,
+            "model": model,
+        }
+        for metric in TEST_METRICS:
+            row[metric] = (
+                float(final_test[metric])
+                if metric in final_test and pd.notna(final_test[metric])
+                else None
+            )
+
+        metadata_path = path.parent / "run_metadata.json"
+        if metadata_path.exists():
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            for field in METADATA_FIELDS:
+                row[field] = metadata.get(field)
+
+        rows.append(row)
 
     return pd.DataFrame(rows)
 
@@ -65,7 +84,11 @@ def read_majority_baselines(
     """Compute majority-class accuracy from processed test splits."""
     rows: list[dict[str, float | int | str]] = []
 
-    for run in runs[["dataset", "seed"]].drop_duplicates().itertuples(index=False):
+    for run in (
+        runs[["dataset", "seed"]]
+        .drop_duplicates()
+        .itertuples(index=False)
+    ):
         seed_dir = (
             processed_dir / f"seed_{run.seed}"
             if pd.notna(run.seed)
@@ -105,16 +128,28 @@ def build_summary(results_dir: Path, processed_dir: Path) -> pd.DataFrame:
         columns="model",
         values="test_acc",
     ).reindex(columns=MODELS)
-    balanced_accuracy_table = metrics.pivot(
-        index=["dataset", "seed"],
-        columns="model",
-        values="test_balanced_acc",
-    ).reindex(columns=MODELS)
-    balanced_accuracy_table = balanced_accuracy_table.add_suffix(
-        "_balanced_acc"
-    )
+    summary = baselines.join(accuracy_table)
+    metric_suffixes = {
+        "test_balanced_acc": "balanced_acc",
+        "test_macro_precision": "macro_precision",
+        "test_macro_recall": "macro_recall",
+        "test_macro_f1": "macro_f1",
+        "test_weighted_f1": "weighted_f1",
+        "test_loss": "loss",
+        "trainable_parameters": "parameters",
+        "fit_seconds": "fit_seconds",
+        "test_seconds": "test_seconds",
+    }
+    for metric, suffix in metric_suffixes.items():
+        if metric not in metrics.columns:
+            continue
+        metric_table = metrics.pivot(
+            index=["dataset", "seed"],
+            columns="model",
+            values=metric,
+        ).reindex(columns=MODELS)
+        summary = summary.join(metric_table.add_suffix(f"_{suffix}"))
 
-    summary = baselines.join(accuracy_table).join(balanced_accuracy_table)
     summary["best_model"] = accuracy_table.idxmax(axis=1)
     summary["best_acc"] = accuracy_table.max(axis=1)
     summary["best_minus_majority"] = (
@@ -135,7 +170,20 @@ def build_aggregate_summary(summary: pd.DataFrame) -> pd.DataFrame:
         column
         for column in summary.columns
         if column in MODELS
-        or column.endswith("_balanced_acc")
+        or any(
+            column.endswith(f"_{suffix}")
+            for suffix in [
+                "balanced_acc",
+                "macro_precision",
+                "macro_recall",
+                "macro_f1",
+                "weighted_f1",
+                "loss",
+                "parameters",
+                "fit_seconds",
+                "test_seconds",
+            ]
+        )
         or column in {"majority_acc", "best_acc", "best_minus_majority"}
     ]
 

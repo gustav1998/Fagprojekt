@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+import time
 from pathlib import Path
 
 import lightning as L
@@ -54,7 +56,12 @@ def parse_args():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--dataset", type=str, required=True, help="Dataset name")
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        required=True,
+        help="Dataset name",
+    )
     parser.add_argument(
         "--model",
         type=str,
@@ -200,6 +207,7 @@ def main() -> None:
     model = TabularClassifierModule(
         model=base_model,
         learning_rate=args.learning_rate,
+        num_classes=datamodule.num_classes,
     )
 
     result_version = args.result_version
@@ -225,8 +233,40 @@ def main() -> None:
         log_every_n_steps=1,
     )
 
+    start_time = time.perf_counter()
     trainer.fit(model, datamodule=datamodule)
+    fit_seconds = time.perf_counter() - start_time
+    test_start_time = time.perf_counter()
     trainer.test(model, datamodule=datamodule)
+    test_seconds = time.perf_counter() - test_start_time
+
+    metadata = {
+        "dataset": args.dataset,
+        "model": args.model,
+        "seed": args.seed,
+        "epochs": args.epochs,
+        "learning_rate": args.learning_rate,
+        "rank": args.rank if args.model in {"cpd", "tt", "tr"} else None,
+        "interaction_order": (
+            args.interaction_order if args.model == "mba" else None
+        ),
+        "batch_size": args.batch_size,
+        "accelerator": args.accelerator,
+        "num_classes": datamodule.num_classes,
+        "input_dim": datamodule.input_dim,
+        "trainable_parameters": sum(
+            parameter.numel()
+            for parameter in model.parameters()
+            if parameter.requires_grad
+        ),
+        "fit_seconds": fit_seconds,
+        "test_seconds": test_seconds,
+    }
+    metadata_path = Path(logger.log_dir) / "run_metadata.json"
+    metadata_path.write_text(
+        json.dumps(metadata, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 if __name__ == "__main__":
