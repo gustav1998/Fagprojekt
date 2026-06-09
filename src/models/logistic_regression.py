@@ -1,16 +1,14 @@
 import torch
 import torch.nn as nn
 
-
 class LogisticRegression(nn.Module):
-    """Linear classifier that returns one logit per class."""
     def __init__(
             self,
-            input_dim: int,
-            num_classes: int = 2,
+            input_dim: int, # number of input features
+            num_classes: int = 2, # number of output classes
     ):
         super().__init__()
         self.linear = nn.Linear(input_dim, num_classes)
 
-    def forward(self, x):
+    def forward(self, x): # forward pass 
         return self.linear(x)
