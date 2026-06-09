@@ -12,9 +12,9 @@ class MBAClassifier(nn.Module):
 
     def __init__(
         self,
-        feature_dims: list[int],
-        interaction_order: int,
-        num_classes: int,
+        feature_dims: list[int], # Number of categories for each feature
+        interaction_order: int, # Maximum order of interactions to consider
+        num_classes: int, # Number of output classes
     ) -> None:
         super().__init__()
 
@@ -27,9 +27,9 @@ class MBAClassifier(nn.Module):
         self.interaction_order = min(interaction_order, len(feature_dims))
         self.num_classes = num_classes
 
-        interactions: list[tuple[int, ...]] = []
-        strides: list[torch.Tensor] = []
-        tables: list[nn.Parameter] = []
+        interactions: list[tuple[int, ...]] = [] # List of feature index combinations for interactions
+        strides: list[torch.Tensor] = [] # List of stride tensors for each interaction to compute flat indices
+        tables: list[nn.Parameter] = [] # List of parameter tensors for each interaction, storing the weights for each class and interaction combination
 
         for order in range(1, self.interaction_order + 1):
             for interaction in combinations(range(len(feature_dims)), order):
