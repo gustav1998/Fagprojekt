@@ -14,18 +14,16 @@ from src.utils.encoding import one_hot_encode_features
 ONE_HOT_MODELS = {"lr", "mlp"}
 TENSOR_MODELS = {"cpd", "mba", "tt", "tr"}
 
-
+# returns the appropriate processed data representation ("baseline" or "tensor") expected by a given model type
 def representation_for_model(model_type: str) -> str:
-    """Return the processed data representation expected by a model."""
     if model_type in ONE_HOT_MODELS:
         return "baseline"
     if model_type in TENSOR_MODELS:
         return "tensor"
     raise ValueError(f"Unsupported model type: {model_type}")
 
-
+# PyTorch Lightning DataModule for loading processed tabular data and creating DataLoaders for training, validation, and testing
 class TabularDataModule(L.LightningDataModule):
-    """Load processed tabular data into PyTorch DataLoaders."""
 
     def __init__(
         self,
@@ -58,7 +56,7 @@ class TabularDataModule(L.LightningDataModule):
         self.num_classes = None
 
     def setup(self, stage: str | None = None) -> None:
-        """Load processed splits and convert them to model inputs."""
+        # Load processed splits and convert them to model inputs based on the model type, which determines the expected data representation (one-hot encoded for "baseline" or integer-encoded for "tensor")
         representation = representation_for_model(self.model_type)
 
         data = load_processed_dataset(
@@ -106,6 +104,7 @@ class TabularDataModule(L.LightningDataModule):
             self.X_val = X_val_raw.long()
             self.X_test = X_test_raw.long()
 
+        # store the target labels as tensors for all models since both one-hot encoded and tensor representations use the same target encoding
         self.y_train = y_train
         self.y_val = y_val
         self.y_test = y_test
@@ -113,8 +112,8 @@ class TabularDataModule(L.LightningDataModule):
         self.input_dim = self.X_train.shape[1]
         self.num_classes = len(self.metadata["target_mapping"])
 
+    # create DataLoaders for training, validation, and testing using TensorDataset to wrap the feature and target tensors, with shuffling enabled for training and disabled for validation and testing
     def train_dataloader(self) -> DataLoader:
-        """Return the training DataLoader."""
         dataset = TensorDataset(self.X_train, self.y_train)
         generator = None
         if self.seed is not None:
@@ -129,6 +128,7 @@ class TabularDataModule(L.LightningDataModule):
             generator=generator,
         )
 
+    # validation and test DataLoaders do not use shuffling, as we want to ensure that the same validation and test splits are used across runs regardless of the seed
     def val_dataloader(self) -> DataLoader:
         """Return the validation DataLoader."""
         dataset = TensorDataset(self.X_val, self.y_val)

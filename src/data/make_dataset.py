@@ -1,6 +1,3 @@
-
-
-# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 import logging
@@ -21,7 +18,7 @@ from src.data.preprocessing import (
     transform_dataset,
 )
 
-
+# cli-commands for chosing dataset representation and running the preprocessing pipeline to create processed train, validation, and test splits along with metadata for each dataset and representation
 @click.command()
 @click.option(
     "--dataset",
@@ -70,6 +67,7 @@ from src.data.preprocessing import (
     default="quantile",
     show_default=True,
 )
+
 def main(
     dataset_name: str,
     representation: str,
@@ -89,14 +87,15 @@ def main(
         raw_dir=raw_dir,
     )
 
-    target_column = config["target_column"]
+    target_column = config["target_column"] # clean the raw training data by removing rows with missing or outliers according to the dataset configuration
     raw_train_source = clean_targets(
         raw_train_source,
         target_column=target_column,
         min_target_count=config.get("min_target_count"),
     )
 
-    if raw_test_source is None:
+    # if there is no official test set, split the raw training data into train, validation, and test sets, ensuring that the splits are stratified if possible
+    if raw_test_source is None: 
         logger.info("Raw shape: %s", raw_train_source.shape)
         raw_train_df, raw_val_df, raw_test_df = split_dataset(
             df=raw_train_source,
@@ -122,12 +121,14 @@ def main(
         raw_test_df = raw_test_source.reset_index(drop=True)
         official_test = True
 
+    # create the requested representations
     representations = (
-        ["baseline", "tensor"]
+        ["baseline", "tensor"] # if representation is "both"
         if representation == "both"
-        else [representation]
+        else [representation] # if representation is "baseline" or "tensor"
     )
 
+    # fit the preprocessor on the training data and transform the entire raw dataframe for each representation
     for rep in representations:
         logger.info("Creating representation: %s", rep)
 
@@ -143,6 +144,7 @@ def main(
         val_df = transform_dataset(raw_val_df, metadata)
         test_df = transform_dataset(raw_test_df, metadata)
 
+        # save the processed splits and metadata to the output directory
         split_paths = save_splits(
             train_df=train_df,
             val_df=val_df,
@@ -152,6 +154,7 @@ def main(
             representation=rep,
         )
 
+        # saves important metadata about the dataset 
         metadata.update(
             {
                 "dataset_name": dataset_name,
@@ -163,6 +166,7 @@ def main(
                 "n_test": len(test_df),
             }
         )
+
 
         metadata_path = save_metadata(
             metadata=metadata,
@@ -177,8 +181,7 @@ def main(
         logger.info("Saved %s metadata: %s", rep, metadata_path)
 
     logger.info("Done.")
-
-
+    
 if __name__ == "__main__":
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)

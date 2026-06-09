@@ -7,7 +7,7 @@ from typing import Any
 import pandas as pd
 import torch
 
-
+# loads the processed CSV splits and metadata for a given dataset and representation from the specified processed directory
 def load_processed_dataset(
     dataset_name: str,
     representation: str,
@@ -37,7 +37,7 @@ def load_processed_dataset(
         "metadata": metadata,
     }
 
-
+# transforms the feature columns of the given DataFrame into a tensor and the target column into a tensor of labels, placing them on the specified device (CPU or GPU)
 def dataframe_to_tensors(
     df: pd.DataFrame,
     target_column: str = "target",
