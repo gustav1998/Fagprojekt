@@ -235,6 +235,49 @@ include = ["src*"]
 This tells setuptools to package the `src` Python package.
 
 
+## Cross-Platform Setup
+
+The recommended setup command is:
+
+```bash
+uv sync
+uv run python test_environment.py
+```
+
+This works on macOS, Linux, and Windows because `uv run` executes commands
+inside the project environment without requiring shell-specific activation.
+
+Manual activation is optional. If you create the environment with:
+
+```bash
+uv venv .venv
+```
+
+activate it with the command for your shell:
+
+```bash
+# macOS/Linux
+source .venv/bin/activate
+```
+
+```powershell
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+```
+
+```cmd
+:: Windows Command Prompt
+.venv\Scripts\activate.bat
+```
+
+After activation, install the project and run the smoke test:
+
+```bash
+uv pip install -e .
+python test_environment.py
+```
+
+
 ## Environment Smoke Test
 
 File: `test_environment.py`
