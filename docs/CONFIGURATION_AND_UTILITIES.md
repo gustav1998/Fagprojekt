@@ -84,7 +84,7 @@ for _dataset_name in [
     }
 ```
 
-The report datasets share the same CSV structure, so they are added with one
+Most of the datasets share the same CSV structure, so they are added with one
 loop instead of repeating identical configuration blocks.
 
 

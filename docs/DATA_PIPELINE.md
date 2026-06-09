@@ -2,9 +2,13 @@
 
 This document explains how raw datasets become model-ready tensors.
 
-## Raw Dataset Loading
+## 1. Raw Dataset Loading
 
 File: `src/data/preprocessing.py`
+
+File for getting configs (explained in `docs\CONFIGURATION_AND_UTILITIES.md`):
+
+File: `src/data/dataset_configs.py`
 
 ### Loading a CSV
 
@@ -302,7 +306,7 @@ json.dump(metadata, f, indent=2)
 The metadata JSON is saved next to the processed CSV files.
 
 
-## Dataset Creation Command
+## 2. Dataset Creation Command
 
 File: `src/data/make_dataset.py`
 
@@ -328,7 +332,7 @@ uv run python -m src.data.make_dataset --dataset house_votes_84 --representation
 ```
 
 
-## Loading Processed Data
+## 3. Loading Processed Data
 
 File: `src/data/load_processed.py`
 
@@ -365,7 +369,7 @@ PyTorch `CrossEntropyLoss` expects targets as integer class indices, so labels
 are stored as `torch.long`.
 
 
-## Lightning Data Module
+## 4. Lightning Data Module
 
 File: `src/data/datamodule.py`
 
