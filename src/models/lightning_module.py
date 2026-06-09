@@ -35,6 +35,7 @@ class TabularClassifierModule(L.LightningModule):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.model(x)
 
+    # defines a method to compute classification metrics 
     @staticmethod
     def _classification_metrics(
         preds: torch.Tensor,
@@ -46,6 +47,7 @@ class TabularClassifierModule(L.LightningModule):
         f1_scores = []
         supports = []
 
+        # computes metrics for each class:
         for class_idx in range(num_classes):
             mask = targets == class_idx
             pred_mask = preds == class_idx
@@ -65,11 +67,13 @@ class TabularClassifierModule(L.LightningModule):
                     else torch.tensor(0.0, device=targets.device)
                 )
 
+                # store the metrics for this class to compute macro and weighted averages later
                 recalls.append(recall)
                 precisions.append(precision)
                 f1_scores.append(f1)
                 supports.append(support.float())
 
+        # if there are no classes with support (e.g., due to an empty dataset), return zero for all metrics to avoid NaN values
         if not recalls:
             zero = torch.tensor(0.0, device=targets.device)
             return {
@@ -80,6 +84,7 @@ class TabularClassifierModule(L.LightningModule):
                 "weighted_f1": zero,
             }
 
+        # compute macro and weighted averages of the metrics across classes, returning them in a dictionary
         recall_tensor = torch.stack(recalls)
         precision_tensor = torch.stack(precisions)
         f1_tensor = torch.stack(f1_scores)
@@ -95,6 +100,7 @@ class TabularClassifierModule(L.LightningModule):
             ).sum(),
         }
 
+    # computes a confusion matrix for the given predictions and targets
     @staticmethod
     def _confusion_matrix(
         preds: torch.Tensor,
@@ -110,6 +116,7 @@ class TabularClassifierModule(L.LightningModule):
             matrix[target.long(), pred.long()] += 1
         return matrix
 
+    # saves the predictions and targets for each batch during training, validation, and testing to compute epoch-level metrics at the end of each epoch
     def _store_epoch_outputs(
         self,
         stage: str,
@@ -119,6 +126,7 @@ class TabularClassifierModule(L.LightningModule):
         self._epoch_predictions[stage].append(preds.detach().cpu())
         self._epoch_targets[stage].append(targets.detach().cpu())
 
+    # computes and logs classification metrics at the end of each epoch for the specified stage (train, val, or test) and saves the confusion matrix for the test stage
     def _log_epoch_classification_metrics(self, stage: str) -> None:
         preds = self._epoch_predictions[stage]
         targets = self._epoch_targets[stage]
@@ -145,7 +153,7 @@ class TabularClassifierModule(L.LightningModule):
             )
         preds.clear()
         targets.clear()
-
+    # saves the confusion matrix for the test set to a CSV file
     def _write_test_confusion_matrix(self, matrix: torch.Tensor) -> None:
         if self.logger is None or not hasattr(self.logger, "log_dir"):
             return
@@ -161,6 +169,7 @@ class TabularClassifierModule(L.LightningModule):
             )
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
+    # defines the training, validation, and test steps, which compute the loss and accuracy for each batch and log them, while also storing the predictions and targets for epoch-level metrics
     def _shared_step(
         self,
         batch: tuple[torch.Tensor, torch.Tensor],
@@ -197,6 +206,7 @@ class TabularClassifierModule(L.LightningModule):
         )
         return loss
 
+    # computes and logs classification metrics at the end of each training epoch using the stored predictions and targets for the training stage
     def on_train_epoch_end(self) -> None:
         self._log_epoch_classification_metrics(stage="train")
 
@@ -230,5 +240,6 @@ class TabularClassifierModule(L.LightningModule):
     def on_test_epoch_end(self) -> None:
         self._log_epoch_classification_metrics(stage="test")
 
+    # defines the optimizer to use for training, which is Adam with the specified learning rate
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
