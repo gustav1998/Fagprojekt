@@ -19,6 +19,7 @@ def load_raw_dataset(config: dict[str, Any], raw_dir: Path) -> pd.DataFrame:
 
     file_path = raw_dir / file_name
 
+    # load dataset with configured options, ensuring all columns are read as strings
     df = pd.read_csv(
         file_path,
         sep=config.get("sep", ","),
@@ -30,18 +31,19 @@ def load_raw_dataset(config: dict[str, Any], raw_dir: Path) -> pd.DataFrame:
         skipinitialspace=True,
     )
 
+    # drop any columns explicitly listed for removal in the config
     drop_columns = config.get("drop_columns", [])
     if drop_columns:
-        df = df.drop(columns=drop_columns)
+        df = df.drop(columns = drop_columns)
 
     return df
 
-
+# load raw dataset splits with optional official test set 
 def load_raw_dataset_splits(
     config: dict[str, Any],
     raw_dir: Path,
 ) -> tuple[pd.DataFrame, pd.DataFrame | None]:
-    """Load configured raw data, including official train/test files."""
+
     if "train_file_name" not in config or "test_file_name" not in config:
         return load_raw_dataset(config=config, raw_dir=raw_dir), None
 
@@ -52,7 +54,7 @@ def load_raw_dataset_splits(
         load_raw_dataset(config=test_config, raw_dir=raw_dir),
     )
 
-
+# infer feature columns based on config, ensuring no overlap and all columns exist in the dataframe
 def infer_feature_columns(
     df: pd.DataFrame,
     target_column: str,
@@ -60,6 +62,7 @@ def infer_feature_columns(
     numerical_columns: list[str] | None,
 ) -> tuple[list[str], list[str]]:
     """Resolve categorical and numerical feature columns."""
+  
     if categorical_columns == "all_except_target":
         categorical = [col for col in df.columns if col != target_column]
     else:
@@ -67,6 +70,7 @@ def infer_feature_columns(
 
     numerical = numerical_columns or []
 
+    # check for column overlap
     overlap = set(categorical) & set(numerical)
     if overlap:
         raise ValueError(
@@ -74,6 +78,7 @@ def infer_feature_columns(
             f"{sorted(overlap)}"
         )
 
+    # check that all specified columns in categorical, numerical, and target are present in the dataframe
     unknown = (
         set(categorical) | set(numerical) | {target_column}
     ) - set(df.columns)
@@ -82,7 +87,7 @@ def infer_feature_columns(
 
     return categorical, numerical
 
-
+# handles missing values by filling categorical columns with a missing token and numerical columns with the median
 def fill_missing_values(
     df: pd.DataFrame,
     target_column: str,
@@ -104,7 +109,7 @@ def fill_missing_values(
 
     return df.reset_index(drop=True)
 
-
+# handles outliers and drops rows with missing or rare targets based on config settings
 def clean_targets(
     df: pd.DataFrame,
     target_column: str,
@@ -120,7 +125,7 @@ def clean_targets(
 
     return df.reset_index(drop=True)
 
-
+# encodes categorical columns and target column
 def build_mapping(
     series: pd.Series,
     extra_values: list[str] | None = None,
@@ -130,7 +135,7 @@ def build_mapping(
     values.update(extra_values or [])
     return {value: idx for idx, value in enumerate(sorted(values))}
 
-
+# applies the mapping
 def apply_mapping(
     series: pd.Series,
     mapping: dict[str, int],
@@ -138,6 +143,7 @@ def apply_mapping(
 ) -> pd.Series:
     """Map values with an optional fallback for unseen categories."""
     values = series.astype(str)
+
     if unknown_token is not None:
         values = values.where(values.isin(mapping), unknown_token)
     encoded = values.map(mapping)
@@ -148,7 +154,7 @@ def apply_mapping(
         )
     return encoded.astype(int)
 
-
+ # handles the fitting of numerical discretization bins for all the different datasets based on the config settings, using either quantile or uniform binning strategies
 def fit_numerical_bins(
     df: pd.DataFrame,
     numerical_columns: list[str],
@@ -163,8 +169,8 @@ def fit_numerical_bins(
         series = pd.to_numeric(df[col], errors="coerce")
         unique_count = int(series.nunique())
 
-        if unique_count <= 1:
-            edges = [float(series.min()), float(series.max())]
+        if unique_count <= 1: # if there is only one unique value, we can just create a single bin for it
+            edges = [float(series.min()), float(series.max())] #
             cardinality = 1
         elif strategy == "quantile":
             _, edges_array = pd.qcut(
@@ -175,7 +181,7 @@ def fit_numerical_bins(
                 duplicates="drop",
             )
             edges = [float(x) for x in edges_array]
-            cardinality = max(1, len(edges) - 1)
+            cardinality = max(1, len(edges) - 1) # cardinality is number of bins, which is one less than number of edges
         elif strategy == "uniform":
             _, edges_array = pd.cut(
                 series,
@@ -198,7 +204,7 @@ def fit_numerical_bins(
 
     return bin_metadata, cardinalities
 
-
+# applies the fitted numerical discretization bins to a dataframe
 def apply_numerical_bins(
     df: pd.DataFrame,
     numerical_columns: list[str],
@@ -216,7 +222,7 @@ def apply_numerical_bins(
             continue
 
         edges = [float(x) for x in metadata["edges"]]
-        cut_edges = [-np.inf, *edges[1:-1], np.inf]
+        cut_edges = [-np.inf, *edges[1:-1], np.inf] # ensure all values are binned even if they fall outside the original edges
         binned = pd.cut(
             pd.to_numeric(df[col], errors="coerce"),
             bins=cut_edges,
@@ -227,7 +233,7 @@ def apply_numerical_bins(
 
     return discretized_df
 
-
+# main function to fit the preprocessor on the training data and then transform a raw dataframe into the processed representation using the fitted metadata
 def fit_preprocessor(
     train_df: pd.DataFrame,
     config: dict[str, Any],
@@ -241,14 +247,15 @@ def fit_preprocessor(
     if representation not in {"baseline", "tensor"}:
         raise ValueError(f"Unsupported representation: {representation}")
 
-    target_column = config["target_column"]
-    categorical_columns, numerical_columns = infer_feature_columns(
+    target_column = config["target_column"] # sets the target column from the config
+    categorical_columns, numerical_columns = infer_feature_columns( # infers the categorical and numerical feature columns based on the config settings and the dataframe columns
         df=train_df,
         target_column=target_column,
         categorical_columns=config.get("categorical_columns"),
         numerical_columns=config.get("numerical_columns"),
     )
 
+    # fills missing values in the training data 
     train_df = fill_missing_values(
         train_df,
         target_column=target_column,
@@ -269,6 +276,7 @@ def fit_preprocessor(
         feature_mappings[col] = mapping
         cat_cardinalities.append(len(mapping))
 
+    # handles missing values in numerical columns by filling with the median and also computes the median fill values for each numerical column to be included in the metadata for use when transforming validation and test splits
     numerical_fill_values: dict[str, float] = {}
     for col in numerical_columns:
         median = pd.to_numeric(
@@ -286,6 +294,8 @@ def fit_preprocessor(
     n_bins = n_bins or config.get("default_n_bins", 10)
     numerical_bin_metadata: dict[str, Any] = {}
     numerical_cardinalities: list[int] = []
+
+    
     if representation == "tensor" and numerical_columns:
         numerical_bin_metadata, numerical_cardinalities = fit_numerical_bins(
             df=train_df,
@@ -296,6 +306,7 @@ def fit_preprocessor(
 
     cardinalities = cat_cardinalities + numerical_cardinalities
 
+    # returns a dictionary containing all the fitted metadata needed to transform raw dataframes into the processed representation
     return {
         "target_column": target_column,
         "feature_names": categorical_columns + numerical_columns,
@@ -314,12 +325,12 @@ def fit_preprocessor(
         "n_features": len(categorical_columns) + len(numerical_columns),
     }
 
-
+# transforms a raw dataframe into the processed representation using the fitted metadata
 def transform_dataset(
     df: pd.DataFrame,
     metadata: dict[str, Any],
 ) -> pd.DataFrame:
-    """Transform a raw split with fitted preprocessing metadata."""
+
     target_column = metadata["target_column"]
     categorical_columns = metadata["categorical_columns"]
     numerical_columns = metadata["numerical_columns"]
@@ -374,7 +385,7 @@ def transform_dataset(
     )
     return processed_df.reset_index(drop=True)
 
-
+ # processes a raw dataset into one model input representation by fitting the preprocessor on the training data and then transforming the entire raw dataframe using the fitted metadata, returning both the processed dataframe and the metadata
 def process_dataset(
     df: pd.DataFrame,
     config: dict[str, Any],
@@ -397,7 +408,7 @@ def process_dataset(
     )
     return transform_dataset(df, metadata), metadata
 
-
+# defines the dataset splitting function which handles both the case where there is an official test set and the case where there is not, ensuring that the splits are stratified if possible
 def split_dataset(
     df: pd.DataFrame,
     target_column: str = "target",
@@ -456,7 +467,7 @@ def split_dataset(
         test_df.reset_index(drop=True),
     )
 
-
+# defines the train-val splitting function for the case where there is an official test set, ensuring that the split is stratified if possible
 def split_train_val(
     df: pd.DataFrame,
     target_column: str,
@@ -494,7 +505,7 @@ def split_train_val(
         val_df.reset_index(drop=True),
     )
 
-
+# saves the processed train, validation, and test splits as CSV files in the specified output directory
 def save_splits(
     train_df: pd.DataFrame,
     val_df: pd.DataFrame,
@@ -518,7 +529,7 @@ def save_splits(
 
     return paths
 
-
+# saves the fitted preprocessing metadata as a JSON file in the specified output directory
 def save_metadata(
     metadata: dict[str, Any],
     output_dir: Path,

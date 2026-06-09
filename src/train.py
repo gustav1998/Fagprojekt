@@ -170,7 +170,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def apply_model_defaults(args: argparse.Namespace) -> argparse.Namespace:
+def apply_model_defaults(args: argparse.Namespace) -> argparse.Namespace: # checks whether any model-specific hyperparameters are unset and fills them in from defaults
     """Fill unset hyperparameters from model-specific defaults."""
     defaults = DEFAULT_TRAINING_CONFIGS[args.model]
 
@@ -190,66 +190,67 @@ def main() -> None:
     """Run training and testing for one model on one dataset."""
     args = apply_model_defaults(parse_args())
     if args.seed is not None:
-        L.seed_everything(args.seed, workers=True)
+        L.seed_everything(args.seed, workers=True) # check whether a seed was provided and if so, set it for reproducibility
 
     datamodule = TabularDataModule(
-        dataset_name=args.dataset,
-        batch_size=args.batch_size,
-        model_type=args.model,
-        processed_dir=args.processed_dir,
-        seed=args.seed,
+        dataset_name = args.dataset,
+        batch_size = args.batch_size,
+        model_type = args.model,
+        processed_dir = args.processed_dir,
+        seed = args.seed,
     )
     datamodule.setup()
 
+    # check which model was selected and initialize it with the appropriate hyperparameters and data dimensions:
     if args.model == "lr":
         base_model = LogisticRegression(
-            input_dim=datamodule.input_dim,
-            num_classes=datamodule.num_classes,
+            input_dim = datamodule.input_dim,
+            num_classes = datamodule.num_classes,
         )
 
     elif args.model == "mlp":
         base_model = MLPClassifier(
-            input_dim=datamodule.input_dim,
-            hidden_dim=args.hidden_dim,
-            num_classes=datamodule.num_classes,
-            dropout=args.dropout,
+            input_dim = datamodule.input_dim,
+            hidden_dim = args.hidden_dim,
+            num_classes = datamodule.num_classes,
+            dropout = args.dropout,
         )
 
     elif args.model == "cpd":
         base_model = CPDClassifier(
-            feature_dims=datamodule.cardinalities,
-            rank=args.rank,
-            num_classes=datamodule.num_classes,
+            feature_dims = datamodule.cardinalities,
+            rank = args.rank,
+            num_classes = datamodule.num_classes,
         )
 
     elif args.model == "mba":
         base_model = MBAClassifier(
-            feature_dims=datamodule.cardinalities,
-            interaction_order=args.interaction_order,
-            num_classes=datamodule.num_classes,
+            feature_dims = datamodule.cardinalities,
+            interaction_order = args.interaction_order,
+            num_classes = datamodule.num_classes,
         )
 
     elif args.model == "tt":
         base_model = TTClassifier(
-            feature_dims=datamodule.cardinalities,
-            rank=args.rank,
-            num_classes=datamodule.num_classes,
+            feature_dims = datamodule.cardinalities,
+            rank = args.rank,
+            num_classes = datamodule.num_classes,
         )
 
     elif args.model == "tr":
         base_model = TRClassifier(
-            feature_dims=datamodule.cardinalities,
-            rank=args.rank,
-            num_classes=datamodule.num_classes,
+            feature_dims = datamodule.cardinalities,
+            rank = args.rank,
+            num_classes = datamodule.num_classes,
         )
 
     else:
-        raise ValueError(f"Unsupported model: {args.model}")
+        raise ValueError(f"Unsupported model: {args.model}") 
 
     model = TabularClassifierModule(
-        model=base_model,
-        learning_rate=args.learning_rate,
-        num_classes=datamodule.num_classes,
+        model = base_model,
+        learning_rate = args.learning_rate,
+        num_classes = datamodule.num_classes,
     )
 
     result_version = args.result_version
@@ -260,10 +261,11 @@ def main() -> None:
             else args.dataset
         )
 
+    # saves results:
     logger = CSVLogger(
-        save_dir="results",
-        name=args.model,
-        version=result_version,
+        save_dir = "results",
+        name = args.model,
+        version = result_version,
     )
 
     monitor_mode = args.monitor_mode or infer_monitor_mode(args.monitor)
@@ -271,46 +273,53 @@ def main() -> None:
     checkpoint_callback = None
     if args.early_stopping:
         checkpoint_callback = ModelCheckpoint(
-            dirpath=Path(logger.log_dir) / "checkpoints",
-            filename="best",
-            monitor=args.monitor,
-            mode=monitor_mode,
-            save_top_k=1,
+            dirpath = Path(logger.log_dir) / "checkpoints",
+            filename = "best",
+            monitor = args.monitor,
+            mode = monitor_mode,
+            save_top_k = 1,
         )
         callbacks.extend(
             [
                 checkpoint_callback,
                 EarlyStopping(
-                    monitor=args.monitor,
-                    mode=monitor_mode,
-                    patience=args.patience,
+                    monitor = args.monitor,
+                    mode = monitor_mode,
+                    patience = args.patience,
                 ),
             ]
         )
 
+    # initialize the Lightning trainer with the specified accelerator, logger, and callbacks and run training and testing:
     trainer = L.Trainer(
-        max_epochs=args.epochs,
-        accelerator=args.accelerator,
-        devices=1,
-        logger=logger,
-        enable_checkpointing=args.early_stopping,
-        callbacks=callbacks,
-        log_every_n_steps=1,
+        max_epochs = args.epochs,
+        accelerator = args.accelerator,
+        devices = 1,
+        logger = logger,
+        enable_checkpointing = args.early_stopping,
+        callbacks = callbacks,
+        log_every_n_steps = 1,
     )
 
-    start_time = time.perf_counter()
+    start_time = time.perf_counter() 
+
     trainer.fit(model, datamodule=datamodule)
-    fit_seconds = time.perf_counter() - start_time
+
+    fit_seconds = time.perf_counter() - start_time # time the training process
+
     test_seconds = None
     if not args.skip_test:
+
         test_start_time = time.perf_counter()
+
         trainer.test(
             model,
             datamodule=datamodule,
             ckpt_path="best" if args.early_stopping else None,
         )
-        test_seconds = time.perf_counter() - test_start_time
+        test_seconds = time.perf_counter() - test_start_time # time the testing process
 
+    # logs and saves metadata about the training run to a JSON file in the result folder
     metadata = {
         "dataset": args.dataset,
         "model": args.model,
