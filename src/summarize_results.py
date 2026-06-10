@@ -8,7 +8,7 @@ import click
 import pandas as pd
 
 
-MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"]
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr", "rf"]
 
 SEEDED_VERSION_PATTERN = re.compile(r"(?P<dataset>.+)_seed(?P<seed>-?\d+)$") # Pattern to extract dataset name and seed from Lightning result version strings, e.g. "dataset_seed42"
 
