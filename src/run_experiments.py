@@ -118,13 +118,14 @@ def main(
             # After preprocessing, train each selected model on the processed data for the current seed and dataset. The training command includes all relevant hyperparameters, with defaults taken from DEFAULT_TRAINING_CONFIGS if not specified.
             for model in selected_models:
                 if model == "rf":
-                    # RF is sklearn-based and has its own entry point
                     command = [
                         sys.executable,
                         "-m",
-                        "src.models.rf",
+                        "src.train",
                         "--dataset",
                         dataset,
+                        "--model",
+                        "rf",
                         "--processed-dir",
                         str(processed_dir),
                         "--seed",
