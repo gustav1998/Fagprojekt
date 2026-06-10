@@ -19,22 +19,35 @@ def load_raw_dataset(config: dict[str, Any], raw_dir: Path) -> pd.DataFrame:
 
     file_path = raw_dir / file_name
 
-    # load dataset with configured options, ensuring all columns are read as strings
+    read_csv_options = {
+        "sep": config.get("sep", ","),
+        "engine": config.get("engine"),
+        "header": config.get("header", "infer"),
+        "names": config.get("column_names"),
+        "na_values": config.get("missing_tokens", ["?"]),
+        "keep_default_na": True,
+        "skipinitialspace": True,
+    }
+    for option in [
+        "skiprows",
+        "compression",
+        "comment",
+        "encoding",
+        "low_memory",
+    ]:
+        if option in config:
+            read_csv_options[option] = config[option]
+
+    # load dataset with configured options
     df = pd.read_csv(
         file_path,
-        sep=config.get("sep", ","),
-        engine=config.get("engine"),
-        header=config.get("header", "infer"),
-        names=config.get("column_names"),
-        na_values=config.get("missing_tokens", ["?"]),
-        keep_default_na=True,
-        skipinitialspace=True,
+        **read_csv_options,
     )
 
     # drop any columns explicitly listed for removal in the config
     drop_columns = config.get("drop_columns", [])
     if drop_columns:
-        df = df.drop(columns = drop_columns)
+        df = df.drop(columns=drop_columns, errors="ignore")
 
     return df
 
@@ -59,7 +72,7 @@ def infer_feature_columns(
     df: pd.DataFrame,
     target_column: str,
     categorical_columns: list[str] | str | None,
-    numerical_columns: list[str] | None,
+    numerical_columns: list[str] | str | None,
 ) -> tuple[list[str], list[str]]:
     """Resolve categorical and numerical feature columns."""
   
@@ -68,7 +81,10 @@ def infer_feature_columns(
     else:
         categorical = categorical_columns or []
 
-    numerical = numerical_columns or []
+    if numerical_columns == "all_except_target":
+        numerical = [col for col in df.columns if col != target_column]
+    else:
+        numerical = numerical_columns or []
 
     # check for column overlap
     overlap = set(categorical) & set(numerical)
@@ -211,14 +227,14 @@ def apply_numerical_bins(
     numerical_bin_metadata: dict[str, Any],
 ) -> pd.DataFrame:
     """Apply fitted numerical discretization bins."""
-    discretized_df = pd.DataFrame(index=df.index)
+    discretized_columns: dict[str, pd.Series | int] = {}
 
     for col in numerical_columns:
         metadata = numerical_bin_metadata[col]
         cardinality = int(metadata["n_bins"])
 
         if cardinality <= 1:
-            discretized_df[col] = 0
+            discretized_columns[col] = 0
             continue
 
         edges = [float(x) for x in metadata["edges"]]
@@ -229,9 +245,9 @@ def apply_numerical_bins(
             labels=False,
             include_lowest=True,
         )
-        discretized_df[col] = binned.astype(int)
+        discretized_columns[col] = binned.astype(int)
 
-    return discretized_df
+    return pd.DataFrame(discretized_columns, index=df.index)
 
 # main function to fit the preprocessor on the training data and then transform a raw dataframe into the processed representation using the fitted metadata
 def fit_preprocessor(

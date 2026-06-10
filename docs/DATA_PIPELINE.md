@@ -448,3 +448,40 @@ shuffle=False
 
 This keeps evaluation deterministic.
 
+
+## 5. Dataset Inspection
+
+File: `src/data_pipeline/describe_datasets.py`
+
+Before training, the processed datasets can be summarized and plotted:
+
+```bash
+uv run python -m src.data_pipeline.describe_datasets --representation both --seed 42
+```
+
+The script reads the same processed folder layout as training. If
+`src/data_pipeline/data/processed/seed_42/` exists, that folder is used. If it
+does not exist, the script falls back to `src/data_pipeline/data/processed/`.
+
+It writes:
+
+```text
+dataset_summary.csv
+class_distribution.csv
+feature_cardinalities.csv
+dataset_sizes.svg
+majority_class_share.svg
+largest_feature_cardinalities.svg
+index.html
+```
+
+The plots help check three things before running models:
+
+```text
+dataset_sizes.svg                 -> whether datasets are tiny or large
+majority_class_share.svg          -> whether majority-class collapse is likely
+largest_feature_cardinalities.svg -> whether tensor factor sizes may become large
+```
+
+The output folder is ignored by Git because these files are generated from the
+processed data.

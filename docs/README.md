@@ -8,7 +8,8 @@ code snippets first, then explain what the code computes or controls.
 - `docs/MODEL_DESCRIPTIONS.md` explains the classifiers and shared Lightning
   training wrapper.
 - `docs/DATA_PIPELINE.md` explains raw dataset loading, preprocessing,
-  splitting, processed data loading, and the Lightning data module.
+  splitting, processed data loading, dataset inspection, and the Lightning data
+  module.
 - `docs/TRAINING_AND_EXPERIMENTS.md` explains the command-line training script,
   the multi-run experiment script, early stopping, and optional tuning.
 - `docs/RESULTS_AND_SUMMARIES.md` explains how logged metrics are turned into

@@ -185,6 +185,27 @@ export. The model-specific math is described in
 `docs/MODEL_DESCRIPTIONS.md`.
 
 
+## Regularization Follow-Up
+
+The MLP already exposes dropout, but the other models may still overfit when
+rank, interaction order, hidden size, or training length is large. Before final
+experiments, regularization should be checked as a controlled hyperparameter.
+
+Useful candidates are:
+
+```text
+weight decay      -> LR, MLP, CPD, MBA, TT, TR
+dropout           -> MLP
+rank penalties    -> CPD, TT, TR through lower rank or explicit weight decay
+order penalties   -> MBA through lower interaction order or regularized tables
+early stopping    -> all trainable models
+```
+
+The goal is not to add every penalty automatically, but to test whether a
+regularized configuration improves validation macro F1 and reduces the gap
+between training and validation metrics.
+
+
 ## Logging
 
 ### Result Version

@@ -17,6 +17,19 @@ used for the experiments. Dataset-specific paths are configured in:
 src/data_pipeline/dataset_configs.py
 ```
 
+Large raw datasets are stored locally under:
+
+```text
+src/data_pipeline/data/raw/large_datasets/
+```
+
+These large downloaded files are ignored by Git. The expected filenames and
+source pages are listed in:
+
+```text
+src/data_pipeline/data/raw/large_datasets/README.md
+```
+
 ## Processed Data
 
 Processed train, validation, and test splits are stored under:
@@ -75,3 +88,19 @@ For seeded experiment folders, use the experiment runner:
 ```bash
 uv run python -m src.training.run_experiments --dataset car_evaluation --seed 42
 ```
+
+## Visualizing Processed Data
+
+To generate CSV summaries and SVG plots for the processed datasets, run:
+
+```bash
+uv run python -m src.data_pipeline.describe_datasets --representation both --seed 42
+```
+
+The generated report is written to:
+
+```text
+src/data_pipeline/data/reports/
+```
+
+This folder is ignored by Git because it is generated output.
