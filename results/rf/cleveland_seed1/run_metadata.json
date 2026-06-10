@@ -1,0 +1,15 @@
+{
+  "dataset": "cleveland",
+  "model": "rf",
+  "seed": 1,
+  "n_estimators": 300,
+  "best_max_depth": 5,
+  "best_max_features": "sqrt",
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 5,
+  "input_dim": 7,
+  "trainable_parameters": null,
+  "fit_seconds": 0.30662679999659304,
+  "test_seconds": 0.03717759999562986
+}

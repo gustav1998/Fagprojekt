@@ -1,0 +1,15 @@
+{
+  "dataset": "xd6",
+  "model": "rf",
+  "seed": 42,
+  "n_estimators": 300,
+  "best_max_depth": null,
+  "best_max_features": "sqrt",
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 2,
+  "input_dim": 9,
+  "trainable_parameters": null,
+  "fit_seconds": 0.3931485000066459,
+  "test_seconds": 0.05050310000660829
+}

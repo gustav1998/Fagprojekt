@@ -1,0 +1,15 @@
+{
+  "dataset": "monk_2",
+  "model": "rf",
+  "seed": 1,
+  "n_estimators": 300,
+  "best_max_depth": null,
+  "best_max_features": 0.5,
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 2,
+  "input_dim": 6,
+  "trainable_parameters": null,
+  "fit_seconds": 0.5979017000063322,
+  "test_seconds": 0.09798109999974258
+}

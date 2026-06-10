@@ -1,0 +1,15 @@
+{
+  "dataset": "house_votes_84",
+  "model": "rf",
+  "seed": 2,
+  "n_estimators": 300,
+  "best_max_depth": null,
+  "best_max_features": "sqrt",
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 2,
+  "input_dim": 16,
+  "trainable_parameters": null,
+  "fit_seconds": 0.5876760000101058,
+  "test_seconds": 0.06904029998986516
+}

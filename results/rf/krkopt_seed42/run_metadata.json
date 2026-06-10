@@ -1,0 +1,15 @@
+{
+  "dataset": "krkopt",
+  "model": "rf",
+  "seed": 42,
+  "n_estimators": 300,
+  "best_max_depth": null,
+  "best_max_features": 0.5,
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 18,
+  "input_dim": 6,
+  "trainable_parameters": null,
+  "fit_seconds": 1.2466561999899568,
+  "test_seconds": 0.10851969999202993
+}

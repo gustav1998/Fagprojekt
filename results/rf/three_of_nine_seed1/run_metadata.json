@@ -1,0 +1,15 @@
+{
+  "dataset": "three_of_nine",
+  "model": "rf",
+  "seed": 1,
+  "n_estimators": 300,
+  "best_max_depth": null,
+  "best_max_features": "sqrt",
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 2,
+  "input_dim": 9,
+  "trainable_parameters": null,
+  "fit_seconds": 0.6208018000033917,
+  "test_seconds": 0.08115510000789072
+}

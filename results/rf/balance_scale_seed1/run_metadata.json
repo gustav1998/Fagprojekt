@@ -1,0 +1,15 @@
+{
+  "dataset": "balance_scale",
+  "model": "rf",
+  "seed": 1,
+  "n_estimators": 300,
+  "best_max_depth": 5,
+  "best_max_features": "sqrt",
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 3,
+  "input_dim": 4,
+  "trainable_parameters": null,
+  "fit_seconds": 0.45082389999879524,
+  "test_seconds": 0.06437169999117032
+}

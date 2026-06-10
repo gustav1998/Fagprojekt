@@ -1,0 +1,15 @@
+{
+  "dataset": "vehicle",
+  "model": "rf",
+  "seed": 1,
+  "n_estimators": 300,
+  "best_max_depth": null,
+  "best_max_features": "sqrt",
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 2,
+  "input_dim": 4,
+  "trainable_parameters": null,
+  "fit_seconds": 0.59381590000703,
+  "test_seconds": 0.06497160000435542
+}

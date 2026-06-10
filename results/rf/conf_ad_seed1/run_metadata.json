@@ -1,0 +1,15 @@
+{
+  "dataset": "conf_ad",
+  "model": "rf",
+  "seed": 1,
+  "n_estimators": 300,
+  "best_max_depth": 10,
+  "best_max_features": "sqrt",
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 2,
+  "input_dim": 6,
+  "trainable_parameters": null,
+  "fit_seconds": 0.27220300000044517,
+  "test_seconds": 0.04019529999641236
+}

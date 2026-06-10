@@ -1,0 +1,15 @@
+{
+  "dataset": "led7",
+  "model": "rf",
+  "seed": 42,
+  "n_estimators": 300,
+  "best_max_depth": 5,
+  "best_max_features": "sqrt",
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 10,
+  "input_dim": 7,
+  "trainable_parameters": null,
+  "fit_seconds": 0.40829089999897406,
+  "test_seconds": 0.059658199999830686
+}

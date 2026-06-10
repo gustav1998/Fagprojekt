@@ -1,0 +1,15 @@
+{
+  "dataset": "ptumor",
+  "model": "rf",
+  "seed": 1,
+  "n_estimators": 300,
+  "best_max_depth": 10,
+  "best_max_features": 0.5,
+  "cv_folds": 5,
+  "cv_scoring": "balanced_accuracy",
+  "num_classes": 2,
+  "input_dim": 17,
+  "trainable_parameters": null,
+  "fit_seconds": 0.6657210000121268,
+  "test_seconds": 0.05693289999908302
+}
