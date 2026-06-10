@@ -10,7 +10,7 @@ from src.data.dataset_configs import DATASET_CONFIGS
 from src.train import DEFAULT_TRAINING_CONFIGS
 
 
-MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr"]
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr", "rf"]
 
 # run one subprocess command and stop on failure
 def run_command(command: list[str]) -> None:
@@ -117,6 +117,25 @@ def main(
 
             # After preprocessing, train each selected model on the processed data for the current seed and dataset. The training command includes all relevant hyperparameters, with defaults taken from DEFAULT_TRAINING_CONFIGS if not specified.
             for model in selected_models:
+                if model == "rf":
+                    command = [
+                        sys.executable,
+                        "-m",
+                        "src.train",
+                        "--dataset",
+                        dataset,
+                        "--model",
+                        "rf",
+                        "--processed-dir",
+                        str(processed_dir),
+                        "--seed",
+                        str(seed),
+                        "--result-version",
+                        f"{dataset}_seed{seed}",
+                    ]
+                    run_command(command)
+                    continue
+
                 config = DEFAULT_TRAINING_CONFIGS[model]
                 command = [
                     sys.executable,
@@ -152,7 +171,7 @@ def main(
                     command.extend(["--monitor-mode", monitor_mode])
                 if model in {"cpd", "tt", "tr"}:
                     command.extend(["--rank", str(rank or config["rank"])]) # checks if the model is one of the factorization models and adds the appropriate rank flag to the command
-                
+
                 if model == "mba":
                     command.extend(
                         [

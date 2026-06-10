@@ -33,8 +33,19 @@ def run_command(command: list[str]) -> None:
     subprocess.run(command, check=True)
 
 
-def suggest_params(trial, model: str) -> dict[str, int | float]:
+def suggest_params(trial, model: str) -> dict[str, int | float | str | None]:
     """Suggest model-specific hyperparameters for one Optuna trial."""
+    if model == "rf":
+        return {
+            "max_depth": trial.suggest_categorical(
+                "max_depth", [None, 5, 10, 15, 20, 30]
+            ),
+            "max_features": trial.suggest_categorical(
+                "max_features", ["sqrt", "log2", 0.5]
+            ),
+            "min_samples_leaf": trial.suggest_int("min_samples_leaf", 1, 16),
+        }
+
     params: dict[str, int | float] = {
         "learning_rate": trial.suggest_float(
             "learning_rate",
@@ -149,7 +160,11 @@ def main(
     optuna = import_optuna()
     mode = metric_mode or infer_monitor_mode(metric)
     direction = "minimize" if mode == "min" else "maximize"
-    selected_epochs = epochs or DEFAULT_TRAINING_CONFIGS[model]["epochs"]
+    selected_epochs = (
+        None
+        if model == "rf"
+        else epochs or DEFAULT_TRAINING_CONFIGS[model]["epochs"]
+    )
     processed_dir = processed_root / f"seed_{seed}"
 
     run_command(
@@ -175,47 +190,72 @@ def main(
         result_version = (
             f"tuning_{dataset}_{model}_seed{seed}_trial{trial.number}"
         )
-        command = [
-            sys.executable,
-            "-m",
-            "src.train",
-            "--dataset",
-            dataset,
-            "--model",
-            model,
-            "--processed-dir",
-            str(processed_dir),
-            "--seed",
-            str(seed),
-            "--result-version",
-            result_version,
-            "--epochs",
-            str(selected_epochs),
-            "--batch-size",
-            str(batch_size),
-            "--accelerator",
-            accelerator,
-            "--learning-rate",
-            str(params["learning_rate"]),
-            "--patience",
-            str(patience),
-            "--monitor",
-            metric,
-            "--monitor-mode",
-            mode,
-            "--skip-test",
-        ]
 
-        if "rank" in params:
-            command.extend(["--rank", str(params["rank"])])
-        if "interaction_order" in params:
-            command.extend(
-                ["--interaction-order", str(params["interaction_order"])]
-            )
-        if "hidden_dim" in params:
-            command.extend(["--hidden-dim", str(params["hidden_dim"])])
-        if "dropout" in params:
-            command.extend(["--dropout", str(params["dropout"])])
+        if model == "rf":
+            command = [
+                sys.executable,
+                "-m",
+                "src.train",
+                "--dataset",
+                dataset,
+                "--model",
+                "rf",
+                "--processed-dir",
+                str(processed_dir),
+                "--seed",
+                str(seed),
+                "--result-version",
+                result_version,
+                "--skip-test",
+                "--max-features",
+                str(params["max_features"]),
+                "--min-samples-leaf",
+                str(params["min_samples_leaf"]),
+            ]
+            if params["max_depth"] is not None:
+                command.extend(["--max-depth", str(params["max_depth"])])
+        else:
+            command = [
+                sys.executable,
+                "-m",
+                "src.train",
+                "--dataset",
+                dataset,
+                "--model",
+                model,
+                "--processed-dir",
+                str(processed_dir),
+                "--seed",
+                str(seed),
+                "--result-version",
+                result_version,
+                "--epochs",
+                str(selected_epochs),
+                "--batch-size",
+                str(batch_size),
+                "--accelerator",
+                accelerator,
+                "--learning-rate",
+                str(params["learning_rate"]),
+                "--patience",
+                str(patience),
+                "--monitor",
+                metric,
+                "--monitor-mode",
+                mode,
+                "--skip-test",
+            ]
+
+            if "rank" in params:
+                command.extend(["--rank", str(params["rank"])])
+            if "interaction_order" in params:
+                command.extend(
+                    ["--interaction-order", str(params["interaction_order"])]
+                )
+            if "hidden_dim" in params:
+                command.extend(["--hidden-dim", str(params["hidden_dim"])])
+            if "dropout" in params:
+                command.extend(["--dropout", str(params["dropout"])])
 
         run_command(command)
         result_dir = Path("results") / model / result_version
@@ -235,8 +275,8 @@ def main(
         "best_params": study.best_params,
         "trials": trials,
         "epochs": selected_epochs,
-        "patience": patience,
-        "batch_size": batch_size,
+        "patience": patience if model != "rf" else None,
+        "batch_size": batch_size if model != "rf" else None,
     }
     output_path.write_text(
         json.dumps(output, indent=2) + "\n",
