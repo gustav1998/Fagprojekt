@@ -211,12 +211,25 @@ def apply_model_defaults(args: argparse.Namespace) -> argparse.Namespace: # chec
     return args
 
 
+def resolve_processed_dir(args: argparse.Namespace) -> Path:
+    """Use a seed-specific processed folder when it exists."""
+    processed_dir = args.processed_dir
+    if args.seed is None:
+        return processed_dir
+
+    seed_dir = processed_dir / f"seed_{args.seed}"
+    if seed_dir.exists():
+        return seed_dir
+
+    return processed_dir
+
+
 def _train_rf(args: argparse.Namespace, result_version: str) -> None:
     """Train a Random Forest and save results in the standard format."""
     data = load_processed_dataset(
         dataset_name=args.dataset,
         representation="baseline",
-        processed_dir=args.processed_dir,
+        processed_dir=resolve_processed_dir(args),
     )
 
     train_df = data["train_df"]
@@ -304,6 +317,7 @@ def _train_rf(args: argparse.Namespace, result_version: str) -> None:
 def main() -> None:
     """Run training and testing for one model on one dataset."""
     args = apply_model_defaults(parse_args())
+    processed_dir = resolve_processed_dir(args)
     if args.seed is not None:
         L.seed_everything(args.seed, workers=True) # check whether a seed was provided and if so, set it for reproducibility
 
@@ -321,7 +335,7 @@ def main() -> None:
         dataset_name = args.dataset,
         batch_size = args.batch_size,
         model_type = args.model,
-        processed_dir = args.processed_dir,
+        processed_dir = processed_dir,
         seed = args.seed,
     )
     datamodule.setup()
