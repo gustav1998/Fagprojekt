@@ -402,4 +402,29 @@ uv run python -m src.training.run_experiments --dataset house_votes_84 --model c
 
 uv run python -m src.training.run_experiments --model rf --seed 42 --seed 1 --seed 2
 ```
- 
+
+### Full Pipeline (Tune Then Train All Seeds)
+
+Tune one model across all 27 datasets (saves one JSON per dataset):
+
+```bash
+uv run python -m src.training.tune_hyperparameters --model rf
+```
+
+Tune all models across all datasets:
+
+```bash
+uv run python -m src.training.tune_hyperparameters
+```
+
+Train all models on all datasets using tuned hyperparameters, across all 5 evaluation seeds:
+
+```bash
+uv run python -m src.training.run_experiments --seed 1 --seed 2 --seed 3 --seed 4 --seed 5
+```
+
+Aggregate results across seeds into summary CSVs:
+
+```bash
+uv run python -m src.summary_results.summarize_results
+```

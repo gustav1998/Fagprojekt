@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -55,6 +56,12 @@ def run_command(command: list[str]) -> None:
     default=Path("src/data_pipeline/data/processed"),
     show_default=True,
 )
+@click.option(
+    "--tuning-dir",
+    type=click.Path(path_type=Path),
+    default=Path("src/summary_results/results/tuning"),
+    show_default=True,
+)
 @click.option("--epochs", type=int, default=None)
 @click.option("--learning-rate", type=float, default=None)
 @click.option("--rank", type=int, default=None)
@@ -80,6 +87,7 @@ def main(
     batch_size: int,
     accelerator: str,
     processed_root: Path,
+    tuning_dir: Path,
     epochs: int | None,
     learning_rate: float | None,
     rank: int | None,
@@ -133,10 +141,21 @@ def main(
                         "--result-version",
                         f"{dataset}_seed{seed}",
                     ]
+                    tuning_json = tuning_dir / f"rf_{dataset}_seed42_best_params.json"
+                    if tuning_json.exists():
+                        rf_params = json.loads(tuning_json.read_text(encoding="utf-8"))["best_params"]
+                        command.extend(["--max-features", str(rf_params.get("max_features", "sqrt"))])
+                        command.extend(["--min-samples-leaf", str(rf_params.get("min_samples_leaf", 1))])
+                        if rf_params.get("max_depth") is not None:
+                            command.extend(["--max-depth", str(rf_params["max_depth"])])
                     run_command(command)
                     continue
 
                 config = DEFAULT_TRAINING_CONFIGS[model]
+                tuning_json = tuning_dir / f"{model}_{dataset}_seed42_best_params.json"
+                tuned = {}
+                if tuning_json.exists():
+                    tuned = json.loads(tuning_json.read_text(encoding="utf-8")).get("best_params", {})
                 command = [
                     sys.executable,
                     "-m",
@@ -158,32 +177,32 @@ def main(
                     "--epochs",
                     str(epochs or config["epochs"]),
                     "--learning-rate",
-                    str(learning_rate or config["learning_rate"]),
+                    str(tuned.get("learning_rate") or learning_rate or config["learning_rate"]),
                     "--patience",
                     str(patience),
                     "--monitor",
                     monitor,
                 ]
 
-                if not early_stopping: # checks for early stopping and adds the appropriate flag to the command
+                if not early_stopping:
                     command.append("--disable-early-stopping")
-                if monitor_mode is not None: # checks for monitor mode and adds the appropriate flag to the command
+                if monitor_mode is not None:
                     command.extend(["--monitor-mode", monitor_mode])
                 if model in {"cpd", "tt", "tr"}:
-                    command.extend(["--rank", str(rank or config["rank"])]) # checks if the model is one of the factorization models and adds the appropriate rank flag to the command
-
+                    command.extend(["--rank", str(tuned.get("rank") or rank or config["rank"])])
                 if model == "mba":
                     command.extend(
                         [
                             "--interaction-order",
-                            str(
-                                interaction_order
-                                or config["interaction_order"]
-                            ),
+                            str(tuned.get("interaction_order") or interaction_order or config["interaction_order"]),
                         ]
-                    ) # checks if the model is mba and adds the appropriate interaction order flag to the command
+                    )
+                if model == "mlp" and tuned.get("hidden_dim") is not None:
+                    command.extend(["--hidden-dim", str(tuned["hidden_dim"])])
+                if model == "mlp" and tuned.get("dropout") is not None:
+                    command.extend(["--dropout", str(tuned["dropout"])])
 
-                run_command(command) # runs the training command for the current model, dataset, and seed
+                run_command(command)
 
 if __name__ == "__main__":
     main()

@@ -102,10 +102,11 @@ def read_trial_score(
 @click.command()
 @click.option(
     "--dataset",
+    "datasets",
+    multiple=True,
     type=click.Choice(sorted(DATASET_CONFIGS.keys())),
-    required=True,
 )
-@click.option("--model", type=click.Choice(MODELS), required=True)
+@click.option("--model", "models", multiple=True, type=click.Choice(MODELS))
 @click.option("--seed", type=int, default=42, show_default=True)
 @click.option("--trials", type=int, default=25, show_default=True)
 @click.option("--epochs", type=int, default=None)
@@ -143,8 +144,8 @@ def read_trial_score(
     show_default=True,
 )
 def main(
-    dataset: str,
-    model: str,
+    datasets: tuple[str, ...],
+    models: tuple[str, ...],
     seed: int,
     trials: int,
     epochs: int | None,
@@ -156,136 +157,142 @@ def main(
     processed_root: Path,
     output_dir: Path,
 ) -> None:
-    """Tune one model on one dataset using validation performance."""
+    """Tune models on datasets using validation performance."""
     optuna = import_optuna()
-    mode = metric_mode or infer_monitor_mode(metric)
-    direction = "minimize" if mode == "min" else "maximize"
-    selected_epochs = (
-        None
-        if model == "rf"
-        else epochs or DEFAULT_TRAINING_CONFIGS[model]["epochs"]
-    )
+    selected_datasets = datasets or tuple(sorted(DATASET_CONFIGS.keys()))
+    selected_models = models or tuple(MODELS)
     processed_dir = processed_root / f"seed_{seed}"
-
-    run_command(
-        [
-            sys.executable,
-            "-m",
-            "src.data_pipeline.make_dataset",
-            "--dataset",
-            dataset,
-            "--representation",
-            "both",
-            "--seed",
-            str(seed),
-            "--output-dir",
-            str(processed_dir),
-        ]
-    )
-
-    study = optuna.create_study(direction=direction)
-
-    def objective(trial) -> float:
-        params = suggest_params(trial, model)
-        result_version = (
-            f"tuning_{dataset}_{model}_seed{seed}_trial{trial.number}"
+    for model in selected_models:
+        effective_metric = (
+            "val_balanced_acc" if model == "rf" and metric == "val_loss" else metric
         )
+        effective_mode = metric_mode or infer_monitor_mode(effective_metric)
+        effective_direction = "minimize" if effective_mode == "min" else "maximize"
+        selected_epochs = (
+            None
+            if model == "rf"
+            else epochs or DEFAULT_TRAINING_CONFIGS[model]["epochs"]
+        )
+        for dataset in selected_datasets:
+            run_command(
+                [
+                    sys.executable,
+                    "-m",
+                    "src.data_pipeline.make_dataset",
+                    "--dataset",
+                    dataset,
+                    "--representation",
+                    "both",
+                    "--seed",
+                    str(seed),
+                    "--output-dir",
+                    str(processed_dir),
+                ]
+            )
 
-        if model == "rf":
-            command = [
-                sys.executable,
-                "-m",
-                "src.training.train",
-                "--dataset",
-                dataset,
-                "--model",
-                "rf",
-                "--processed-dir",
-                str(processed_dir),
-                "--seed",
-                str(seed),
-                "--result-version",
-                result_version,
-                "--skip-test",
-                "--max-features",
-                str(params["max_features"]),
-                "--min-samples-leaf",
-                str(params["min_samples_leaf"]),
-            ]
-            if params["max_depth"] is not None:
-                command.extend(["--max-depth", str(params["max_depth"])])
-        else:
-            command = [
-                sys.executable,
-                "-m",
-                "src.training.train",
-                "--dataset",
-                dataset,
-                "--model",
-                model,
-                "--processed-dir",
-                str(processed_dir),
-                "--seed",
-                str(seed),
-                "--result-version",
-                result_version,
-                "--epochs",
-                str(selected_epochs),
-                "--batch-size",
-                str(batch_size),
-                "--accelerator",
-                accelerator,
-                "--learning-rate",
-                str(params["learning_rate"]),
-                "--patience",
-                str(patience),
-                "--monitor",
-                metric,
-                "--monitor-mode",
-                mode,
-                "--skip-test",
-            ]
+            study = optuna.create_study(direction=effective_direction)
 
-            if "rank" in params:
-                command.extend(["--rank", str(params["rank"])])
-            if "interaction_order" in params:
-                command.extend(
-                    ["--interaction-order", str(params["interaction_order"])]
+            def objective(trial) -> float:
+                params = suggest_params(trial, model)
+                result_version = (
+                    f"tuning_{dataset}_{model}_seed{seed}_trial{trial.number}"
                 )
-            if "hidden_dim" in params:
-                command.extend(["--hidden-dim", str(params["hidden_dim"])])
-            if "dropout" in params:
-                command.extend(["--dropout", str(params["dropout"])])
 
-        run_command(command)
-        result_dir = (
-            Path("src/summary_results/results") / model / result_version
-        )
-        return read_trial_score(result_dir, metric, mode)
+                if model == "rf":
+                    command = [
+                        sys.executable,
+                        "-m",
+                        "src.training.train",
+                        "--dataset",
+                        dataset,
+                        "--model",
+                        "rf",
+                        "--processed-dir",
+                        str(processed_dir),
+                        "--seed",
+                        str(seed),
+                        "--result-version",
+                        result_version,
+                        "--skip-test",
+                        "--max-features",
+                        str(params["max_features"]),
+                        "--min-samples-leaf",
+                        str(params["min_samples_leaf"]),
+                    ]
+                    if params["max_depth"] is not None:
+                        command.extend(["--max-depth", str(params["max_depth"])])
+                else:
+                    command = [
+                        sys.executable,
+                        "-m",
+                        "src.training.train",
+                        "--dataset",
+                        dataset,
+                        "--model",
+                        model,
+                        "--processed-dir",
+                        str(processed_dir),
+                        "--seed",
+                        str(seed),
+                        "--result-version",
+                        result_version,
+                        "--epochs",
+                        str(selected_epochs),
+                        "--batch-size",
+                        str(batch_size),
+                        "--accelerator",
+                        accelerator,
+                        "--learning-rate",
+                        str(params["learning_rate"]),
+                        "--patience",
+                        str(patience),
+                        "--monitor",
+                        effective_metric,
+                        "--monitor-mode",
+                        effective_mode,
+                        "--skip-test",
+                    ]
 
-    study.optimize(objective, n_trials=trials)
+                    if "rank" in params:
+                        command.extend(["--rank", str(params["rank"])])
+                    if "interaction_order" in params:
+                        command.extend(
+                            ["--interaction-order", str(params["interaction_order"])]
+                        )
+                    if "hidden_dim" in params:
+                        command.extend(["--hidden-dim", str(params["hidden_dim"])])
+                    if "dropout" in params:
+                        command.extend(["--dropout", str(params["dropout"])])
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / f"{model}_{dataset}_seed{seed}_best_params.json"
-    output = {
-        "dataset": dataset,
-        "model": model,
-        "seed": seed,
-        "metric": metric,
-        "metric_mode": mode,
-        "best_value": study.best_value,
-        "best_params": study.best_params,
-        "trials": trials,
-        "epochs": selected_epochs,
-        "patience": patience if model != "rf" else None,
-        "batch_size": batch_size if model != "rf" else None,
-    }
-    output_path.write_text(
-        json.dumps(output, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    print(f"Saved {output_path}")
-    print(json.dumps(output, indent=2))
+                run_command(command)
+                result_dir = (
+                    Path("src/summary_results/results") / model / result_version
+                )
+                return read_trial_score(result_dir, effective_metric, effective_mode)
+
+            study.optimize(objective, n_trials=trials)
+
+            output_dir.mkdir(parents=True, exist_ok=True)
+            output_path = output_dir / f"{model}_{dataset}_seed{seed}_best_params.json"
+            output = {
+                "dataset": dataset,
+                "model": model,
+                "seed": seed,
+                "metric": effective_metric,
+                "metric_mode": effective_mode,
+                "best_value": study.best_value,
+                "best_params": study.best_params,
+                "trials": trials,
+                "epochs": selected_epochs,
+                "patience": patience if model != "rf" else None,
+                "batch_size": batch_size if model != "rf" else None,
+            }
+            output_path.write_text(
+                json.dumps(output, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            print(f"Saved {output_path}")
+            print(json.dumps(output, indent=2))
 
 
 if __name__ == "__main__":
