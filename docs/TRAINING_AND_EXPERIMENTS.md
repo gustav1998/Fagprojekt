@@ -399,4 +399,7 @@ uv run python -m src.run_experiments --dataset house_votes_84 --seed 1 --seed 2 
 
 ```bash
 uv run python -m src.run_experiments --dataset house_votes_84 --model cpd --model tt --model tr --rank 32 --epochs 150 --learning-rate 0.005 --accelerator cpu
+
+uv run python -m src.run_experiments --model rf --seed 42 --seed 1 --seed 2
 ```
+ 
