@@ -4,6 +4,7 @@ import argparse
 import json
 import time
 from pathlib import Path
+import joblib
 
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -164,6 +165,7 @@ def main() -> None:
 
     # saves the test metrics to a CSV file in the result directory
     pd.DataFrame([test_metrics]).to_csv(result_dir / "metrics.csv", index=False)
+    joblib.dump(final_rf, result_dir / "model.joblib") # saves the trained Random Forest model to a file in the result directory using joblib
 
     # saves the best hyperparameters and other relevant metadata about the run as JSON file in the result directory
     run_metadata = {
