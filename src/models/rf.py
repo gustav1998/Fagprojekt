@@ -113,14 +113,13 @@ def main() -> None:
     # refit = whether to refit an estimator using the best found parameters on the whole dataset; False means do not refit, we will manually fit later with the best hyperparameters
     # n_jobs = same as before
 
-    
-    grid_search.fit(X_train, y_train)
+    grid_search.fit(X_train, y_train) # run the grid search on the training data
 
-    best_params = grid_search.best_params_
+    best_params = grid_search.best_params_ # gets the best hyperparameters found by the grid search based on the specified scoring metric (balanced accuracy)
 
-    # Refit on the full train split with the best hyperparameters.
-    # Val and test splits are untouched during CV — consistent with all other
-    # models in this project (train for fitting, val/CV for selection, test once).
+    # Refit on the full train split with the best hyperparameters
+    # Val and test splits are untouched during CV
+    # models in this project (train for fitting, val/CV for selection, test once)
     final_rf = RandomForestClassifier(
         n_estimators=args.n_estimators,
         random_state=args.seed,
@@ -128,14 +127,17 @@ def main() -> None:
         **best_params,
     )
 
+    # times the trainnng
     fit_start = time.perf_counter()
     final_rf.fit(X_train, y_train)
     fit_seconds = time.perf_counter() - fit_start
 
+    # evaluate the best model on the test set
     test_start = time.perf_counter()
     y_pred = final_rf.predict(X_test)
     test_seconds = time.perf_counter() - test_start
 
+    # computes various test metrics
     test_metrics = {
         "epoch": 0,
         "step": 0,
@@ -156,11 +158,14 @@ def main() -> None:
         ),
     }
 
+    # sets the result directory 
     result_dir = Path("results") / "rf" / result_version
     result_dir.mkdir(parents=True, exist_ok=True)
 
+    # saves the test metrics to a CSV file in the result directory
     pd.DataFrame([test_metrics]).to_csv(result_dir / "metrics.csv", index=False)
 
+    # saves the best hyperparameters and other relevant metadata about the run as JSON file in the result directory
     run_metadata = {
         "dataset": args.dataset,
         "model": "rf",
@@ -181,6 +186,7 @@ def main() -> None:
         encoding="utf-8",
     )
 
+    # prints the location of the saved results and the run metadata to the console
     print(f"Saved results to {result_dir}")
     print(json.dumps(run_metadata, indent=2))
 
