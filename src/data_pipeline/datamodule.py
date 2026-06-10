@@ -4,11 +4,11 @@ import lightning as L
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
-from src.data.load_processed import (
+from src.data_pipeline.load_processed import (
     dataframe_to_tensors,
     load_processed_dataset,
 )
-from src.utils.encoding import one_hot_encode_features
+from src.data_pipeline.encoding import one_hot_encode_features
 
 
 ONE_HOT_MODELS = {"lr", "mlp"}
@@ -30,7 +30,7 @@ class TabularDataModule(L.LightningDataModule):
         dataset_name: str,
         batch_size: int = 256,
         model_type: str = "lr",
-        processed_dir: str = "data/processed",
+        processed_dir: str = "src/data_pipeline/data/processed",
         num_workers: int = 0,
         seed: int | None = None,
     ) -> None:

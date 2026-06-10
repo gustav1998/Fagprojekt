@@ -24,11 +24,11 @@ code snippets first, then explain what the code computes or controls.
 
 ```text
 raw CSV files
-    -> src.data.make_dataset
+    -> src.data_pipeline.make_dataset
     -> processed train/val/test CSV files and metadata
-    -> src.train
-    -> Lightning training logs under results/
-    -> src.summarize_results
+    -> src.training.train
+    -> Lightning training logs under src/summary_results/results/
+    -> src.summary_results.summarize_results
     -> benchmark summary CSV files
 ```
 

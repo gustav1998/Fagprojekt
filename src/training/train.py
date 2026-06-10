@@ -14,8 +14,8 @@ from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
 from sklearn.ensemble import RandomForestClassifier
 
-from src.data.datamodule import TabularDataModule
-from src.data.load_processed import load_processed_dataset
+from src.data_pipeline.datamodule import TabularDataModule
+from src.data_pipeline.load_processed import load_processed_dataset
 from src.models.logistic_regression import LogisticRegression
 from src.models.mlp import MLPClassifier
 from src.models.lightning_module import TabularClassifierModule
@@ -87,7 +87,7 @@ def parse_args():
     parser.add_argument(
         "--processed-dir",
         type=Path,
-        default=Path("data/processed"),
+        default=Path("src/data_pipeline/data/processed"),
         help="Directory containing processed dataset splits.",
     )
     parser.add_argument(
@@ -133,7 +133,7 @@ def parse_args():
         "--result-version",
         type=str,
         default=None,
-        help="Result folder name under results/<model>/.",
+        help="Result folder name under src/summary_results/results/<model>/.",
     )
     parser.add_argument(
         "--early-stopping",
@@ -253,7 +253,7 @@ def _train_rf(args: argparse.Namespace, result_version: str) -> None:
         test_metrics = compute_metrics(y_test, rf.predict(X_test))
         test_seconds = time.perf_counter() - test_start
 
-    result_dir = Path("results") / "rf" / result_version
+    result_dir = Path("src/summary_results/results") / "rf" / result_version
     result_dir.mkdir(parents=True, exist_ok=True)
 
     row = {
@@ -380,7 +380,7 @@ def main() -> None:
 
     # saves results:
     logger = CSVLogger(
-        save_dir = "results",
+        save_dir = "src/summary_results/results",
         name = args.model,
         version = result_version,
     )

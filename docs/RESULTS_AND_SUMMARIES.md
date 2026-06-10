@@ -10,7 +10,7 @@ File: `src/summarize_results.py`
 Lightning writes metrics to:
 
 ```text
-results/<model>/<version>/metrics.csv
+src/summary_results/results/<model>/<version>/metrics.csv
 ```
 
 The summary script searches those files with:
@@ -136,7 +136,7 @@ when the score should reflect the actual class distribution.
 Each test run also writes a confusion matrix:
 
 ```text
-results/<model>/<version>/test_confusion_matrix.csv
+src/summary_results/results/<model>/<version>/test_confusion_matrix.csv
 ```
 
 Rows are true classes and columns are predicted classes.
@@ -275,27 +275,27 @@ standard deviation over the completed runs.
 ### Options
 
 ```python
-@click.option("--results-dir", default=Path("results"))
-@click.option("--processed-dir", default=Path("data/processed"))
-@click.option("--output", default=Path("results/benchmark_summary.csv"))
-@click.option("--aggregate-output", default=Path("results/benchmark_summary_aggregate.csv"))
+@click.option("--results-dir", default=Path("src/summary_results/results"))
+@click.option("--processed-dir", default=Path("src/data_pipeline/data/processed"))
+@click.option("--output", default=Path("src/summary_results/results/benchmark_summary.csv"))
+@click.option("--aggregate-output", default=Path("src/summary_results/results/benchmark_summary_aggregate.csv"))
 ```
 
 The normal command is:
 
 ```bash
-uv run python -m src.summarize_results
+uv run python -m src.summary_results.summarize_results
 ```
 
 For seeded experiment folders, use:
 
 ```bash
-uv run python -m src.summarize_results --processed-dir data/processed
+uv run python -m src.summary_results.summarize_results --processed-dir src/data_pipeline/data/processed
 ```
 
 The script writes:
 
 ```text
-results/benchmark_summary.csv
-results/benchmark_summary_aggregate.csv
+src/summary_results/results/benchmark_summary.csv
+src/summary_results/results/benchmark_summary_aggregate.csv
 ```

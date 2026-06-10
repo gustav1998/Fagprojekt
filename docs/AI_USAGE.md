@@ -58,7 +58,7 @@ AI-assisted code changes were checked through a combination of:
 Some AI-assisted experiment work used temporary scripts under `/private/tmp`.
 These scripts were used only to run one-off comparisons or generate plots, then
 removed after use. The permanent outputs from those experiments are the metric
-CSV files and plots under `results/`, which are ignored by git.
+CSV files and plots under `src/summary_results/results/`, which are ignored by git.
 
 ## Update Log
 

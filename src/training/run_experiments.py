@@ -6,8 +6,8 @@ from pathlib import Path
 
 import click
 
-from src.data.dataset_configs import DATASET_CONFIGS
-from src.train import DEFAULT_TRAINING_CONFIGS
+from src.data_pipeline.dataset_configs import DATASET_CONFIGS
+from src.training.train import DEFAULT_TRAINING_CONFIGS
 
 
 MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr", "rf"]
@@ -52,7 +52,7 @@ def run_command(command: list[str]) -> None:
 @click.option(
     "--processed-root",
     type=click.Path(path_type=Path),
-    default=Path("data/processed"),
+    default=Path("src/data_pipeline/data/processed"),
     show_default=True,
 )
 @click.option("--epochs", type=int, default=None)
@@ -103,7 +103,7 @@ def main(
                 [
                     sys.executable,
                     "-m",
-                    "src.data.make_dataset",
+                    "src.data_pipeline.make_dataset",
                     "--dataset",
                     dataset,
                     "--representation",
@@ -121,7 +121,7 @@ def main(
                     command = [
                         sys.executable,
                         "-m",
-                        "src.train",
+                        "src.training.train",
                         "--dataset",
                         dataset,
                         "--model",
@@ -140,7 +140,7 @@ def main(
                 command = [
                     sys.executable,
                     "-m",
-                    "src.train",
+                    "src.training.train",
                     "--dataset",
                     dataset,
                     "--model",

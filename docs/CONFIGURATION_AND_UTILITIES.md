@@ -5,7 +5,7 @@ modules.
 
 ## Dataset Configurations
 
-File: `src/data/dataset_configs.py`
+File: `src/data_pipeline/dataset_configs.py`
 
 ### Configuration Dictionary
 
@@ -30,7 +30,7 @@ Each dataset entry describes how to load and process one raw dataset.
 The important fields are:
 
 ```text
-file_name           -> raw file path under data/raw
+file_name           -> raw file path under src/data_pipeline/data/raw
 sep                 -> separator passed to pandas.read_csv
 header              -> whether the file contains a header
 target_column       -> column to predict
@@ -90,7 +90,7 @@ loop instead of repeating identical configuration blocks.
 
 ## One-Hot Encoding
 
-File: `src/utils/encoding.py`
+File: `src/data_pipeline/encoding.py`
 
 ### Function Signature
 

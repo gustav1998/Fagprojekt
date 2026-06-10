@@ -4,11 +4,11 @@ This document explains how raw datasets become model-ready tensors.
 
 ## 1. Raw Dataset Loading
 
-File: `src/data/preprocessing.py`
+File: `src/data_pipeline/preprocessing.py`
 
 File for getting configs (explained in `docs\CONFIGURATION_AND_UTILITIES.md`):
 
-File: `src/data/dataset_configs.py`
+File: `src/data_pipeline/dataset_configs.py`
 
 ### Loading a CSV
 
@@ -32,7 +32,7 @@ The dataset configuration specifies where the raw file is and how Pandas should
 read it. The important fields are:
 
 ```text
-file_name       -> path relative to data/raw
+file_name       -> path relative to src/data_pipeline/data/raw
 sep             -> column separator
 header          -> whether the file has a header row
 column_names    -> names to assign if the file has no header
@@ -308,15 +308,15 @@ The metadata JSON is saved next to the processed CSV files.
 
 ## 2. Dataset Creation Command
 
-File: `src/data/make_dataset.py`
+File: `src/data_pipeline/make_dataset.py`
 
 ### CLI Options
 
 ```python
 @click.option("--dataset", "dataset_name", required=True, ...)
 @click.option("--representation", default="both", ...)
-@click.option("--raw-dir", default=Path("data/raw"), ...)
-@click.option("--output-dir", default=Path("data/processed"), ...)
+@click.option("--raw-dir", default=Path("src/data_pipeline/data/raw"), ...)
+@click.option("--output-dir", default=Path("src/data_pipeline/data/processed"), ...)
 @click.option("--seed", default=42, ...)
 @click.option("--n-bins", default=None, ...)
 @click.option("--binning-strategy", default="quantile", ...)
@@ -328,13 +328,13 @@ the tensor representation, or both, then writes processed splits and metadata.
 The normal command shape is:
 
 ```bash
-uv run python -m src.data.make_dataset --dataset house_votes_84 --representation both
+uv run python -m src.data_pipeline.make_dataset --dataset house_votes_84 --representation both
 ```
 
 
 ## 3. Loading Processed Data
 
-File: `src/data/load_processed.py`
+File: `src/data_pipeline/load_processed.py`
 
 ### Reading Splits and Metadata
 
@@ -371,7 +371,7 @@ are stored as `torch.long`.
 
 ## 4. Lightning Data Module
 
-File: `src/data/datamodule.py`
+File: `src/data_pipeline/datamodule.py`
 
 ### Representation Selection
 

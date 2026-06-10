@@ -206,25 +206,25 @@ def build_aggregate_summary(summary: pd.DataFrame) -> pd.DataFrame:
 @click.option(
     "--results-dir",
     type=click.Path(path_type=Path),
-    default=Path("results"),
+    default=Path("src/summary_results/results"),
     show_default=True,
 )
 @click.option(
     "--processed-dir",
     type=click.Path(path_type=Path),
-    default=Path("data/processed"),
+    default=Path("src/data_pipeline/data/processed"),
     show_default=True,
 )
 @click.option(
     "--output",
     type=click.Path(path_type=Path),
-    default=Path("results/benchmark_summary.csv"),
+    default=Path("src/summary_results/results/benchmark_summary.csv"),
     show_default=True,
 )
 @click.option(
     "--aggregate-output",
     type=click.Path(path_type=Path),
-    default=Path("results/benchmark_summary_aggregate.csv"),
+    default=Path("src/summary_results/results/benchmark_summary_aggregate.csv"),
     show_default=True,
 )
 def main(

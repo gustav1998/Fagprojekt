@@ -10,9 +10,9 @@ from pathlib import Path
 import click
 import pandas as pd
 
-from src.data.dataset_configs import DATASET_CONFIGS
-from src.run_experiments import MODELS
-from src.train import DEFAULT_TRAINING_CONFIGS, infer_monitor_mode
+from src.data_pipeline.dataset_configs import DATASET_CONFIGS
+from src.training.run_experiments import MODELS
+from src.training.train import DEFAULT_TRAINING_CONFIGS, infer_monitor_mode
 
 
 def import_optuna():
@@ -133,13 +133,13 @@ def read_trial_score(
 @click.option(
     "--processed-root",
     type=click.Path(path_type=Path),
-    default=Path("data/processed"),
+    default=Path("src/data_pipeline/data/processed"),
     show_default=True,
 )
 @click.option(
     "--output-dir",
     type=click.Path(path_type=Path),
-    default=Path("results/tuning"),
+    default=Path("src/summary_results/results/tuning"),
     show_default=True,
 )
 def main(
@@ -171,7 +171,7 @@ def main(
         [
             sys.executable,
             "-m",
-            "src.data.make_dataset",
+            "src.data_pipeline.make_dataset",
             "--dataset",
             dataset,
             "--representation",
@@ -195,7 +195,7 @@ def main(
             command = [
                 sys.executable,
                 "-m",
-                "src.train",
+                "src.training.train",
                 "--dataset",
                 dataset,
                 "--model",
@@ -218,7 +218,7 @@ def main(
             command = [
                 sys.executable,
                 "-m",
-                "src.train",
+                "src.training.train",
                 "--dataset",
                 dataset,
                 "--model",
@@ -258,7 +258,9 @@ def main(
                 command.extend(["--dropout", str(params["dropout"])])
 
         run_command(command)
-        result_dir = Path("results") / model / result_version
+        result_dir = (
+            Path("src/summary_results/results") / model / result_version
+        )
         return read_trial_score(result_dir, metric, mode)
 
     study.optimize(objective, n_trials=trials)

@@ -77,8 +77,8 @@ target/
 .ipynb_checkpoints/
 
 # generated experiment outputs
-/results/
-/data/processed/seed_*/
+/src/summary_results/results/
+/src/data_pipeline/data/processed/seed_*/
 
 # Mac OS-specific storage files
 .DS_Store

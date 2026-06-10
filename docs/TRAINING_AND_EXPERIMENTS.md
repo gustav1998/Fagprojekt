@@ -59,7 +59,7 @@ Unset values are filled from `DEFAULT_TRAINING_CONFIGS`. This means a basic
 command still runs with model-specific settings:
 
 ```bash
-uv run python -m src.train --dataset house_votes_84 --model cpd
+uv run python -m src.training.train --dataset house_votes_84 --model cpd
 ```
 
 ### Seeding
@@ -201,20 +201,20 @@ if result_version is None:
 The result version becomes the folder name under:
 
 ```text
-results/<model>/<result_version>/
+src/summary_results/results/<model>/<result_version>/
 ```
 
 For seeded experiments, this creates paths such as:
 
 ```text
-results/cpd/house_votes_84_seed42/
+src/summary_results/results/cpd/house_votes_84_seed42/
 ```
 
 ### CSV Logger
 
 ```python
 logger = CSVLogger(
-    save_dir="results",
+    save_dir="src/summary_results/results",
     name=args.model,
     version=result_version,
 )
@@ -223,7 +223,7 @@ logger = CSVLogger(
 Lightning writes metrics to:
 
 ```text
-results/<model>/<version>/metrics.csv
+src/summary_results/results/<model>/<version>/metrics.csv
 ```
 
 The summary script later reads these files.
@@ -284,10 +284,10 @@ for seed in seeds:
     processed_dir = processed_root / f"seed_{seed}"
 
     for dataset in selected_datasets:
-        run_command([... "src.data.make_dataset", ...])
+        run_command([... "src.data_pipeline.make_dataset", ...])
 
         for model in selected_models:
-            run_command([... "src.train", ...])
+            run_command([... "src.training.train", ...])
 ```
 
 The experiment script loops over:
@@ -299,7 +299,7 @@ seeds x datasets x models
 For each seed and dataset, it first creates processed data in:
 
 ```text
-data/processed/seed_<seed>/
+src/data_pipeline/data/processed/seed_<seed>/
 ```
 
 Then it trains every selected model on those processed splits.
@@ -324,7 +324,7 @@ metric, saves the best checkpoint, and tests that checkpoint instead of blindly
 testing the final epoch.
 
 ```bash
-uv run python -m src.train \
+uv run python -m src.training.train \
   --dataset house_votes_84 \
   --model cpd \
   --epochs 150 \
@@ -337,7 +337,7 @@ The default monitor is `val_loss`, so smaller is better. Metrics such as
 `val_acc` or `val_macro_f1` should use `--monitor-mode max`.
 
 ```bash
-uv run python -m src.train \
+uv run python -m src.training.train \
   --dataset house_votes_84 \
   --model cpd \
   --monitor val_macro_f1 \
@@ -347,7 +347,7 @@ uv run python -m src.train \
 For controlled comparisons, early stopping can be disabled:
 
 ```bash
-uv run python -m src.train \
+uv run python -m src.training.train \
   --dataset house_votes_84 \
   --model cpd \
   --disable-early-stopping
@@ -357,11 +357,11 @@ uv run python -m src.train \
 ## Optional Hyperparameter Tuning
 
 Bayesian hyperparameter tuning is kept separate from normal training.
-`src.tune_hyperparameters` uses Optuna to optimize validation performance for
+`src.training.tune_hyperparameters` uses Optuna to optimize validation performance for
 one dataset and one model at a time.
 
 ```bash
-uv run python -m src.tune_hyperparameters \
+uv run python -m src.training.tune_hyperparameters \
   --dataset house_votes_84 \
   --model cpd \
   --trials 25 \
@@ -374,7 +374,7 @@ The script creates processed data for the selected seed, runs validation-only
 training trials, and writes the best parameters to:
 
 ```text
-results/tuning/<model>_<dataset>_seed<seed>_best_params.json
+src/summary_results/results/tuning/<model>_<dataset>_seed<seed>_best_params.json
 ```
 
 The final benchmark should use fixed hyperparameters selected before looking at
@@ -386,20 +386,20 @@ the test results.
 ### One Dataset, One Model
 
 ```bash
-uv run python -m src.train --dataset house_votes_84 --model cpd --accelerator cpu
+uv run python -m src.training.train --dataset house_votes_84 --model cpd --accelerator cpu
 ```
 
 ### One Dataset, All Models, Three Seeds
 
 ```bash
-uv run python -m src.run_experiments --dataset house_votes_84 --seed 1 --seed 2 --seed 3 --accelerator cpu
+uv run python -m src.training.run_experiments --dataset house_votes_84 --seed 1 --seed 2 --seed 3 --accelerator cpu
 ```
 
 ### Tensor Models With Heavier Defaults
 
 ```bash
-uv run python -m src.run_experiments --dataset house_votes_84 --model cpd --model tt --model tr --rank 32 --epochs 150 --learning-rate 0.005 --accelerator cpu
+uv run python -m src.training.run_experiments --dataset house_votes_84 --model cpd --model tt --model tr --rank 32 --epochs 150 --learning-rate 0.005 --accelerator cpu
 
-uv run python -m src.run_experiments --model rf --seed 42 --seed 1 --seed 2
+uv run python -m src.training.run_experiments --model rf --seed 42 --seed 1 --seed 2
 ```
  

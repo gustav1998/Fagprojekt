@@ -7,14 +7,14 @@ This folder contains the datasets used in the project.
 Raw datasets are stored under:
 
 ```text
-data/raw/
+src/data_pipeline/data/raw/
 ```
 
 The raw files include the UCI-style datasets and the additional report datasets
 used for the experiments. Dataset-specific paths are configured in:
 
 ```text
-src/data/dataset_configs.py
+src/data_pipeline/dataset_configs.py
 ```
 
 ## Processed Data
@@ -22,7 +22,7 @@ src/data/dataset_configs.py
 Processed train, validation, and test splits are stored under:
 
 ```text
-data/processed/
+src/data_pipeline/data/processed/
 ```
 
 Each dataset has two processed representations:
@@ -54,7 +54,7 @@ reliably.
 Seeded experiment splits are stored in folders such as:
 
 ```text
-data/processed/seed_42/
+src/data_pipeline/data/processed/seed_42/
 ```
 
 The MONK datasets use their official test files. A validation split is carved
@@ -67,11 +67,11 @@ include labels in the same supervised-learning format.
 To regenerate processed files from the raw data, run:
 
 ```bash
-uv run python -m src.data.make_dataset --dataset car_evaluation --representation both
+uv run python -m src.data_pipeline.make_dataset --dataset car_evaluation --representation both
 ```
 
 For seeded experiment folders, use the experiment runner:
 
 ```bash
-uv run python -m src.run_experiments --dataset car_evaluation --seed 42
+uv run python -m src.training.run_experiments --dataset car_evaluation --seed 42
 ```

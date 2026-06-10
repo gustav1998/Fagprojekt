@@ -6,8 +6,8 @@ from pathlib import Path
 import click
 from dotenv import find_dotenv, load_dotenv
 
-from src.data.dataset_configs import DATASET_CONFIGS
-from src.data.preprocessing import (
+from src.data_pipeline.dataset_configs import DATASET_CONFIGS
+from src.data_pipeline.preprocessing import (
     clean_targets,
     fit_preprocessor,
     load_raw_dataset_splits,
@@ -37,13 +37,13 @@ from src.data.preprocessing import (
 @click.option(
     "--raw-dir",
     type=click.Path(path_type=Path),
-    default=Path("data/raw"),
+    default=Path("src/data_pipeline/data/raw"),
     show_default=True,
 )
 @click.option(
     "--output-dir",
     type=click.Path(path_type=Path),
-    default=Path("data/processed"),
+    default=Path("src/data_pipeline/data/processed"),
     show_default=True,
 )
 @click.option(

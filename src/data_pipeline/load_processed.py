@@ -11,7 +11,7 @@ import torch
 def load_processed_dataset(
     dataset_name: str,
     representation: str,
-    processed_dir: str | Path = "data/processed",
+    processed_dir: str | Path = "src/data_pipeline/data/processed",
 ) -> dict[str, Any]:
     """Load processed CSV splits and metadata."""
     processed_dir = Path(processed_dir)
