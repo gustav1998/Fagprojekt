@@ -1,0 +1,136 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "white_king_file",
+    "white_king_rank",
+    "white_rook_file",
+    "white_rook_rank",
+    "black_king_file",
+    "black_king_rank"
+  ],
+  "categorical_columns": [
+    "white_king_file",
+    "white_king_rank",
+    "white_rook_file",
+    "white_rook_rank",
+    "black_king_file",
+    "black_king_rank"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    6,
+    6,
+    10,
+    10,
+    10,
+    10
+  ],
+  "categorical_cardinalities": [
+    6,
+    6,
+    10,
+    10,
+    10,
+    10
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "draw": 0,
+    "eight": 1,
+    "eleven": 2,
+    "fifteen": 3,
+    "five": 4,
+    "four": 5,
+    "fourteen": 6,
+    "nine": 7,
+    "one": 8,
+    "seven": 9,
+    "six": 10,
+    "sixteen": 11,
+    "ten": 12,
+    "thirteen": 13,
+    "three": 14,
+    "twelve": 15,
+    "two": 16,
+    "zero": 17
+  },
+  "feature_mappings": {
+    "white_king_file": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "a": 2,
+      "b": 3,
+      "c": 4,
+      "d": 5
+    },
+    "white_king_rank": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "4": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
+    },
+    "white_rook_file": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "a": 2,
+      "b": 3,
+      "c": 4,
+      "d": 5,
+      "e": 6,
+      "f": 7,
+      "g": 8,
+      "h": 9
+    },
+    "white_rook_rank": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "4": 3,
+      "5": 4,
+      "6": 5,
+      "7": 6,
+      "8": 7,
+      "__MISSING__": 8,
+      "__UNKNOWN__": 9
+    },
+    "black_king_file": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "a": 2,
+      "b": 3,
+      "c": 4,
+      "d": 5,
+      "e": 6,
+      "f": 7,
+      "g": 8,
+      "h": 9
+    },
+    "black_king_rank": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "4": 3,
+      "5": 4,
+      "6": 5,
+      "7": 6,
+      "8": 7,
+      "__MISSING__": 8,
+      "__UNKNOWN__": 9
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 6,
+  "dataset_name": "krkopt",
+  "task": "classification",
+  "seed": 4,
+  "official_test_split": false,
+  "n_train": 19639,
+  "n_val": 4208,
+  "n_test": 4209
+}

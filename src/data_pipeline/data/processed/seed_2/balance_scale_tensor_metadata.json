@@ -1,0 +1,98 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "left_weight",
+    "left_distance",
+    "right_weight",
+    "right_distance"
+  ],
+  "categorical_columns": [],
+  "numerical_columns": [
+    "left_weight",
+    "left_distance",
+    "right_weight",
+    "right_distance"
+  ],
+  "representation": "tensor",
+  "cardinalities": [
+    4,
+    4,
+    4,
+    4
+  ],
+  "categorical_cardinalities": [],
+  "numerical_cardinalities": [
+    4,
+    4,
+    4,
+    4
+  ],
+  "target_mapping": {
+    "B": 0,
+    "L": 1,
+    "R": 2
+  },
+  "feature_mappings": {},
+  "numerical_fill_values": {
+    "left_weight": 3.0,
+    "left_distance": 3.0,
+    "right_weight": 3.0,
+    "right_distance": 3.0
+  },
+  "numerical_bin_metadata": {
+    "left_weight": {
+      "strategy": "quantile",
+      "edges": [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ],
+      "n_bins": 4
+    },
+    "left_distance": {
+      "strategy": "quantile",
+      "edges": [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ],
+      "n_bins": 4
+    },
+    "right_weight": {
+      "strategy": "quantile",
+      "edges": [
+        1.0,
+        1.2000000000000028,
+        2.0,
+        4.0,
+        5.0
+      ],
+      "n_bins": 4
+    },
+    "right_distance": {
+      "strategy": "quantile",
+      "edges": [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ],
+      "n_bins": 4
+    }
+  },
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 4,
+  "dataset_name": "balance_scale",
+  "task": "classification",
+  "seed": 2,
+  "official_test_split": false,
+  "n_train": 437,
+  "n_val": 94,
+  "n_test": 94
+}

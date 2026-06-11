@@ -1,0 +1,90 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "Political_system",
+    "Age",
+    "Time_of_survey",
+    "Schooling",
+    "Region"
+  ],
+  "categorical_columns": [
+    "Political_system",
+    "Age",
+    "Time_of_survey",
+    "Schooling",
+    "Region"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    6,
+    7,
+    4,
+    7,
+    4
+  ],
+  "categorical_cardinalities": [
+    6,
+    7,
+    4,
+    7,
+    4
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "N": 0,
+    "P": 1
+  },
+  "feature_mappings": {
+    "Political_system": {
+      "Poorly": 0,
+      "Very_poorly": 1,
+      "Very_well": 2,
+      "Well": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
+    },
+    "Age": {
+      "19-29": 0,
+      "30-44": 1,
+      "45-59": 2,
+      "60-74": 3,
+      "75+": 4,
+      "__MISSING__": 5,
+      "__UNKNOWN__": 6
+    },
+    "Time_of_survey": {
+      "1991": 0,
+      "1992": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Schooling": {
+      "Basic": 0,
+      "Basic_incomplete": 1,
+      "Intensive": 2,
+      "Medium": 3,
+      "Upper_medium": 4,
+      "__MISSING__": 5,
+      "__UNKNOWN__": 6
+    },
+    "Region": {
+      "East_Germany": 0,
+      "West_Germany": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 5,
+  "dataset_name": "german_gss",
+  "task": "classification",
+  "seed": 4,
+  "official_test_split": false,
+  "n_train": 279,
+  "n_val": 60,
+  "n_test": 61
+}

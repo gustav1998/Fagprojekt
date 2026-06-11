@@ -1,0 +1,82 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "Smoking",
+    "M._Work",
+    "P._Work",
+    "Pressure",
+    "Proteins"
+  ],
+  "categorical_columns": [
+    "Smoking",
+    "M._Work",
+    "P._Work",
+    "Pressure",
+    "Proteins"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "categorical_cardinalities": [
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "neg": 0,
+    "pos": 1
+  },
+  "feature_mappings": {
+    "Smoking": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "M._Work": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "P._Work": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "Pressure": {
+      "<140": 0,
+      ">140": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Proteins": {
+      "<3": 0,
+      ">3": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 5,
+  "dataset_name": "coronary",
+  "task": "classification",
+  "seed": 4,
+  "official_test_split": false,
+  "n_train": 1288,
+  "n_val": 276,
+  "n_test": 277
+}

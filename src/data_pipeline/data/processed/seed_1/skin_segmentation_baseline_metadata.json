@@ -1,0 +1,39 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "B",
+    "G",
+    "R"
+  ],
+  "categorical_columns": [],
+  "numerical_columns": [
+    "B",
+    "G",
+    "R"
+  ],
+  "representation": "baseline",
+  "cardinalities": [],
+  "categorical_cardinalities": [],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "1": 0,
+    "2": 1
+  },
+  "feature_mappings": {},
+  "numerical_fill_values": {
+    "B": 139.0,
+    "G": 153.0,
+    "R": 128.0
+  },
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 3,
+  "dataset_name": "skin_segmentation",
+  "task": "classification",
+  "seed": 1,
+  "official_test_split": false,
+  "n_train": 171539,
+  "n_val": 36759,
+  "n_test": 36759
+}

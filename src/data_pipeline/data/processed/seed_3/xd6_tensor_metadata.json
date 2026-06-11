@@ -1,0 +1,122 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "Attribute_1",
+    "Attribute_2",
+    "Attribute_3",
+    "Attribute_4",
+    "Attribute_5",
+    "Attribute_6",
+    "Attribute_7",
+    "Attribute_8",
+    "Attribute_9"
+  ],
+  "categorical_columns": [
+    "Attribute_1",
+    "Attribute_2",
+    "Attribute_3",
+    "Attribute_4",
+    "Attribute_5",
+    "Attribute_6",
+    "Attribute_7",
+    "Attribute_8",
+    "Attribute_9"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "categorical_cardinalities": [
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "0": 0,
+    "1": 1
+  },
+  "feature_mappings": {
+    "Attribute_1": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Attribute_2": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Attribute_3": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Attribute_4": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Attribute_5": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Attribute_6": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Attribute_7": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Attribute_8": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Attribute_9": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 9,
+  "dataset_name": "xd6",
+  "task": "classification",
+  "seed": 3,
+  "official_test_split": false,
+  "n_train": 681,
+  "n_val": 146,
+  "n_test": 146
+}
