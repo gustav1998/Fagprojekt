@@ -197,6 +197,12 @@ def read_trial_score(
     default=Path("src/summary_results/results/tuning"),
     show_default=True,
 )
+@click.option(
+    "--skip-preprocessing",
+    is_flag=True,
+    default=False,
+    help="Skip make_dataset calls and assume processed data already exists.",
+)
 def main(
     datasets: tuple[str, ...],
     models: tuple[str, ...],
@@ -213,13 +219,20 @@ def main(
     metric_mode: str | None,
     processed_root: Path,
     output_dir: Path,
+    skip_preprocessing: bool,
 ) -> None:
     """Tune models on datasets using validation performance."""
     optuna = import_optuna()
     selected_datasets = datasets or tuple(sorted(DATASET_CONFIGS.keys()))
     selected_models = models or tuple(MODELS)
     processed_dir = processed_root / f"seed_{seed}"
-    for model in selected_models:
+    for mi, model in enumerate(selected_models):
+        print(
+            f"\n{'='*60}\n"
+            f"MODEL {mi+1}/{len(selected_models)}: {model.upper()}\n"
+            f"{'='*60}",
+            flush=True,
+        )
         effective_metric = (
             "val_balanced_acc" if model == "rf" and metric == "val_loss" else metric
         )
@@ -230,22 +243,27 @@ def main(
             if model == "rf"
             else epochs or DEFAULT_TRAINING_CONFIGS[model]["epochs"]
         )
-        for dataset in selected_datasets:
-            run_command(
-                [
-                    sys.executable,
-                    "-m",
-                    "src.data_pipeline.make_dataset",
-                    "--dataset",
-                    dataset,
-                    "--representation",
-                    "both",
-                    "--seed",
-                    str(seed),
-                    "--output-dir",
-                    str(processed_dir),
-                ]
+        for di, dataset in enumerate(selected_datasets):
+            print(
+                f"\n  [{model.upper()}] dataset {di+1}/{len(selected_datasets)}: {dataset}",
+                flush=True,
             )
+            if not skip_preprocessing:
+                run_command(
+                    [
+                        sys.executable,
+                        "-m",
+                        "src.data_pipeline.make_dataset",
+                        "--dataset",
+                        dataset,
+                        "--representation",
+                        "both",
+                        "--seed",
+                        str(seed),
+                        "--output-dir",
+                        str(processed_dir),
+                    ]
+                )
 
             mba_orders = None
             if model == "mba":

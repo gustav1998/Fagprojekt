@@ -115,7 +115,7 @@ def main(
     for seed in seeds:
         processed_dir = processed_root / f"seed_{seed}"
 
-        for dataset in selected_datasets:
+        for di, dataset in enumerate(selected_datasets):
             if not skip_preprocessing:
                 run_command(
                     [
@@ -134,7 +134,12 @@ def main(
                 )
 
             # After preprocessing, train each selected model on the processed data for the current seed and dataset. The training command includes all relevant hyperparameters, with defaults taken from DEFAULT_TRAINING_CONFIGS if not specified.
-            for model in selected_models:
+            for mi, model in enumerate(selected_models):
+                print(
+                    f"\n=== Seed {seed} | dataset {di+1}/{len(selected_datasets)}: {dataset}"
+                    f" | model {mi+1}/{len(selected_models)}: {model.upper()} ===",
+                    flush=True,
+                )
                 if model == "rf":
                     command = [
                         sys.executable,
