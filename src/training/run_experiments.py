@@ -79,8 +79,14 @@ def run_command(command: list[str]) -> None:
     type=click.Choice(["min", "max"]),
     default=None,
 )
+@click.option(
+    "--skip-preprocessing",
+    is_flag=True,
+    default=False,
+    help="Skip make_dataset calls and assume processed data already exists.",
+)
 
-# Note: This script runs the full pipeline for multiple seeds, datasets, and models. It first preprocesses the data for each seed and dataset, then trains each model on the processed data. 
+# Note: This script runs the full pipeline for multiple seeds, datasets, and models. It first preprocesses the data for each seed and dataset, then trains each model on the processed data.
 def main(
     datasets: tuple[str, ...],
     models: tuple[str, ...],
@@ -98,6 +104,7 @@ def main(
     patience: int,
     monitor: str,
     monitor_mode: str | None,
+    skip_preprocessing: bool,
 ) -> None:
     
     # Run preprocessing and training for multiple seeds
@@ -109,21 +116,22 @@ def main(
         processed_dir = processed_root / f"seed_{seed}"
 
         for dataset in selected_datasets:
-            run_command(
-                [
-                    sys.executable,
-                    "-m",
-                    "src.data_pipeline.make_dataset",
-                    "--dataset",
-                    dataset,
-                    "--representation",
-                    "both",
-                    "--seed",
-                    str(seed),
-                    "--output-dir",
-                    str(processed_dir),
-                ]
-            )
+            if not skip_preprocessing:
+                run_command(
+                    [
+                        sys.executable,
+                        "-m",
+                        "src.data_pipeline.make_dataset",
+                        "--dataset",
+                        dataset,
+                        "--representation",
+                        "both",
+                        "--seed",
+                        str(seed),
+                        "--output-dir",
+                        str(processed_dir),
+                    ]
+                )
 
             # After preprocessing, train each selected model on the processed data for the current seed and dataset. The training command includes all relevant hyperparameters, with defaults taken from DEFAULT_TRAINING_CONFIGS if not specified.
             for model in selected_models:
