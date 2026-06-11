@@ -45,7 +45,7 @@ DEFAULT_TRAINING_CONFIGS = {
     "mba": {
         "epochs": 60,
         "learning_rate": 1e-2,
-        "interaction_order": 3,
+        "interaction_order": 2,
     },
     "tt": {
         "epochs": 60,

@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from itertools import combinations
+from math import prod
 from pathlib import Path
 
 import click
@@ -33,7 +35,43 @@ def run_command(command: list[str]) -> None:
     subprocess.run(command, check=True)
 
 
-def suggest_params(trial, model: str) -> dict[str, int | float | str | None]:
+def count_mba_parameters(
+    feature_dims: list[int],
+    num_classes: int,
+    interaction_order: int,
+) -> int:
+    """Count MBA parameters up to one interaction order."""
+    total = num_classes
+    for order in range(1, interaction_order + 1):
+        for interaction in combinations(feature_dims, order):
+            total += num_classes * prod(interaction)
+    return total
+
+
+def allowed_mba_orders(
+    metadata_path: Path,
+    max_parameters: int,
+    max_order: int,
+) -> list[int]:
+    """Return MBA orders that fit under the parameter budget."""
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    feature_dims = metadata["cardinalities"]
+    num_classes = len(metadata["target_mapping"])
+    max_order = min(max_order, len(feature_dims))
+
+    return [
+        order
+        for order in range(1, max_order + 1)
+        if count_mba_parameters(feature_dims, num_classes, order)
+        <= max_parameters
+    ]
+
+
+def suggest_params(
+    trial,
+    model: str,
+    mba_orders: list[int] | None = None,
+) -> dict[str, int | float | str | None]:
     """Suggest model-specific hyperparameters for one Optuna trial."""
     if model == "rf":
         return {
@@ -67,10 +105,11 @@ def suggest_params(trial, model: str) -> dict[str, int | float | str | None]:
             [4, 8, 16, 32, 64],
         )
     elif model == "mba":
-        params["interaction_order"] = trial.suggest_int(
+        if not mba_orders:
+            raise ValueError("No MBA interaction orders fit the parameter budget.")
+        params["interaction_order"] = trial.suggest_categorical(
             "interaction_order",
-            1,
-            4,
+            mba_orders,
         )
 
     return params
@@ -112,6 +151,21 @@ def read_trial_score(
 @click.option("--epochs", type=int, default=None)
 @click.option("--patience", type=int, default=15, show_default=True)
 @click.option("--batch-size", type=int, default=512, show_default=True)
+@click.option("--num-workers", type=int, default=0, show_default=True)
+@click.option(
+    "--max-mba-parameters",
+    type=int,
+    default=5_000_000,
+    show_default=True,
+    help="Maximum explicit MBA parameters allowed during tuning.",
+)
+@click.option(
+    "--max-mba-order",
+    type=int,
+    default=3,
+    show_default=True,
+    help="Maximum MBA interaction order considered during tuning.",
+)
 @click.option(
     "--accelerator",
     type=click.Choice(["auto", "cpu", "gpu"]),
@@ -151,6 +205,9 @@ def main(
     epochs: int | None,
     patience: int,
     batch_size: int,
+    num_workers: int,
+    max_mba_parameters: int,
+    max_mba_order: int,
     accelerator: str,
     metric: str,
     metric_mode: str | None,
@@ -190,10 +247,30 @@ def main(
                 ]
             )
 
+            mba_orders = None
+            if model == "mba":
+                metadata_path = processed_dir / f"{dataset}_tensor_metadata.json"
+                mba_orders = allowed_mba_orders(
+                    metadata_path=metadata_path,
+                    max_parameters=max_mba_parameters,
+                    max_order=max_mba_order,
+                )
+                if not mba_orders:
+                    raise click.ClickException(
+                        "No MBA interaction order fits "
+                        f"--max-mba-parameters={max_mba_parameters} "
+                        f"for dataset {dataset}."
+                    )
+                print(
+                    "Allowed MBA interaction orders for "
+                    f"{dataset}: {mba_orders}",
+                    flush=True,
+                )
+
             study = optuna.create_study(direction=effective_direction)
 
             def objective(trial) -> float:
-                params = suggest_params(trial, model)
+                params = suggest_params(trial, model, mba_orders)
                 result_version = (
                     f"tuning_{dataset}_{model}_seed{seed}_trial{trial.number}"
                 )
@@ -211,6 +288,8 @@ def main(
                         str(processed_dir),
                         "--seed",
                         str(seed),
+                        "--num-workers",
+                        str(num_workers),
                         "--result-version",
                         result_version,
                         "--skip-test",
@@ -240,6 +319,8 @@ def main(
                         str(selected_epochs),
                         "--batch-size",
                         str(batch_size),
+                        "--num-workers",
+                        str(num_workers),
                         "--accelerator",
                         accelerator,
                         "--learning-rate",
@@ -286,6 +367,12 @@ def main(
                 "epochs": selected_epochs,
                 "patience": patience if model != "rf" else None,
                 "batch_size": batch_size if model != "rf" else None,
+                "num_workers": num_workers if model != "rf" else None,
+                "max_mba_parameters": (
+                    max_mba_parameters if model == "mba" else None
+                ),
+                "max_mba_order": max_mba_order if model == "mba" else None,
+                "allowed_mba_orders": mba_orders if model == "mba" else None,
             }
             output_path.write_text(
                 json.dumps(output, indent=2) + "\n",

@@ -5,7 +5,7 @@ run many dataset/model/seed combinations.
 
 ## Single Training Run
 
-File: `src/train.py`
+File: `src/training/train.py`
 
 ### Model Defaults
 
@@ -14,7 +14,7 @@ DEFAULT_TRAINING_CONFIGS = {
     "lr": {"epochs": 100, "learning_rate": 1e-3},
     "mlp": {"epochs": 100, "learning_rate": 1e-3},
     "cpd": {"epochs": 60, "learning_rate": 1e-2, "rank": 16},
-    "mba": {"epochs": 60, "learning_rate": 1e-2, "interaction_order": 3},
+    "mba": {"epochs": 60, "learning_rate": 1e-2, "interaction_order": 2},
     "tt": {"epochs": 60, "learning_rate": 1e-2, "rank": 16},
     "tr": {"epochs": 60, "learning_rate": 1e-2, "rank": 16},
 }
@@ -52,7 +52,7 @@ if args.learning_rate is None:
 if args.rank is None:
     args.rank = defaults.get("rank", 8)
 if args.interaction_order is None:
-    args.interaction_order = defaults.get("interaction_order", 3)
+    args.interaction_order = defaults.get("interaction_order", 2)
 ```
 
 Unset values are filled from `DEFAULT_TRAINING_CONFIGS`. This means a basic
@@ -415,6 +415,22 @@ src/summary_results/results/tuning/<model>_<dataset>_seed<seed>_best_params.json
 
 The final benchmark should use fixed hyperparameters selected before looking at
 the test results.
+
+MBA tuning is data-aware. The script reads the tensor metadata after
+preprocessing and only samples interaction orders whose explicit parameter
+tables fit under `--max-mba-parameters`. The largest order considered is
+controlled by `--max-mba-order`, which defaults to 3:
+
+```bash
+uv run python -m src.training.tune_hyperparameters \
+  --dataset aps_failure \
+  --model mba \
+  --max-mba-order 3 \
+  --max-mba-parameters 5000000
+```
+
+This prevents high-dimensional datasets from trying interaction orders that
+would allocate hundreds of millions of parameters.
 
 
 ## Example Commands

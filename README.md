@@ -140,7 +140,7 @@ Useful examples:
     uv run python -m src.training.train --dataset car_evaluation --model lr
     uv run python -m src.training.train --dataset car_evaluation --model mlp
     uv run python -m src.training.train --dataset car_evaluation --model cpd --rank 32
-    uv run python -m src.training.train --dataset car_evaluation --model mba --interaction-order 3
+    uv run python -m src.training.train --dataset car_evaluation --model mba --interaction-order 2
     uv run python -m src.training.train --dataset car_evaluation --model tt --rank 32
     uv run python -m src.training.train --dataset car_evaluation --model tr --rank 32
 
@@ -188,7 +188,7 @@ The training CLI uses model-specific defaults:
 - `lr`: 100 epochs, learning rate `1e-3`
 - `mlp`: 100 epochs, learning rate `1e-3`
 - `cpd`: 60 epochs, learning rate `1e-2`, rank 16
-- `mba`: 60 epochs, learning rate `1e-2`, interaction order 3
+- `mba`: 60 epochs, learning rate `1e-2`, interaction order 2
 - `tt`: 60 epochs, learning rate `1e-2`, rank 16
 - `tr`: 60 epochs, learning rate `1e-2`, rank 16
 
@@ -210,6 +210,9 @@ Optional hyperparameter tuning is separate from normal training:
 
 The tuning script optimizes validation performance and writes best parameters
 under `src/summary_results/results/tuning/`. Final benchmarks should use fixed settings.
+For MBA, tuning only samples interaction orders that fit under
+`--max-mba-order` and `--max-mba-parameters`, which prevents very wide
+datasets from creating unreasonably large explicit interaction tables.
 
 Results
 -------
