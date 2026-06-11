@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
+import warnings
 from pathlib import Path
 
 import joblib
@@ -12,6 +13,7 @@ import pandas as pd
 import lightning as L
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
+from lightning.pytorch.utilities.warnings import PossibleUserWarning
 from sklearn.ensemble import RandomForestClassifier
 
 from src.data_pipeline.datamodule import TabularDataModule
@@ -84,6 +86,15 @@ def parse_args():
         ),
     )
     parser.add_argument("--batch-size", type=int, default=256)
+    parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=0,
+        help=(
+            "Number of DataLoader worker processes. The default is 0 because "
+            "the processed data is already loaded into memory."
+        ),
+    )
     parser.add_argument(
         "--processed-dir",
         type=Path,
@@ -317,6 +328,16 @@ def _train_rf(args: argparse.Namespace, result_version: str) -> None:
 def main() -> None:
     """Run training and testing for one model on one dataset."""
     args = apply_model_defaults(parse_args())
+    warnings.filterwarnings(
+        "ignore",
+        message=r"The '.*_dataloader' does not have many workers.*",
+        category=PossibleUserWarning,
+    )
+    warnings.filterwarnings(
+        "ignore",
+        message=r".*treespec, LeafSpec.*deprecated.*treespec, TreeSpec.*is_leaf.*",
+        category=Warning,
+    )
     processed_dir = resolve_processed_dir(args)
     if args.seed is not None:
         L.seed_everything(args.seed, workers=True) # check whether a seed was provided and if so, set it for reproducibility
@@ -336,6 +357,7 @@ def main() -> None:
         batch_size = args.batch_size,
         model_type = args.model,
         processed_dir = processed_dir,
+        num_workers = args.num_workers,
         seed = args.seed,
     )
     datamodule.setup()
@@ -462,6 +484,7 @@ def main() -> None:
             args.interaction_order if args.model == "mba" else None
         ),
         "batch_size": args.batch_size,
+        "num_workers": args.num_workers,
         "accelerator": args.accelerator,
         "early_stopping": args.early_stopping,
         "patience": args.patience if args.early_stopping else None,

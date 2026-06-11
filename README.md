@@ -153,6 +153,12 @@ Run multiple datasets, models, and seeds:
 
     uv run python -m src.training.run_experiments --seed 1 --seed 2 --seed 3
 
+The default DataLoader worker count is `0`, which is safe because processed
+data is already loaded into memory before training. For large runs, you can try
+more workers:
+
+    uv run python -m src.training.run_experiments --num-workers 4 --seed 1 --seed 2 --seed 3
+
 Limit a multi-seed run to selected datasets or models by repeating options:
 
     uv run python -m src.training.run_experiments \
@@ -220,6 +226,14 @@ majority-class baseline, parameter counts, timings, and best model per dataset:
 When seeded result folders are present, the summary also writes:
 
     src/summary_results/results/benchmark_summary_aggregate.csv
+
+Create SVG plots from the summary table:
+
+    uv run python -m src.summary_results.plot_results
+
+The plots are written to:
+
+    src/summary_results/results/plots/
 
 Current results should be treated as preliminary because not all planned models,
 datasets, and metrics have been run yet.

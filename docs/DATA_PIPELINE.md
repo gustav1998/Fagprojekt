@@ -440,6 +440,11 @@ return DataLoader(
 The training loader shuffles examples. If a seed is supplied, a seeded
 generator is used so the shuffle order is reproducible.
 
+`num_workers` controls how many extra worker processes PyTorch uses to prepare
+batches. The default is `0` because the processed CSV files are loaded into
+memory before the loaders are created. For larger datasets, `--num-workers 2`
+or `--num-workers 4` can be tested as a performance option.
+
 Validation and test loaders do not shuffle:
 
 ```python

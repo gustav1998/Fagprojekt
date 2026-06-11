@@ -94,9 +94,10 @@ def read_majority_baselines(
         .drop_duplicates()
         .itertuples(index=False)
     ):
+        seed = int(run.seed) if pd.notna(run.seed) else None
         seed_dir = (
-            processed_dir / f"seed_{run.seed}"
-            if pd.notna(run.seed)
+            processed_dir / f"seed_{seed}"
+            if seed is not None
             else processed_dir
         )
         test_path = seed_dir / f"{run.dataset}_tensor_test.csv"

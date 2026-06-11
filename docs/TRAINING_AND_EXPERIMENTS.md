@@ -337,6 +337,21 @@ if model == "mba":
 CPD, TT, and TR use tensor rank. MBA uses interaction order. Logistic
 regression and the MLP do not use either parameter.
 
+### DataLoader Workers
+
+The training commands accept `--num-workers`:
+
+```bash
+uv run python -m src.training.train --dataset house_votes_84 --model cpd --num-workers 4
+uv run python -m src.training.run_experiments --seed 1 --seed 2 --num-workers 4
+```
+
+This controls how many extra worker processes PyTorch uses for each DataLoader.
+The default is `0`, which is usually fine here because processed datasets are
+loaded into memory before training starts. Larger datasets may benefit from
+`2` or `4` workers, but it should be treated as a runtime-performance setting,
+not as a modeling setting.
+
 
 ## Early Stopping
 

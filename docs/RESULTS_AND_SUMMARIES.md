@@ -299,3 +299,33 @@ The script writes:
 src/summary_results/results/benchmark_summary.csv
 src/summary_results/results/benchmark_summary_aggregate.csv
 ```
+
+## Result Plots
+
+File: `src/summary_results/plot_results.py`
+
+After creating `benchmark_summary.csv`, generate the standard result plots:
+
+```bash
+uv run python -m src.summary_results.plot_results
+```
+
+The script writes SVG files to:
+
+```text
+src/summary_results/results/plots/
+```
+
+The generated plots are:
+
+```text
+macro_f1_by_dataset.svg
+balanced_accuracy_by_dataset.svg
+accuracy_minus_majority.svg
+fit_time_by_model.svg
+```
+
+The first three plots compare models across datasets. Values are averaged across
+available seeds before plotting. `accuracy_minus_majority.svg` shows whether
+each model beats the majority-class baseline. The fit-time plot shows the mean
+training time per model across the available runs.

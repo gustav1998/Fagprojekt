@@ -44,6 +44,7 @@ def run_command(command: list[str]) -> None:
     help="Seed to run. Repeat the option for multiple seeds.",
 )
 @click.option("--batch-size", type=int, default=256, show_default=True)
+@click.option("--num-workers", type=int, default=0, show_default=True)
 @click.option(
     "--accelerator",
     type=click.Choice(["auto", "cpu", "gpu"]),
@@ -85,6 +86,7 @@ def main(
     models: tuple[str, ...],
     seeds: tuple[int, ...],
     batch_size: int,
+    num_workers: int,
     accelerator: str,
     processed_root: Path,
     tuning_dir: Path,
@@ -138,6 +140,8 @@ def main(
                         str(processed_dir),
                         "--seed",
                         str(seed),
+                        "--num-workers",
+                        str(num_workers),
                         "--result-version",
                         f"{dataset}_seed{seed}",
                     ]
@@ -166,6 +170,8 @@ def main(
                     model,
                     "--batch-size",
                     str(batch_size),
+                    "--num-workers",
+                    str(num_workers),
                     "--accelerator",
                     accelerator,
                     "--processed-dir",
