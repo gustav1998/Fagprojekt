@@ -78,7 +78,7 @@ target/
 
 # generated experiment outputs
 #/src/summary_results/results/
-#/src/data_pipeline/data/processed/seed_*/
+/src/data_pipeline/data/processed/seed_*/
 #/src/data_pipeline/data/reports/
 /src/data_pipeline/data/raw/
 !/src/data_pipeline/data/raw/large_datasets/README.md
