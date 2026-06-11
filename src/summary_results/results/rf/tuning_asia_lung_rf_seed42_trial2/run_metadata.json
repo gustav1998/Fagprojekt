@@ -1,0 +1,14 @@
+{
+  "dataset": "asia_lung",
+  "model": "rf",
+  "seed": 42,
+  "n_estimators": 300,
+  "max_depth": 5,
+  "max_features": "log2",
+  "min_samples_leaf": 3,
+  "num_classes": 2,
+  "input_dim": 7,
+  "trainable_parameters": null,
+  "fit_seconds": 0.6025355999991007,
+  "test_seconds": null
+}
