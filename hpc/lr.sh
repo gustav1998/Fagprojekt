@@ -6,6 +6,7 @@
 #BSUB -gpu "num=1:mode=exclusive_process:mps=yes"
 #BSUB -W 12:00
 #BSUB -R "rusage[mem=5GB]"
+#BSUB -R "span[hosts=1]"
 #BSUB -u 245208@dtu.dk
 ### -- send notification at completion --
 #BSUB -B
