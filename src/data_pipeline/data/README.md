@@ -129,6 +129,20 @@ For seeded experiment folders, use the experiment runner:
 uv run python -m src.training.run_experiments --dataset car_evaluation --seed 42
 ```
 
+### Generating All Processed Datasets (K-fold pipeline)
+
+To regenerate processed data for every dataset at once using the new
+tuning-split + 5-fold pipeline (`make_dataset2.py`), run:
+
+```bash
+for dataset in $(uv run python -c "from src.data_pipeline.dataset_configs import DATASET_CONFIGS; names = sorted(DATASET_CONFIGS); names.remove('lenses'); print(' '.join(names))"); do
+    uv run python -m src.data_pipeline.make_dataset2 --dataset "$dataset" --representation both
+done
+```
+
+This skips `lenses`, since it collapses to a single usable class after rare-class
+filtering and is excluded from the K-fold evaluation pipeline.
+
 ## Visualizing Processed Data
 
 To generate CSV summaries and SVG plots for the processed datasets, run:
