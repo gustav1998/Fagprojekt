@@ -1,0 +1,74 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "age",
+    "spectacle_prescription",
+    "astigmatic",
+    "tear_production_rate"
+  ],
+  "categorical_columns": [
+    "age",
+    "spectacle_prescription",
+    "astigmatic",
+    "tear_production_rate"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    5,
+    4,
+    4,
+    4
+  ],
+  "categorical_cardinalities": [
+    5,
+    4,
+    4,
+    4
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "1": 0,
+    "2": 1,
+    "3": 2
+  },
+  "feature_mappings": {
+    "age": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "__MISSING__": 3,
+      "__UNKNOWN__": 4
+    },
+    "spectacle_prescription": {
+      "1": 0,
+      "2": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "astigmatic": {
+      "1": 0,
+      "2": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "tear_production_rate": {
+      "1": 0,
+      "2": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 4,
+  "dataset_name": "lenses",
+  "task": "classification",
+  "seed": 1,
+  "official_test_split": false,
+  "n_train": 16,
+  "n_val": 4,
+  "n_test": 4
+}

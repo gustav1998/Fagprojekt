@@ -1,0 +1,80 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "hobby",
+    "age",
+    "educational_level",
+    "marital_status"
+  ],
+  "categorical_columns": [
+    "hobby",
+    "age",
+    "educational_level",
+    "marital_status"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    5,
+    6,
+    6,
+    6
+  ],
+  "categorical_cardinalities": [
+    5,
+    6,
+    6,
+    6
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "1": 0,
+    "2": 1,
+    "3": 2
+  },
+  "feature_mappings": {
+    "hobby": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "__MISSING__": 3,
+      "__UNKNOWN__": 4
+    },
+    "age": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "4": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
+    },
+    "educational_level": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "4": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
+    },
+    "marital_status": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "4": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 4,
+  "dataset_name": "hayesroth",
+  "task": "classification",
+  "seed": 2,
+  "official_test_split": false,
+  "n_train": 92,
+  "n_val": 20,
+  "n_test": 20
+}

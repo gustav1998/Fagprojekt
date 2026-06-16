@@ -1,0 +1,103 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "buying",
+    "maint",
+    "doors",
+    "persons",
+    "lug_boot",
+    "safety"
+  ],
+  "categorical_columns": [
+    "buying",
+    "maint",
+    "doors",
+    "persons",
+    "lug_boot",
+    "safety"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    6,
+    6,
+    6,
+    5,
+    5,
+    5
+  ],
+  "categorical_cardinalities": [
+    6,
+    6,
+    6,
+    5,
+    5,
+    5
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "acc": 0,
+    "good": 1,
+    "unacc": 2,
+    "vgood": 3
+  },
+  "feature_mappings": {
+    "buying": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "high": 2,
+      "low": 3,
+      "med": 4,
+      "vhigh": 5
+    },
+    "maint": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "high": 2,
+      "low": 3,
+      "med": 4,
+      "vhigh": 5
+    },
+    "doors": {
+      "2": 0,
+      "3": 1,
+      "4": 2,
+      "5more": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
+    },
+    "persons": {
+      "2": 0,
+      "4": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3,
+      "more": 4
+    },
+    "lug_boot": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "big": 2,
+      "med": 3,
+      "small": 4
+    },
+    "safety": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "high": 2,
+      "low": 3,
+      "med": 4
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 6,
+  "dataset_name": "car_evaluation",
+  "task": "classification",
+  "seed": 42,
+  "official_test_split": false,
+  "n_train": 1209,
+  "n_val": 259,
+  "n_test": 260
+}

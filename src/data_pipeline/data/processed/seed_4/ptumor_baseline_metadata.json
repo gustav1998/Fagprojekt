@@ -1,0 +1,205 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "age",
+    "sex",
+    "histologic_type",
+    "degree_of_diffe",
+    "bone",
+    "bone_marrow",
+    "lung",
+    "pleura",
+    "peritoneum",
+    "liver",
+    "brain",
+    "skin",
+    "neck",
+    "supraclavicular",
+    "axillar",
+    "mediastinum",
+    "abdominal"
+  ],
+  "categorical_columns": [
+    "age",
+    "sex",
+    "histologic_type",
+    "degree_of_diffe",
+    "bone",
+    "bone_marrow",
+    "lung",
+    "pleura",
+    "peritoneum",
+    "liver",
+    "brain",
+    "skin",
+    "neck",
+    "supraclavicular",
+    "axillar",
+    "mediastinum",
+    "abdominal"
+  ],
+  "numerical_columns": [],
+  "representation": "baseline",
+  "cardinalities": [
+    5,
+    4,
+    5,
+    5,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "categorical_cardinalities": [
+    5,
+    4,
+    5,
+    5,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "N": 0,
+    "P": 1
+  },
+  "feature_mappings": {
+    "age": {
+      "30-59": 0,
+      "<30": 1,
+      ">=60": 2,
+      "__MISSING__": 3,
+      "__UNKNOWN__": 4
+    },
+    "sex": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "female": 2,
+      "male": 3
+    },
+    "histologic_type": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "adeno": 2,
+      "anaplastic": 3,
+      "epidermoid": 4
+    },
+    "degree_of_diffe": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "fairly": 2,
+      "poorly": 3,
+      "well": 4
+    },
+    "bone": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "bone_marrow": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "lung": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "pleura": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "peritoneum": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "liver": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "brain": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "skin": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "neck": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "supraclavicular": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "axillar": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "mediastinum": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "abdominal": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 17,
+  "dataset_name": "ptumor",
+  "task": "classification",
+  "seed": 4,
+  "official_test_split": false,
+  "n_train": 237,
+  "n_val": 51,
+  "n_test": 51
+}

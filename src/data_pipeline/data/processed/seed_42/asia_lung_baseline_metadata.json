@@ -1,0 +1,102 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "A",
+    "S",
+    "T",
+    "B",
+    "E",
+    "X",
+    "D"
+  ],
+  "categorical_columns": [
+    "A",
+    "S",
+    "T",
+    "B",
+    "E",
+    "X",
+    "D"
+  ],
+  "numerical_columns": [],
+  "representation": "baseline",
+  "cardinalities": [
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "categorical_cardinalities": [
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "no": 0,
+    "yes": 1
+  },
+  "feature_mappings": {
+    "A": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "S": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "T": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "B": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "E": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "X": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    },
+    "D": {
+      "__MISSING__": 0,
+      "__UNKNOWN__": 1,
+      "no": 2,
+      "yes": 3
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 7,
+  "dataset_name": "asia_lung",
+  "task": "classification",
+  "seed": 42,
+  "official_test_split": false,
+  "n_train": 3499,
+  "n_val": 750,
+  "n_test": 751
+}

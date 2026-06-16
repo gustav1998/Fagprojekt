@@ -1,0 +1,88 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "DMFT.Begin",
+    "DMFT.End",
+    "Gender",
+    "Ethnic"
+  ],
+  "categorical_columns": [
+    "DMFT.Begin",
+    "DMFT.End",
+    "Gender",
+    "Ethnic"
+  ],
+  "numerical_columns": [],
+  "representation": "baseline",
+  "cardinalities": [
+    11,
+    9,
+    4,
+    5
+  ],
+  "categorical_cardinalities": [
+    11,
+    9,
+    4,
+    5
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "All_methods": 0,
+    "Diet_enrichment": 1,
+    "Health_education": 2,
+    "Mouthwash": 3,
+    "Oral_hygiene": 4
+  },
+  "feature_mappings": {
+    "DMFT.Begin": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4,
+      "5": 5,
+      "6": 6,
+      "7": 7,
+      "8": 8,
+      "__MISSING__": 9,
+      "__UNKNOWN__": 10
+    },
+    "DMFT.End": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4,
+      "5": 5,
+      "6": 6,
+      "__MISSING__": 7,
+      "__UNKNOWN__": 8
+    },
+    "Gender": {
+      "Female": 0,
+      "Male": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "Ethnic": {
+      "Black": 0,
+      "Dark": 1,
+      "White": 2,
+      "__MISSING__": 3,
+      "__UNKNOWN__": 4
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 4,
+  "dataset_name": "dmft",
+  "task": "classification",
+  "seed": 42,
+  "official_test_split": false,
+  "n_train": 462,
+  "n_val": 99,
+  "n_test": 100
+}

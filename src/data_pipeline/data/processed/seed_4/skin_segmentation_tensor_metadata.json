@@ -1,0 +1,99 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "B",
+    "G",
+    "R"
+  ],
+  "categorical_columns": [],
+  "numerical_columns": [
+    "B",
+    "G",
+    "R"
+  ],
+  "representation": "tensor",
+  "cardinalities": [
+    10,
+    10,
+    10
+  ],
+  "categorical_cardinalities": [],
+  "numerical_cardinalities": [
+    10,
+    10,
+    10
+  ],
+  "target_mapping": {
+    "1": 0,
+    "2": 1
+  },
+  "feature_mappings": {},
+  "numerical_fill_values": {
+    "B": 139.0,
+    "G": 153.0,
+    "R": 128.0
+  },
+  "numerical_bin_metadata": {
+    "B": {
+      "strategy": "quantile",
+      "edges": [
+        0.0,
+        35.0,
+        57.0,
+        84.0,
+        116.0,
+        139.0,
+        158.0,
+        171.0,
+        179.0,
+        197.0,
+        255.0
+      ],
+      "n_bins": 10
+    },
+    "G": {
+      "strategy": "quantile",
+      "edges": [
+        0.0,
+        38.0,
+        69.0,
+        102.0,
+        135.0,
+        153.0,
+        164.0,
+        174.0,
+        180.0,
+        195.0,
+        255.0
+      ],
+      "n_bins": 10
+    },
+    "R": {
+      "strategy": "quantile",
+      "edges": [
+        0.0,
+        17.0,
+        38.0,
+        90.40000000000873,
+        115.0,
+        128.0,
+        136.0,
+        158.0,
+        191.0,
+        227.0,
+        255.0
+      ],
+      "n_bins": 10
+    }
+  },
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 3,
+  "dataset_name": "skin_segmentation",
+  "task": "classification",
+  "seed": 4,
+  "official_test_split": false,
+  "n_train": 171539,
+  "n_val": 36759,
+  "n_test": 36759
+}

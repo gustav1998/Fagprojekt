@@ -1,0 +1,111 @@
+{
+  "target_column": "class",
+  "feature_names": [
+    "sex",
+    "cp",
+    "fbs",
+    "restecg",
+    "exang",
+    "slope",
+    "thal"
+  ],
+  "categorical_columns": [
+    "sex",
+    "cp",
+    "fbs",
+    "restecg",
+    "exang",
+    "slope",
+    "thal"
+  ],
+  "numerical_columns": [],
+  "representation": "tensor",
+  "cardinalities": [
+    4,
+    6,
+    4,
+    5,
+    4,
+    5,
+    6
+  ],
+  "categorical_cardinalities": [
+    4,
+    6,
+    4,
+    5,
+    4,
+    5,
+    6
+  ],
+  "numerical_cardinalities": [],
+  "target_mapping": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+  },
+  "feature_mappings": {
+    "sex": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "cp": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "4": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
+    },
+    "fbs": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "restecg": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "__MISSING__": 3,
+      "__UNKNOWN__": 4
+    },
+    "exang": {
+      "0": 0,
+      "1": 1,
+      "__MISSING__": 2,
+      "__UNKNOWN__": 3
+    },
+    "slope": {
+      "1": 0,
+      "2": 1,
+      "3": 2,
+      "__MISSING__": 3,
+      "__UNKNOWN__": 4
+    },
+    "thal": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "__MISSING__": 4,
+      "__UNKNOWN__": 5
+    }
+  },
+  "numerical_fill_values": {},
+  "numerical_bin_metadata": {},
+  "missing_token": "__MISSING__",
+  "unknown_token": "__UNKNOWN__",
+  "n_features": 7,
+  "dataset_name": "cleveland",
+  "task": "classification",
+  "seed": 2,
+  "official_test_split": false,
+  "n_train": 212,
+  "n_val": 45,
+  "n_test": 46
+}
