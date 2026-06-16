@@ -81,6 +81,10 @@ target/
 /src/data_pipeline/data/processed/
 #/src/data_pipeline/data/reports/
 
+# superseded by make_dataset2.py / preprocessing2.py during the K-fold rewrite
+/src/data_pipeline/make_dataset.py
+/src/data_pipeline/preprocessing.py
+
 # Mac OS-specific storage files
 .DS_Store
 
