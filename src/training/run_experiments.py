@@ -7,7 +7,7 @@ from pathlib import Path
 
 import click
 
-from src.data_pipeline.dataset_configs import DATASET_CONFIGS
+from src.data_pipeline.dataset_configs import DATASET_CONFIGS, EXCLUDED_DATASETS
 from src.training.train import DEFAULT_TRAINING_CONFIGS
 
 
@@ -107,8 +107,15 @@ def main(
     skip_preprocessing: bool,
 ) -> None:
     
-    # Run preprocessing and training for multiple seeds
-    selected_datasets = datasets or tuple(sorted(DATASET_CONFIGS))
+    if datasets:
+        requested_excluded = set(datasets) & EXCLUDED_DATASETS
+        if requested_excluded:
+            raise click.ClickException(
+                f"These datasets are excluded from the pipeline: {sorted(requested_excluded)}"
+            )
+
+    available_datasets = set(DATASET_CONFIGS.keys()) - EXCLUDED_DATASETS
+    selected_datasets = datasets or tuple(sorted(available_datasets))
     selected_models = models or tuple(MODELS)
 
     # For each seed, preprocess the data for each dataset, then train each model on the processed data. The processed data is stored in a separate directory for each seed to avoid conflicts.
