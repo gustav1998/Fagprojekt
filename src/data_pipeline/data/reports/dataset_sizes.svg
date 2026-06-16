@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="990" viewBox="0 0 980 990">
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#172033}
+.title{font-size:22px;font-weight:700}.label{font-size:12px}.value{font-size:12px;fill:#39475f}
+.axis{stroke:#d7deea;stroke-width:1}.bar{fill:#356f8c}.bar.alt{fill:#d18454}
+</style>
+<rect x="0" y="0" width="980" height="990" fill="#ffffff"/>
+<text class="title" x="24" y="34">Rows per processed dataset</text>
+<line class="axis" x1="210" y1="46" x2="910" y2="46"/>
+<text class="label" x="24" y="74">census_income_kdd (baseline)</text>
+<rect class="bar" x="210" y="58" width="700.0" height="18" rx="2"/>
+<text class="value" x="918.0" y="72">299,285</text>
+<text class="label" x="24" y="102">census_income_kdd (tensor)</text>
+<rect class="bar alt" x="210" y="86" width="700.0" height="18" rx="2"/>
+<text class="value" x="918.0" y="100">299,285</text>
+<text class="label" x="24" y="130">skin_segmentation (baseline)</text>
+<rect class="bar" x="210" y="114" width="573.2" height="18" rx="2"/>
+<text class="value" x="791.2" y="128">245,057</text>
+<text class="label" x="24" y="158">skin_segmentation (tensor)</text>
+<rect class="bar alt" x="210" y="142" width="573.2" height="18" rx="2"/>
+<text class="value" x="791.2" y="156">245,057</text>
+<text class="label" x="24" y="186">phiusiil_phishing (baseline)</text>
+<rect class="bar" x="210" y="170" width="551.5" height="18" rx="2"/>
+<text class="value" x="769.5" y="184">235,795</text>
+<text class="label" x="24" y="214">phiusiil_phishing (tensor)</text>
+<rect class="bar alt" x="210" y="198" width="551.5" height="18" rx="2"/>
+<text class="value" x="769.5" y="212">235,795</text>
+<text class="label" x="24" y="242">rt_iot2022 (baseline)</text>
+<rect class="bar" x="210" y="226" width="288.0" height="18" rx="2"/>
+<text class="value" x="506.0" y="240">123,117</text>
+<text class="label" x="24" y="270">rt_iot2022 (tensor)</text>
+<rect class="bar alt" x="210" y="254" width="288.0" height="18" rx="2"/>
+<text class="value" x="506.0" y="268">123,117</text>
+<text class="label" x="24" y="298">aps_failure (baseline)</text>
+<rect class="bar" x="210" y="282" width="177.8" height="18" rx="2"/>
+<text class="value" x="395.8" y="296">76,000</text>
+<text class="label" x="24" y="326">aps_failure (tensor)</text>
+<rect class="bar alt" x="210" y="310" width="177.8" height="18" rx="2"/>
+<text class="value" x="395.8" y="324">76,000</text>
+<text class="label" x="24" y="354">connect_4 (baseline)</text>
+<rect class="bar" x="210" y="338" width="158.0" height="18" rx="2"/>
+<text class="value" x="376.0" y="352">67,557</text>
+<text class="label" x="24" y="382">connect_4 (tensor)</text>
+<rect class="bar alt" x="210" y="366" width="158.0" height="18" rx="2"/>
+<text class="value" x="376.0" y="380">67,557</text>
+<text class="label" x="24" y="410">secondary_mushroom (baseline)</text>
+<rect class="bar" x="210" y="394" width="142.8" height="18" rx="2"/>
+<text class="value" x="360.8" y="408">61,069</text>
+<text class="label" x="24" y="438">secondary_mushroom (tensor)</text>
+<rect class="bar alt" x="210" y="422" width="142.8" height="18" rx="2"/>
+<text class="value" x="360.8" y="436">61,069</text>
+<text class="label" x="24" y="466">sensorless_drive (baseline)</text>
+<rect class="bar" x="210" y="450" width="136.8" height="18" rx="2"/>
+<text class="value" x="354.8" y="464">58,509</text>
+<text class="label" x="24" y="494">sensorless_drive (tensor)</text>
+<rect class="bar alt" x="210" y="478" width="136.8" height="18" rx="2"/>
+<text class="value" x="354.8" y="492">58,509</text>
+<text class="label" x="24" y="522">shuttle (baseline)</text>
+<rect class="bar" x="210" y="506" width="135.7" height="18" rx="2"/>
+<text class="value" x="353.7" y="520">58,000</text>
+<text class="label" x="24" y="550">shuttle (tensor)</text>
+<rect class="bar alt" x="210" y="534" width="135.7" height="18" rx="2"/>
+<text class="value" x="353.7" y="548">58,000</text>
+<text class="label" x="24" y="578">krkopt (baseline)</text>
+<rect class="bar" x="210" y="562" width="65.6" height="18" rx="2"/>
+<text class="value" x="283.6" y="576">28,056</text>
+<text class="label" x="24" y="606">krkopt (tensor)</text>
+<rect class="bar alt" x="210" y="590" width="65.6" height="18" rx="2"/>
+<text class="value" x="283.6" y="604">28,056</text>
+<text class="label" x="24" y="634">nursery (baseline)</text>
+<rect class="bar" x="210" y="618" width="30.3" height="18" rx="2"/>
+<text class="value" x="248.3" y="632">12,960</text>
+<text class="label" x="24" y="662">nursery (tensor)</text>
+<rect class="bar alt" x="210" y="646" width="30.3" height="18" rx="2"/>
+<text class="value" x="248.3" y="660">12,960</text>
+<text class="label" x="24" y="690">asia_lung (baseline)</text>
+<rect class="bar" x="210" y="674" width="11.7" height="18" rx="2"/>
+<text class="value" x="229.7" y="688">5,000</text>
+<text class="label" x="24" y="718">asia_lung (tensor)</text>
+<rect class="bar alt" x="210" y="702" width="11.7" height="18" rx="2"/>
+<text class="value" x="229.7" y="716">5,000</text>
+<text class="label" x="24" y="746">led7 (baseline)</text>
+<rect class="bar" x="210" y="730" width="7.5" height="18" rx="2"/>
+<text class="value" x="225.5" y="744">3,200</text>
+<text class="label" x="24" y="774">led7 (tensor)</text>
+<rect class="bar alt" x="210" y="758" width="7.5" height="18" rx="2"/>
+<text class="value" x="225.5" y="772">3,200</text>
+<text class="label" x="24" y="802">coronary (baseline)</text>
+<rect class="bar" x="210" y="786" width="4.3" height="18" rx="2"/>
+<text class="value" x="222.3" y="800">1,841</text>
+<text class="label" x="24" y="830">coronary (tensor)</text>
+<rect class="bar alt" x="210" y="814" width="4.3" height="18" rx="2"/>
+<text class="value" x="222.3" y="828">1,841</text>
+<text class="label" x="24" y="858">car_evaluation (baseline)</text>
+<rect class="bar" x="210" y="842" width="4.0" height="18" rx="2"/>
+<text class="value" x="222.0" y="856">1,728</text>
+<text class="label" x="24" y="886">car_evaluation (tensor)</text>
+<rect class="bar alt" x="210" y="870" width="4.0" height="18" rx="2"/>
+<text class="value" x="222.0" y="884">1,728</text>
+<text class="label" x="24" y="914">mofn (baseline)</text>
+<rect class="bar" x="210" y="898" width="3.1" height="18" rx="2"/>
+<text class="value" x="221.1" y="912">1,324</text>
+<text class="label" x="24" y="942">mofn (tensor)</text>
+<rect class="bar alt" x="210" y="926" width="3.1" height="18" rx="2"/>
+<text class="value" x="221.1" y="940">1,324</text>
+</svg>

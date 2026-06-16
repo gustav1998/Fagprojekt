@@ -197,7 +197,7 @@ def fit_numerical_bins(
                 duplicates="drop",
             )
             edges = [float(x) for x in edges_array]
-            cardinality = max(1, len(edges) - 1) # cardinality is number of bins, which is one less than number of edges
+            cardinality = max(1, unique_count) # cardinality is number of bins, which is one less than number of edges
         elif strategy == "uniform":
             _, edges_array = pd.cut(
                 series,
@@ -207,7 +207,7 @@ def fit_numerical_bins(
                 duplicates="drop",
             )
             edges = [float(x) for x in edges_array]
-            cardinality = max(1, len(edges) - 1)
+            cardinality = max(1, unique_count)
         else:
             raise ValueError(f"Unsupported binning strategy: {strategy}")
 
