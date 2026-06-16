@@ -33,7 +33,7 @@ python3 -m src.training.tune_hyperparameters \
 
 python3 -m src.training.run_experiments \
     --model mba \
-    --seed 1 --seed 2 --seed 3 --seed 4 --seed 5 --seed 42 \
+    --seed 42 \
     --skip-preprocessing \
     --accelerator gpu \
     --num-workers 4
@@ -41,7 +41,7 @@ python3 -m src.training.run_experiments \
 git config user.email "<your-dtu-email>"
 git config user.name "<your-name>"
 git add src/summary_results/results/
-git commit -m "MBA results: all datasets, 6 seeds"
+git commit -m "MBA results: all datasets"
 git fetch origin
 git rebase origin/main
 git push

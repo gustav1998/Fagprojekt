@@ -31,9 +31,6 @@ These are the smaller raw datasets stored directly under
 | `credit_approval` | https://archive.ics.uci.edu/dataset/27/credit+approval |
 | `lenses` | https://archive.ics.uci.edu/dataset/58/lenses |
 | `hayesroth` | https://archive.ics.uci.edu/dataset/44/hayes+roth |
-| `monk_1` | https://archive.ics.uci.edu/dataset/70/monk+s+problems |
-| `monk_2` | https://archive.ics.uci.edu/dataset/70/monk+s+problems |
-| `monk_3` | https://archive.ics.uci.edu/dataset/70/monk+s+problems |
 | `nursery` | https://archive.ics.uci.edu/dataset/76/nursery |
 | `primary_tumor` | https://archive.ics.uci.edu/dataset/83/primary+tumor |
 
@@ -114,10 +111,9 @@ Seeded experiment splits are stored in folders such as:
 src/data_pipeline/data/processed/seed_42/
 ```
 
-The MONK datasets use their official test files. A validation split is carved
-out of the official training file. Hayes-Roth keeps using the labeled
-`hayes-roth.data` file because the companion `hayes-roth.test` file does not
-include labels in the same supervised-learning format.
+Hayes-Roth keeps using the labeled `hayes-roth.data` file because the
+companion `hayes-roth.test` file does not include labels in the same
+supervised-learning format.
 
 ## Regenerating Processed Splits
 

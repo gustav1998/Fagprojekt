@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="990" viewBox="0 0 980 990">
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#172033}
+.title{font-size:22px;font-weight:700}.label{font-size:12px}.value{font-size:12px;fill:#39475f}
+.axis{stroke:#d7deea;stroke-width:1}.bar{fill:#356f8c}.bar.alt{fill:#d18454}
+</style>
+<rect x="0" y="0" width="980" height="990" fill="#ffffff"/>
+<text class="title" x="24" y="34">Test-set majority class share</text>
+<line class="axis" x1="210" y1="46" x2="910" y2="46"/>
+<text class="label" x="24" y="74">aps_failure (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="58" width="700.0" height="18" rx="2"/>
+<text class="value" x="918.0" y="72">98%</text>
+<text class="label" x="24" y="102">census_income_kdd (tensor, 2 cla</text>
+<rect class="bar alt" x="210" y="86" width="672.4" height="18" rx="2"/>
+<text class="value" x="890.4" y="100">94%</text>
+<text class="label" x="24" y="130">asia_lung (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="114" width="669.1" height="18" rx="2"/>
+<text class="value" x="887.1" y="128">93%</text>
+<text class="label" x="24" y="158">conf_ad (tensor, 2 classes)</text>
+<rect class="bar alt" x="210" y="142" width="619.9" height="18" rx="2"/>
+<text class="value" x="837.9" y="156">86%</text>
+<text class="label" x="24" y="186">coronary (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="170" width="615.9" height="18" rx="2"/>
+<text class="value" x="833.9" y="184">86%</text>
+<text class="label" x="24" y="214">skin_segmentation (tensor, 2 cla</text>
+<rect class="bar alt" x="210" y="198" width="568.0" height="18" rx="2"/>
+<text class="value" x="786.0" y="212">79%</text>
+<text class="label" x="24" y="242">shuttle (tensor, 7 classes)</text>
+<rect class="bar" x="210" y="226" width="567.4" height="18" rx="2"/>
+<text class="value" x="785.4" y="240">79%</text>
+<text class="label" x="24" y="270">mofn (tensor, 2 classes)</text>
+<rect class="bar alt" x="210" y="254" width="558.3" height="18" rx="2"/>
+<text class="value" x="776.3" y="268">78%</text>
+<text class="label" x="24" y="298">german_gss (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="282" width="552.3" height="18" rx="2"/>
+<text class="value" x="770.3" y="296">77%</text>
+<text class="label" x="24" y="326">rt_iot2022 (tensor, 12 classes)</text>
+<rect class="bar alt" x="210" y="310" width="551.1" height="18" rx="2"/>
+<text class="value" x="769.1" y="324">77%</text>
+<text class="label" x="24" y="354">ptumor (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="338" width="548.1" height="18" rx="2"/>
+<text class="value" x="766.1" y="352">76%</text>
+<text class="label" x="24" y="382">ppd (tensor, 2 classes)</text>
+<rect class="bar alt" x="210" y="366" width="512.0" height="18" rx="2"/>
+<text class="value" x="730.0" y="380">71%</text>
+<text class="label" x="24" y="410">car_evaluation (tensor, 4 classe</text>
+<rect class="bar" x="210" y="394" width="501.8" height="18" rx="2"/>
+<text class="value" x="719.8" y="408">70%</text>
+<text class="label" x="24" y="438">monk_2 (tensor, 2 classes)</text>
+<rect class="bar alt" x="210" y="422" width="481.2" height="18" rx="2"/>
+<text class="value" x="699.2" y="436">67%</text>
+<text class="label" x="24" y="466">xd6 (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="450" width="481.1" height="18" rx="2"/>
+<text class="value" x="699.1" y="464">67%</text>
+<text class="label" x="24" y="494">connect_4 (tensor, 3 classes)</text>
+<rect class="bar alt" x="210" y="478" width="471.9" height="18" rx="2"/>
+<text class="value" x="689.9" y="492">66%</text>
+<text class="label" x="24" y="522">house_votes_84 (tensor, 2 classe</text>
+<rect class="bar" x="210" y="506" width="434.4" height="18" rx="2"/>
+<text class="value" x="652.4" y="520">61%</text>
+<text class="label" x="24" y="550">sensory (tensor, 2 classes)</text>
+<rect class="bar alt" x="210" y="534" width="420.2" height="18" rx="2"/>
+<text class="value" x="638.2" y="548">59%</text>
+<text class="label" x="24" y="578">phiusiil_phishing (tensor, 2 cla</text>
+<rect class="bar" x="210" y="562" width="409.9" height="18" rx="2"/>
+<text class="value" x="627.9" y="576">57%</text>
+<text class="label" x="24" y="606">secondary_mushroom (tensor, 2 cl</text>
+<rect class="bar alt" x="210" y="590" width="397.8" height="18" rx="2"/>
+<text class="value" x="615.8" y="604">55%</text>
+<text class="label" x="24" y="634">credit_approval (tensor, 2 class</text>
+<rect class="bar" x="210" y="618" width="392.9" height="18" rx="2"/>
+<text class="value" x="610.9" y="632">55%</text>
+<text class="label" x="24" y="662">cleveland (tensor, 5 classes)</text>
+<rect class="bar alt" x="210" y="646" width="389.6" height="18" rx="2"/>
+<text class="value" x="607.6" y="660">54%</text>
+<text class="label" x="24" y="690">three_of_nine (tensor, 2 classes</text>
+<rect class="bar" x="210" y="674" width="381.7" height="18" rx="2"/>
+<text class="value" x="599.7" y="688">53%</text>
+<text class="label" x="24" y="718">monk_3 (tensor, 2 classes)</text>
+<rect class="bar alt" x="210" y="702" width="378.3" height="18" rx="2"/>
+<text class="value" x="596.3" y="716">53%</text>
+<text class="label" x="24" y="746">parity5p5 (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="730" width="360.5" height="18" rx="2"/>
+<text class="value" x="578.5" y="744">50%</text>
+<text class="label" x="24" y="774">lenses (tensor, 3 classes)</text>
+<rect class="bar alt" x="210" y="758" width="358.4" height="18" rx="2"/>
+<text class="value" x="576.4" y="772">50%</text>
+<text class="label" x="24" y="802">monk_1 (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="786" width="358.4" height="18" rx="2"/>
+<text class="value" x="576.4" y="800">50%</text>
+<text class="label" x="24" y="830">vehicle (tensor, 2 classes)</text>
+<rect class="bar alt" x="210" y="814" width="358.4" height="18" rx="2"/>
+<text class="value" x="576.4" y="828">50%</text>
+<text class="label" x="24" y="858">balance_scale (tensor, 3 classes</text>
+<rect class="bar" x="210" y="842" width="327.9" height="18" rx="2"/>
+<text class="value" x="545.9" y="856">46%</text>
+<text class="label" x="24" y="886">hayesroth (tensor, 3 classes)</text>
+<rect class="bar alt" x="210" y="870" width="286.7" height="18" rx="2"/>
+<text class="value" x="504.7" y="884">40%</text>
+<text class="label" x="24" y="914">nursery (tensor, 5 classes)</text>
+<rect class="bar" x="210" y="898" width="236.2" height="18" rx="2"/>
+<text class="value" x="454.2" y="912">33%</text>
+<text class="label" x="24" y="942">dmft (tensor, 5 classes)</text>
+<rect class="bar alt" x="210" y="926" width="172.0" height="18" rx="2"/>
+<text class="value" x="390.0" y="940">24%</text>
+</svg>

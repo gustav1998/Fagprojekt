@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="1214" viewBox="0 0 980 1214">
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#172033}
+.title{font-size:22px;font-weight:700}.label{font-size:12px}.value{font-size:12px;fill:#39475f}
+.axis{stroke:#d7deea;stroke-width:1}.bar{fill:#356f8c}.bar.alt{fill:#d18454}
+</style>
+<rect x="0" y="0" width="980" height="1214" fill="#ffffff"/>
+<text class="title" x="24" y="34">Largest feature cardinalities</text>
+<line class="axis" x1="210" y1="46" x2="910" y2="46"/>
+<text class="label" x="24" y="74">phiusiil_phishing / TLD (tensor)</text>
+<rect class="bar" x="210" y="58" width="700.0" height="18" rx="2"/>
+<text class="value" x="918.0" y="72">646</text>
+<text class="label" x="24" y="102">census_income_kdd / industry_cod</text>
+<rect class="bar alt" x="210" y="86" width="58.5" height="18" rx="2"/>
+<text class="value" x="276.5" y="100">54</text>
+<text class="label" x="24" y="130">census_income_kdd / previous_res</text>
+<rect class="bar" x="210" y="114" width="56.3" height="18" rx="2"/>
+<text class="value" x="274.3" y="128">52</text>
+<text class="label" x="24" y="158">census_income_kdd / occupation_c</text>
+<rect class="bar alt" x="210" y="142" width="53.1" height="18" rx="2"/>
+<text class="value" x="271.1" y="156">49</text>
+<text class="label" x="24" y="186">census_income_kdd / country_of_b</text>
+<rect class="bar" x="210" y="170" width="47.7" height="18" rx="2"/>
+<text class="value" x="265.7" y="184">44</text>
+<text class="label" x="24" y="214">census_income_kdd / country_of_b</text>
+<rect class="bar alt" x="210" y="198" width="47.7" height="18" rx="2"/>
+<text class="value" x="265.7" y="212">44</text>
+<text class="label" x="24" y="242">census_income_kdd / country_of_b</text>
+<rect class="bar" x="210" y="226" width="47.7" height="18" rx="2"/>
+<text class="value" x="265.7" y="240">44</text>
+<text class="label" x="24" y="270">census_income_kdd / household_fa</text>
+<rect class="bar alt" x="210" y="254" width="43.3" height="18" rx="2"/>
+<text class="value" x="261.3" y="268">40</text>
+<text class="label" x="24" y="298">census_income_kdd / major_indust</text>
+<rect class="bar" x="210" y="282" width="28.2" height="18" rx="2"/>
+<text class="value" x="246.2" y="296">26</text>
+<text class="label" x="24" y="326">census_income_kdd / education (t</text>
+<rect class="bar alt" x="210" y="310" width="20.6" height="18" rx="2"/>
+<text class="value" x="238.6" y="324">19</text>
+<text class="label" x="24" y="354">census_income_kdd / major_occupa</text>
+<rect class="bar" x="210" y="338" width="18.4" height="18" rx="2"/>
+<text class="value" x="236.4" y="352">17</text>
+<text class="label" x="24" y="382">credit_approval / A6 (tensor)</text>
+<rect class="bar alt" x="210" y="366" width="17.3" height="18" rx="2"/>
+<text class="value" x="235.3" y="380">16</text>
+<text class="label" x="24" y="410">secondary_mushroom / stem-color </text>
+<rect class="bar" x="210" y="394" width="16.3" height="18" rx="2"/>
+<text class="value" x="234.3" y="408">15</text>
+<text class="label" x="24" y="438">secondary_mushroom / cap-color (</text>
+<rect class="bar alt" x="210" y="422" width="15.2" height="18" rx="2"/>
+<text class="value" x="233.2" y="436">14</text>
+<text class="label" x="24" y="466">secondary_mushroom / gill-color </text>
+<rect class="bar" x="210" y="450" width="15.2" height="18" rx="2"/>
+<text class="value" x="233.2" y="464">14</text>
+<text class="label" x="24" y="494">secondary_mushroom / cap-surface</text>
+<rect class="bar alt" x="210" y="478" width="14.1" height="18" rx="2"/>
+<text class="value" x="232.1" y="492">13</text>
+<text class="label" x="24" y="522">census_income_kdd / class_of_wor</text>
+<rect class="bar" x="210" y="506" width="11.9" height="18" rx="2"/>
+<text class="value" x="229.9" y="520">11</text>
+<text class="label" x="24" y="550">census_income_kdd / hispanic_ori</text>
+<rect class="bar alt" x="210" y="534" width="11.9" height="18" rx="2"/>
+<text class="value" x="229.9" y="548">11</text>
+<text class="label" x="24" y="578">census_income_kdd / migration_ms</text>
+<rect class="bar" x="210" y="562" width="11.9" height="18" rx="2"/>
+<text class="value" x="229.9" y="576">11</text>
+<text class="label" x="24" y="606">census_income_kdd / migration_wi</text>
+<rect class="bar alt" x="210" y="590" width="11.9" height="18" rx="2"/>
+<text class="value" x="229.9" y="604">11</text>
+<text class="label" x="24" y="634">credit_approval / A7 (tensor)</text>
+<rect class="bar" x="210" y="618" width="11.9" height="18" rx="2"/>
+<text class="value" x="229.9" y="632">11</text>
+<text class="label" x="24" y="662">dmft / DMFT.Begin (tensor)</text>
+<rect class="bar alt" x="210" y="646" width="11.9" height="18" rx="2"/>
+<text class="value" x="229.9" y="660">11</text>
+<text class="label" x="24" y="690">rt_iot2022 / service (tensor)</text>
+<rect class="bar" x="210" y="674" width="11.9" height="18" rx="2"/>
+<text class="value" x="229.9" y="688">11</text>
+<text class="label" x="24" y="718">aps_failure / aa_000 (tensor)</text>
+<rect class="bar alt" x="210" y="702" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="716">10</text>
+<text class="label" x="24" y="746">aps_failure / ag_004 (tensor)</text>
+<rect class="bar" x="210" y="730" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="744">10</text>
+<text class="label" x="24" y="774">aps_failure / ag_005 (tensor)</text>
+<rect class="bar alt" x="210" y="758" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="772">10</text>
+<text class="label" x="24" y="802">aps_failure / ag_006 (tensor)</text>
+<rect class="bar" x="210" y="786" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="800">10</text>
+<text class="label" x="24" y="830">aps_failure / ah_000 (tensor)</text>
+<rect class="bar alt" x="210" y="814" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="828">10</text>
+<text class="label" x="24" y="858">aps_failure / an_000 (tensor)</text>
+<rect class="bar" x="210" y="842" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="856">10</text>
+<text class="label" x="24" y="886">aps_failure / ao_000 (tensor)</text>
+<rect class="bar alt" x="210" y="870" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="884">10</text>
+<text class="label" x="24" y="914">aps_failure / ap_000 (tensor)</text>
+<rect class="bar" x="210" y="898" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="912">10</text>
+<text class="label" x="24" y="942">aps_failure / aq_000 (tensor)</text>
+<rect class="bar alt" x="210" y="926" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="940">10</text>
+<text class="label" x="24" y="970">aps_failure / ay_008 (tensor)</text>
+<rect class="bar" x="210" y="954" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="968">10</text>
+<text class="label" x="24" y="998">aps_failure / az_000 (tensor)</text>
+<rect class="bar alt" x="210" y="982" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="996">10</text>
+<text class="label" x="24" y="1026">aps_failure / az_001 (tensor)</text>
+<rect class="bar" x="210" y="1010" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="1024">10</text>
+<text class="label" x="24" y="1054">aps_failure / az_002 (tensor)</text>
+<rect class="bar alt" x="210" y="1038" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="1052">10</text>
+<text class="label" x="24" y="1082">aps_failure / az_003 (tensor)</text>
+<rect class="bar" x="210" y="1066" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="1080">10</text>
+<text class="label" x="24" y="1110">aps_failure / az_004 (tensor)</text>
+<rect class="bar alt" x="210" y="1094" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="1108">10</text>
+<text class="label" x="24" y="1138">aps_failure / az_005 (tensor)</text>
+<rect class="bar" x="210" y="1122" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="1136">10</text>
+<text class="label" x="24" y="1166">aps_failure / ba_000 (tensor)</text>
+<rect class="bar alt" x="210" y="1150" width="10.8" height="18" rx="2"/>
+<text class="value" x="228.8" y="1164">10</text>
+</svg>

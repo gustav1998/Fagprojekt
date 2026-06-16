@@ -242,4 +242,4 @@ class TabularClassifierModule(L.LightningModule):
 
     # defines the optimizer to use for training, which is Adam with the specified learning rate
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)

@@ -233,7 +233,7 @@ def main(
     available_datasets = set(DATASET_CONFIGS.keys()) - EXCLUDED_DATASETS
     selected_datasets = datasets or tuple(sorted(available_datasets))
     selected_models = models or tuple(MODELS)
-    processed_dir = processed_root / f"seed_{seed}"
+    processed_dir = processed_root
     for mi, model in enumerate(selected_models):
         print(
             f"\n{'='*60}\n"
