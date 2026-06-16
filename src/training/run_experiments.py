@@ -34,15 +34,7 @@ def run_command(command: list[str]) -> None:
     type=click.Choice(MODELS),
     help="Model to run. Repeat the option for multiple models.",
 )
-@click.option(
-    "--seed",
-    "seeds",
-    multiple=True,
-    type=int,
-    default=(42,),
-    show_default=True,
-    help="Seed to run. Repeat the option for multiple seeds.",
-)
+@click.option("--seed", type=int, default=42, show_default=True)
 @click.option("--batch-size", type=int, default=256, show_default=True)
 @click.option("--num-workers", type=int, default=0, show_default=True)
 @click.option(
@@ -90,7 +82,7 @@ def run_command(command: list[str]) -> None:
 def main(
     datasets: tuple[str, ...],
     models: tuple[str, ...],
-    seeds: tuple[int, ...],
+    seed: int,
     batch_size: int,
     num_workers: int,
     accelerator: str,
@@ -107,72 +99,36 @@ def main(
     skip_preprocessing: bool,
 ) -> None:
     
-    # Run preprocessing and training for multiple seeds
     selected_datasets = datasets or tuple(sorted(DATASET_CONFIGS))
     selected_models = models or tuple(MODELS)
+    processed_dir = processed_root
 
-    # For each seed, preprocess the data for each dataset, then train each model on the processed data. The processed data is stored in a separate directory for each seed to avoid conflicts.
-    for seed in seeds:
-        processed_dir = processed_root / f"seed_{seed}"
+    for di, dataset in enumerate(selected_datasets):
+        if not skip_preprocessing:
+            run_command(
+                [
+                    sys.executable,
+                    "-m",
+                    "src.data_pipeline.make_dataset",
+                    "--dataset",
+                    dataset,
+                    "--representation",
+                    "both",
+                    "--seed",
+                    str(seed),
+                    "--output-dir",
+                    str(processed_dir),
+                ]
+            )
 
-        for di, dataset in enumerate(selected_datasets):
-            if not skip_preprocessing:
-                run_command(
-                    [
-                        sys.executable,
-                        "-m",
-                        "src.data_pipeline.make_dataset",
-                        "--dataset",
-                        dataset,
-                        "--representation",
-                        "both",
-                        "--seed",
-                        str(seed),
-                        "--output-dir",
-                        str(processed_dir),
-                    ]
-                )
-
-            # After preprocessing, train each selected model on the processed data for the current seed and dataset. The training command includes all relevant hyperparameters, with defaults taken from DEFAULT_TRAINING_CONFIGS if not specified.
-            for mi, model in enumerate(selected_models):
-                print(
-                    f"\n=== Seed {seed} | dataset {di+1}/{len(selected_datasets)}: {dataset}"
-                    f" | model {mi+1}/{len(selected_models)}: {model.upper()} ===",
-                    flush=True,
-                )
-                if model == "rf":
-                    command = [
-                        sys.executable,
-                        "-m",
-                        "src.training.train",
-                        "--dataset",
-                        dataset,
-                        "--model",
-                        "rf",
-                        "--processed-dir",
-                        str(processed_dir),
-                        "--seed",
-                        str(seed),
-                        "--num-workers",
-                        str(num_workers),
-                        "--result-version",
-                        f"{dataset}_seed{seed}",
-                    ]
-                    tuning_json = tuning_dir / f"rf_{dataset}_seed42_best_params.json"
-                    if tuning_json.exists():
-                        rf_params = json.loads(tuning_json.read_text(encoding="utf-8"))["best_params"]
-                        command.extend(["--max-features", str(rf_params.get("max_features", "sqrt"))])
-                        command.extend(["--min-samples-leaf", str(rf_params.get("min_samples_leaf", 1))])
-                        if rf_params.get("max_depth") is not None:
-                            command.extend(["--max-depth", str(rf_params["max_depth"])])
-                    run_command(command)
-                    continue
-
-                config = DEFAULT_TRAINING_CONFIGS[model]
-                tuning_json = tuning_dir / f"{model}_{dataset}_seed42_best_params.json"
-                tuned = {}
-                if tuning_json.exists():
-                    tuned = json.loads(tuning_json.read_text(encoding="utf-8")).get("best_params", {})
+        # Train each selected model on the processed data for the current dataset. The training command includes all relevant hyperparameters, with defaults taken from DEFAULT_TRAINING_CONFIGS if not specified.
+        for mi, model in enumerate(selected_models):
+            print(
+                f"\n=== dataset {di+1}/{len(selected_datasets)}: {dataset}"
+                f" | model {mi+1}/{len(selected_models)}: {model.upper()} ===",
+                flush=True,
+            )
+            if model == "rf":
                 command = [
                     sys.executable,
                     "-m",
@@ -180,48 +136,80 @@ def main(
                     "--dataset",
                     dataset,
                     "--model",
-                    model,
-                    "--batch-size",
-                    str(batch_size),
-                    "--num-workers",
-                    str(num_workers),
-                    "--accelerator",
-                    accelerator,
+                    "rf",
                     "--processed-dir",
                     str(processed_dir),
                     "--seed",
                     str(seed),
+                    "--num-workers",
+                    str(num_workers),
                     "--result-version",
-                    f"{dataset}_seed{seed}",
-                    "--epochs",
-                    str(epochs or config["epochs"]),
-                    "--learning-rate",
-                    str(tuned.get("learning_rate") or learning_rate or config["learning_rate"]),
-                    "--patience",
-                    str(patience),
-                    "--monitor",
-                    monitor,
+                    dataset,
                 ]
-
-                if not early_stopping:
-                    command.append("--disable-early-stopping")
-                if monitor_mode is not None:
-                    command.extend(["--monitor-mode", monitor_mode])
-                if model in {"cpd", "tt", "tr"}:
-                    command.extend(["--rank", str(tuned.get("rank") or rank or config["rank"])])
-                if model == "mba":
-                    command.extend(
-                        [
-                            "--interaction-order",
-                            str(tuned.get("interaction_order") or interaction_order or config["interaction_order"]),
-                        ]
-                    )
-                if model == "mlp" and tuned.get("hidden_dim") is not None:
-                    command.extend(["--hidden-dim", str(tuned["hidden_dim"])])
-                if model == "mlp" and tuned.get("dropout") is not None:
-                    command.extend(["--dropout", str(tuned["dropout"])])
-
+                tuning_json = tuning_dir / f"rf_{dataset}_seed42_best_params.json"
+                if tuning_json.exists():
+                    rf_params = json.loads(tuning_json.read_text(encoding="utf-8"))["best_params"]
+                    command.extend(["--max-features", str(rf_params.get("max_features", "sqrt"))])
+                    command.extend(["--min-samples-leaf", str(rf_params.get("min_samples_leaf", 1))])
+                    if rf_params.get("max_depth") is not None:
+                        command.extend(["--max-depth", str(rf_params["max_depth"])])
                 run_command(command)
+                continue
+
+            config = DEFAULT_TRAINING_CONFIGS[model]
+            tuning_json = tuning_dir / f"{model}_{dataset}_seed42_best_params.json"
+            tuned = {}
+            if tuning_json.exists():
+                tuned = json.loads(tuning_json.read_text(encoding="utf-8")).get("best_params", {})
+            command = [
+                sys.executable,
+                "-m",
+                "src.training.train",
+                "--dataset",
+                dataset,
+                "--model",
+                model,
+                "--batch-size",
+                str(batch_size),
+                "--num-workers",
+                str(num_workers),
+                "--accelerator",
+                accelerator,
+                "--processed-dir",
+                str(processed_dir),
+                "--seed",
+                str(seed),
+                "--result-version",
+                dataset,
+                "--epochs",
+                str(epochs or config["epochs"]),
+                "--learning-rate",
+                str(tuned.get("learning_rate") or learning_rate or config["learning_rate"]),
+                "--patience",
+                str(patience),
+                "--monitor",
+                monitor,
+            ]
+
+            if not early_stopping:
+                command.append("--disable-early-stopping")
+            if monitor_mode is not None:
+                command.extend(["--monitor-mode", monitor_mode])
+            if model in {"cpd", "tt", "tr"}:
+                command.extend(["--rank", str(tuned.get("rank") or rank or config["rank"])])
+            if model == "mba":
+                command.extend(
+                    [
+                        "--interaction-order",
+                        str(tuned.get("interaction_order") or interaction_order or config["interaction_order"]),
+                    ]
+                )
+            if model == "mlp" and tuned.get("hidden_dim") is not None:
+                command.extend(["--hidden-dim", str(tuned["hidden_dim"])])
+            if model == "mlp" and tuned.get("dropout") is not None:
+                command.extend(["--dropout", str(tuned["dropout"])])
+
+            run_command(command)
 
 if __name__ == "__main__":
     main()

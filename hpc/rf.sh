@@ -25,13 +25,13 @@ python3 -m src.training.tune_hyperparameters \
 
 python3 -m src.training.run_experiments \
     --model rf \
-    --seed 1 --seed 2 --seed 3 --seed 4 --seed 5 --seed 42 \
+    --seed 42 \
     --skip-preprocessing
 
 git config user.email "<your-dtu-email>"
 git config user.name "<your-name>"
 git add src/summary_results/results/
-git commit -m "RF results: all datasets, 6 seeds"
+git commit -m "RF results: all datasets"
 git fetch origin
 git rebase origin/main
 git push

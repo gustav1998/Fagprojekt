@@ -32,7 +32,7 @@ python3 -m src.training.tune_hyperparameters \
 python3 -m src.training.run_experiments \
     --model lr \
     --dataset house_votes_84 \
-    --seed 1 --seed 2 --seed 3 --seed 4 --seed 5 --seed 42 \
+    --seed 42 \
     --skip-preprocessing \
     --accelerator gpu \
     --num-workers 2
