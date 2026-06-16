@@ -19,7 +19,8 @@ dependencies = [
   "lightning>=2.3.3",
   "optuna>=3.6,<5",
   "torch>=2.1.0,<2.5.0; sys_platform == 'darwin' and platform_machine == 'arm64' or sys_platform != 'darwin'",
-  "torch<=2.2.2; sys_platform == 'darwin' and platform_machine == 'x86_64'"
+  "torch<=2.2.2; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+  "matplotlib>=3.10.9",
 ]
 
 [tool.setuptools.packages.find]
