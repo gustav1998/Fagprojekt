@@ -147,7 +147,7 @@ def plot_all_epoch_metrics(metrics_path: str, output_dir: str):
                     plt.figure(figsize=(10, 6))
                     
                     # Target metrics present in your actual CSV snippet
-                    metrics_to_plot = results_df.columns
+                    metrics_to_plot = ["train_loss","val_loss","train_acc", "val_acc"]
                     
                     for metric in metrics_to_plot:
                         if metric in results_df.columns and not results_df[metric].isna().all():
