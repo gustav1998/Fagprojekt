@@ -7,7 +7,7 @@
 #BSUB -W 12:00
 #BSUB -R "rusage[mem=5GB]"
 #BSUB -R "span[hosts=1]"
-#BSUB -u 245208@dtu.dk
+#BSUB -u s245208@dtu.dk
 ### -- send notification at completion --
 #BSUB -B
 #BSUB -N
@@ -21,7 +21,6 @@ export PATH=/appl9/python/3.11.9/bin:$PATH
 cd ~/Fagprojekt
 git fetch origin
 git reset --hard origin/main
-python3 -m pip install "torch<2.5.0" --index-url https://download.pytorch.org/whl/cu118 --quiet
 python3 -m pip install -e . --quiet
 
 python3 -m src.training.tune_hyperparameters \
