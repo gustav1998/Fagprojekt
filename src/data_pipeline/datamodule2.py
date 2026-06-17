@@ -102,7 +102,7 @@ class TabularDataModule(L.LightningDataModule): # a lightning class that handles
         self.input_dim = self.X_train.shape[1]
         self.num_classes = len(self.metadata["target_mapping"])
 
-    def train_dataloader(self): # 
+    def train_dataloader(self): # wraps X_train and y_train in a TensorDataset (pairs each row of features with its label) and then returns a DataLoader that serves shuffled batches during training
         dataset = TensorDataset(self.X_train, self.y_train)
         generator = None
         if self.seed is not None:
@@ -117,7 +117,7 @@ class TabularDataModule(L.LightningDataModule): # a lightning class that handles
             generator=generator,
         )
 
-    def val_dataloader(self):
+    def val_dataloader(self): # same idea as above but for validation data
         dataset = TensorDataset(self.X_val, self.y_val)
         return DataLoader(
             dataset,
@@ -126,7 +126,7 @@ class TabularDataModule(L.LightningDataModule): # a lightning class that handles
             num_workers=self.num_workers,
         )
 
-    def test_dataloader(self):
+    def test_dataloader(self): # same as above but for test set
         dataset = TensorDataset(self.X_test, self.y_test)
         return DataLoader(
             dataset,
