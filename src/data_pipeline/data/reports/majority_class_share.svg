@@ -10,6 +10,7 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#172033}
 <text class="label" x="24" y="74">aps_failure (tensor, 2 classes)</text>
 <rect class="bar" x="210" y="58" width="700.0" height="18" rx="2"/>
 <text class="value" x="918.0" y="72">98%</text>
+<<<<<<< HEAD
 <text class="label" x="24" y="102">census_income_kdd (tensor, 2 cla</text>
 <rect class="bar alt" x="210" y="86" width="672.4" height="18" rx="2"/>
 <text class="value" x="890.4" y="100">94%</text>
@@ -103,4 +104,99 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#172033}
 <text class="label" x="24" y="942">dmft (tensor, 5 classes)</text>
 <rect class="bar alt" x="210" y="926" width="172.0" height="18" rx="2"/>
 <text class="value" x="390.0" y="940">24%</text>
+=======
+<text class="label" x="24" y="102">aps_failure (baseline, 2 classes</text>
+<rect class="bar alt" x="210" y="86" width="700.0" height="18" rx="2"/>
+<text class="value" x="918.0" y="100">98%</text>
+<text class="label" x="24" y="130">census_income_kdd (tensor, 2 cla</text>
+<rect class="bar" x="210" y="114" width="672.4" height="18" rx="2"/>
+<text class="value" x="890.4" y="128">94%</text>
+<text class="label" x="24" y="158">census_income_kdd (baseline, 2 c</text>
+<rect class="bar alt" x="210" y="142" width="672.4" height="18" rx="2"/>
+<text class="value" x="890.4" y="156">94%</text>
+<text class="label" x="24" y="186">asia_lung (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="170" width="669.1" height="18" rx="2"/>
+<text class="value" x="887.1" y="184">93%</text>
+<text class="label" x="24" y="214">asia_lung (baseline, 2 classes)</text>
+<rect class="bar alt" x="210" y="198" width="669.1" height="18" rx="2"/>
+<text class="value" x="887.1" y="212">93%</text>
+<text class="label" x="24" y="242">conf_ad (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="226" width="619.9" height="18" rx="2"/>
+<text class="value" x="837.9" y="240">86%</text>
+<text class="label" x="24" y="270">conf_ad (baseline, 2 classes)</text>
+<rect class="bar alt" x="210" y="254" width="619.9" height="18" rx="2"/>
+<text class="value" x="837.9" y="268">86%</text>
+<text class="label" x="24" y="298">coronary (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="282" width="615.9" height="18" rx="2"/>
+<text class="value" x="833.9" y="296">86%</text>
+<text class="label" x="24" y="326">coronary (baseline, 2 classes)</text>
+<rect class="bar alt" x="210" y="310" width="615.9" height="18" rx="2"/>
+<text class="value" x="833.9" y="324">86%</text>
+<text class="label" x="24" y="354">skin_segmentation (tensor, 2 cla</text>
+<rect class="bar" x="210" y="338" width="568.0" height="18" rx="2"/>
+<text class="value" x="786.0" y="352">79%</text>
+<text class="label" x="24" y="382">skin_segmentation (baseline, 2 c</text>
+<rect class="bar alt" x="210" y="366" width="568.0" height="18" rx="2"/>
+<text class="value" x="786.0" y="380">79%</text>
+<text class="label" x="24" y="410">shuttle (tensor, 7 classes)</text>
+<rect class="bar" x="210" y="394" width="567.4" height="18" rx="2"/>
+<text class="value" x="785.4" y="408">79%</text>
+<text class="label" x="24" y="438">shuttle (baseline, 7 classes)</text>
+<rect class="bar alt" x="210" y="422" width="567.4" height="18" rx="2"/>
+<text class="value" x="785.4" y="436">79%</text>
+<text class="label" x="24" y="466">mofn (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="450" width="558.3" height="18" rx="2"/>
+<text class="value" x="776.3" y="464">78%</text>
+<text class="label" x="24" y="494">mofn (baseline, 2 classes)</text>
+<rect class="bar alt" x="210" y="478" width="558.3" height="18" rx="2"/>
+<text class="value" x="776.3" y="492">78%</text>
+<text class="label" x="24" y="522">german_gss (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="506" width="552.3" height="18" rx="2"/>
+<text class="value" x="770.3" y="520">77%</text>
+<text class="label" x="24" y="550">german_gss (baseline, 2 classes)</text>
+<rect class="bar alt" x="210" y="534" width="552.3" height="18" rx="2"/>
+<text class="value" x="770.3" y="548">77%</text>
+<text class="label" x="24" y="578">rt_iot2022 (tensor, 12 classes)</text>
+<rect class="bar" x="210" y="562" width="551.1" height="18" rx="2"/>
+<text class="value" x="769.1" y="576">77%</text>
+<text class="label" x="24" y="606">rt_iot2022 (baseline, 12 classes</text>
+<rect class="bar alt" x="210" y="590" width="551.1" height="18" rx="2"/>
+<text class="value" x="769.1" y="604">77%</text>
+<text class="label" x="24" y="634">ptumor (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="618" width="548.1" height="18" rx="2"/>
+<text class="value" x="766.1" y="632">76%</text>
+<text class="label" x="24" y="662">ptumor (baseline, 2 classes)</text>
+<rect class="bar alt" x="210" y="646" width="548.1" height="18" rx="2"/>
+<text class="value" x="766.1" y="660">76%</text>
+<text class="label" x="24" y="690">ppd (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="674" width="512.0" height="18" rx="2"/>
+<text class="value" x="730.0" y="688">71%</text>
+<text class="label" x="24" y="718">ppd (baseline, 2 classes)</text>
+<rect class="bar alt" x="210" y="702" width="512.0" height="18" rx="2"/>
+<text class="value" x="730.0" y="716">71%</text>
+<text class="label" x="24" y="746">car_evaluation (tensor, 4 classe</text>
+<rect class="bar" x="210" y="730" width="501.8" height="18" rx="2"/>
+<text class="value" x="719.8" y="744">70%</text>
+<text class="label" x="24" y="774">car_evaluation (baseline, 4 clas</text>
+<rect class="bar alt" x="210" y="758" width="501.8" height="18" rx="2"/>
+<text class="value" x="719.8" y="772">70%</text>
+<text class="label" x="24" y="802">monk_2 (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="786" width="481.2" height="18" rx="2"/>
+<text class="value" x="699.2" y="800">67%</text>
+<text class="label" x="24" y="830">monk_2 (baseline, 2 classes)</text>
+<rect class="bar alt" x="210" y="814" width="481.2" height="18" rx="2"/>
+<text class="value" x="699.2" y="828">67%</text>
+<text class="label" x="24" y="858">xd6 (tensor, 2 classes)</text>
+<rect class="bar" x="210" y="842" width="481.1" height="18" rx="2"/>
+<text class="value" x="699.1" y="856">67%</text>
+<text class="label" x="24" y="886">xd6 (baseline, 2 classes)</text>
+<rect class="bar alt" x="210" y="870" width="481.1" height="18" rx="2"/>
+<text class="value" x="699.1" y="884">67%</text>
+<text class="label" x="24" y="914">connect_4 (tensor, 3 classes)</text>
+<rect class="bar" x="210" y="898" width="471.9" height="18" rx="2"/>
+<text class="value" x="689.9" y="912">66%</text>
+<text class="label" x="24" y="942">connect_4 (baseline, 3 classes)</text>
+<rect class="bar alt" x="210" y="926" width="471.9" height="18" rx="2"/>
+<text class="value" x="689.9" y="940">66%</text>
+>>>>>>> 2d51f2f38976564569cee1dbff6621aba11c6816
 </svg>

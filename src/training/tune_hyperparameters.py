@@ -12,7 +12,7 @@ from pathlib import Path
 import click
 import pandas as pd
 
-from src.data_pipeline.dataset_configs import DATASET_CONFIGS
+from src.data_pipeline.dataset_configs import DATASET_CONFIGS, EXCLUDED_DATASETS
 from src.training.run_experiments import MODELS
 from src.training.train import DEFAULT_TRAINING_CONFIGS, infer_monitor_mode
 
@@ -223,7 +223,15 @@ def main(
 ) -> None:
     """Tune models on datasets using validation performance."""
     optuna = import_optuna()
-    selected_datasets = datasets or tuple(sorted(DATASET_CONFIGS.keys()))
+    if datasets:
+        requested_excluded = set(datasets) & EXCLUDED_DATASETS
+        if requested_excluded:
+            raise click.ClickException(
+                f"These datasets are excluded from the pipeline: {sorted(requested_excluded)}"
+            )
+
+    available_datasets = set(DATASET_CONFIGS.keys()) - EXCLUDED_DATASETS
+    selected_datasets = datasets or tuple(sorted(available_datasets))
     selected_models = models or tuple(MODELS)
     processed_dir = processed_root
     for mi, model in enumerate(selected_models):
