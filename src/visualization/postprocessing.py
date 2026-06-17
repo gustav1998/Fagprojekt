@@ -74,6 +74,10 @@ def calculate_table_metrics(results: pd.DataFrame, cardinalities: str | None, ou
         cardinalities_df = pd.read_csv(cardinalities)
     results_list = []
 
+    # load dataset_summary.csv
+    dataset_summary_path = "src/data_pipeline/data/reports/dataset_summary.csv"
+    results = pd.read_csv(dataset_summary_path)
+
     # Group by dataset, aggregate across splits, using first representation
     for name in results['dataset'].unique():
         # Get all rows for this dataset and take first representation
@@ -126,7 +130,7 @@ def calculate_table_metrics(results: pd.DataFrame, cardinalities: str | None, ou
     
     return pd.DataFrame(results_list)
 
-def plot_all_epoch_metrics(metrics_path: str, output_dir: str): 
+def generate_epoch_plots(metrics_path: str, output_dir: str): 
     """
     Finds all metrics.csv files recursively, compresses multi-row epoch logs, 
     and handles plotting.
@@ -202,7 +206,7 @@ def parse_args():
         "--function",
         dest="function_name",
         required=True,
-        choices=["calculate_table_metrics", "generate_plots", "plot_all_epoch_metrics"],
+        choices=["calculate_table_metrics", "generate_plots", "generate_epoch_plots"],
         help="Name of the function to execute."
     )
 
@@ -224,7 +228,7 @@ def parse_args():
         "--metrics-path",
         dest="metrics_path",
         default="src/summary_results/results",
-        help="Path to recursively search for metrics.csv files used by plot_all_epoch_metrics."
+        help="Path to recursively search for metrics.csv files used by generate_epoch_plots."
     )
 
     parser.add_argument(
@@ -258,11 +262,16 @@ def main():
             output_dir=args.output_dir,
         )
 
-    elif args.function_name == "plot_all_epoch_metrics":
-        plot_all_epoch_metrics(
+    elif args.function_name == "generate_epoch_plots":
+        generate_epoch_plots(
             metrics_path=args.metrics_path,
             output_dir=args.output_dir,
         )
 
 if __name__ == "__main__":
     main()
+
+# Example usage:
+# uv run src/visualization/post_processing.py --function calculate_table_metrics --results src/visualization/dataset_metrics.csv --cardinalities src/visualization/cardinalities.csv
+# uv run src/visualization/post_processing.py --function generate_plots --results src/visualization/dataset_metrics.csv
+# uv run src/visualization/post_processing.py --function generate_epoch_plots --metrics-path src/summary_results/results
