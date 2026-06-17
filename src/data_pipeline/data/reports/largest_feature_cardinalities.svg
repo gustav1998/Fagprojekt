@@ -9,98 +9,122 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#172033}
 <line class="axis" x1="210" y1="46" x2="910" y2="46"/>
 <text class="label" x="24" y="74">house_votes_84 / handicapped_inf</text>
 <rect class="bar" x="210" y="58" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="72">4</text>
-<text class="label" x="24" y="102">house_votes_84 / water_project_c</text>
+<text class="value" x="918.0" y="72">697</text>
+<text class="label" x="24" y="102">phiusiil_phishing / TLD (baselin</text>
 <rect class="bar alt" x="210" y="86" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="100">4</text>
-<text class="label" x="24" y="130">house_votes_84 / adoption_of_the</text>
-<rect class="bar" x="210" y="114" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="128">4</text>
-<text class="label" x="24" y="158">house_votes_84 / physician_fee_f</text>
-<rect class="bar alt" x="210" y="142" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="156">4</text>
-<text class="label" x="24" y="186">house_votes_84 / el_salvador_aid</text>
-<rect class="bar" x="210" y="170" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="184">4</text>
-<text class="label" x="24" y="214">house_votes_84 / religious_group</text>
-<rect class="bar alt" x="210" y="198" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="212">4</text>
-<text class="label" x="24" y="242">house_votes_84 / anti_satellite_</text>
-<rect class="bar" x="210" y="226" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="240">4</text>
-<text class="label" x="24" y="270">house_votes_84 / aid_to_nicaragu</text>
-<rect class="bar alt" x="210" y="254" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="268">4</text>
-<text class="label" x="24" y="298">house_votes_84 / mx_missile (ten</text>
-<rect class="bar" x="210" y="282" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="296">4</text>
-<text class="label" x="24" y="326">house_votes_84 / immigration (te</text>
-<rect class="bar alt" x="210" y="310" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="324">4</text>
-<text class="label" x="24" y="354">house_votes_84 / synfuels_corpor</text>
-<rect class="bar" x="210" y="338" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="352">4</text>
-<text class="label" x="24" y="382">house_votes_84 / education_spend</text>
-<rect class="bar alt" x="210" y="366" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="380">4</text>
-<text class="label" x="24" y="410">house_votes_84 / superfund_right</text>
-<rect class="bar" x="210" y="394" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="408">4</text>
-<text class="label" x="24" y="438">house_votes_84 / crime (tensor)</text>
-<rect class="bar alt" x="210" y="422" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="436">4</text>
-<text class="label" x="24" y="466">house_votes_84 / duty_free_expor</text>
-<rect class="bar" x="210" y="450" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="464">4</text>
-<text class="label" x="24" y="494">house_votes_84 / export_administ</text>
-<rect class="bar alt" x="210" y="478" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="492">4</text>
-<text class="label" x="24" y="522">house_votes_84 / handicapped_inf</text>
-<rect class="bar" x="210" y="506" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="520">4</text>
-<text class="label" x="24" y="550">house_votes_84 / water_project_c</text>
-<rect class="bar alt" x="210" y="534" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="548">4</text>
-<text class="label" x="24" y="578">house_votes_84 / adoption_of_the</text>
-<rect class="bar" x="210" y="562" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="576">4</text>
-<text class="label" x="24" y="606">house_votes_84 / physician_fee_f</text>
-<rect class="bar alt" x="210" y="590" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="604">4</text>
-<text class="label" x="24" y="634">house_votes_84 / el_salvador_aid</text>
-<rect class="bar" x="210" y="618" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="632">4</text>
-<text class="label" x="24" y="662">house_votes_84 / religious_group</text>
-<rect class="bar alt" x="210" y="646" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="660">4</text>
-<text class="label" x="24" y="690">house_votes_84 / anti_satellite_</text>
-<rect class="bar" x="210" y="674" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="688">4</text>
-<text class="label" x="24" y="718">house_votes_84 / aid_to_nicaragu</text>
-<rect class="bar alt" x="210" y="702" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="716">4</text>
-<text class="label" x="24" y="746">house_votes_84 / mx_missile (bas</text>
-<rect class="bar" x="210" y="730" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="744">4</text>
-<text class="label" x="24" y="774">house_votes_84 / immigration (ba</text>
-<rect class="bar alt" x="210" y="758" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="772">4</text>
-<text class="label" x="24" y="802">house_votes_84 / synfuels_corpor</text>
-<rect class="bar" x="210" y="786" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="800">4</text>
-<text class="label" x="24" y="830">house_votes_84 / education_spend</text>
-<rect class="bar alt" x="210" y="814" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="828">4</text>
-<text class="label" x="24" y="858">house_votes_84 / superfund_right</text>
-<rect class="bar" x="210" y="842" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="856">4</text>
-<text class="label" x="24" y="886">house_votes_84 / crime (baseline</text>
-<rect class="bar alt" x="210" y="870" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="884">4</text>
-<text class="label" x="24" y="914">house_votes_84 / duty_free_expor</text>
-<rect class="bar" x="210" y="898" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="912">4</text>
-<text class="label" x="24" y="942">house_votes_84 / export_administ</text>
-<rect class="bar alt" x="210" y="926" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="940">4</text>
+<text class="value" x="918.0" y="100">697</text>
+<text class="label" x="24" y="130">census_income_kdd / industry_cod</text>
+<rect class="bar" x="210" y="114" width="54.2" height="18" rx="2"/>
+<text class="value" x="272.2" y="128">54</text>
+<text class="label" x="24" y="158">census_income_kdd / industry_cod</text>
+<rect class="bar alt" x="210" y="142" width="54.2" height="18" rx="2"/>
+<text class="value" x="272.2" y="156">54</text>
+<text class="label" x="24" y="186">census_income_kdd / previous_res</text>
+<rect class="bar" x="210" y="170" width="52.2" height="18" rx="2"/>
+<text class="value" x="270.2" y="184">52</text>
+<text class="label" x="24" y="214">census_income_kdd / previous_res</text>
+<rect class="bar alt" x="210" y="198" width="52.2" height="18" rx="2"/>
+<text class="value" x="270.2" y="212">52</text>
+<text class="label" x="24" y="242">census_income_kdd / occupation_c</text>
+<rect class="bar" x="210" y="226" width="49.2" height="18" rx="2"/>
+<text class="value" x="267.2" y="240">49</text>
+<text class="label" x="24" y="270">census_income_kdd / occupation_c</text>
+<rect class="bar alt" x="210" y="254" width="49.2" height="18" rx="2"/>
+<text class="value" x="267.2" y="268">49</text>
+<text class="label" x="24" y="298">census_income_kdd / country_of_b</text>
+<rect class="bar" x="210" y="282" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="296">44</text>
+<text class="label" x="24" y="326">census_income_kdd / country_of_b</text>
+<rect class="bar alt" x="210" y="310" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="324">44</text>
+<text class="label" x="24" y="354">census_income_kdd / country_of_b</text>
+<rect class="bar" x="210" y="338" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="352">44</text>
+<text class="label" x="24" y="382">census_income_kdd / country_of_b</text>
+<rect class="bar alt" x="210" y="366" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="380">44</text>
+<text class="label" x="24" y="410">census_income_kdd / country_of_b</text>
+<rect class="bar" x="210" y="394" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="408">44</text>
+<text class="label" x="24" y="438">census_income_kdd / country_of_b</text>
+<rect class="bar alt" x="210" y="422" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="436">44</text>
+<text class="label" x="24" y="466">census_income_kdd / household_fa</text>
+<rect class="bar" x="210" y="450" width="40.2" height="18" rx="2"/>
+<text class="value" x="258.2" y="464">40</text>
+<text class="label" x="24" y="494">census_income_kdd / household_fa</text>
+<rect class="bar alt" x="210" y="478" width="40.2" height="18" rx="2"/>
+<text class="value" x="258.2" y="492">40</text>
+<text class="label" x="24" y="522">census_income_kdd / major_indust</text>
+<rect class="bar" x="210" y="506" width="26.1" height="18" rx="2"/>
+<text class="value" x="244.1" y="520">26</text>
+<text class="label" x="24" y="550">census_income_kdd / major_indust</text>
+<rect class="bar alt" x="210" y="534" width="26.1" height="18" rx="2"/>
+<text class="value" x="244.1" y="548">26</text>
+<text class="label" x="24" y="578">census_income_kdd / education (t</text>
+<rect class="bar" x="210" y="562" width="19.1" height="18" rx="2"/>
+<text class="value" x="237.1" y="576">19</text>
+<text class="label" x="24" y="606">census_income_kdd / education (b</text>
+<rect class="bar alt" x="210" y="590" width="19.1" height="18" rx="2"/>
+<text class="value" x="237.1" y="604">19</text>
+<text class="label" x="24" y="634">census_income_kdd / major_occupa</text>
+<rect class="bar" x="210" y="618" width="17.1" height="18" rx="2"/>
+<text class="value" x="235.1" y="632">17</text>
+<text class="label" x="24" y="662">census_income_kdd / major_occupa</text>
+<rect class="bar alt" x="210" y="646" width="17.1" height="18" rx="2"/>
+<text class="value" x="235.1" y="660">17</text>
+<text class="label" x="24" y="690">credit_approval / A6 (tensor)</text>
+<rect class="bar" x="210" y="674" width="16.1" height="18" rx="2"/>
+<text class="value" x="234.1" y="688">16</text>
+<text class="label" x="24" y="718">credit_approval / A6 (baseline)</text>
+<rect class="bar alt" x="210" y="702" width="16.1" height="18" rx="2"/>
+<text class="value" x="234.1" y="716">16</text>
+<text class="label" x="24" y="746">secondary_mushroom / stem-color </text>
+<rect class="bar" x="210" y="730" width="15.1" height="18" rx="2"/>
+<text class="value" x="233.1" y="744">15</text>
+<text class="label" x="24" y="774">secondary_mushroom / stem-color </text>
+<rect class="bar alt" x="210" y="758" width="15.1" height="18" rx="2"/>
+<text class="value" x="233.1" y="772">15</text>
+<text class="label" x="24" y="802">secondary_mushroom / cap-color (</text>
+<rect class="bar" x="210" y="786" width="14.1" height="18" rx="2"/>
+<text class="value" x="232.1" y="800">14</text>
+<text class="label" x="24" y="830">secondary_mushroom / gill-color </text>
+<rect class="bar alt" x="210" y="814" width="14.1" height="18" rx="2"/>
+<text class="value" x="232.1" y="828">14</text>
+<text class="label" x="24" y="858">secondary_mushroom / cap-color (</text>
+<rect class="bar" x="210" y="842" width="14.1" height="18" rx="2"/>
+<text class="value" x="232.1" y="856">14</text>
+<text class="label" x="24" y="886">secondary_mushroom / gill-color </text>
+<rect class="bar alt" x="210" y="870" width="14.1" height="18" rx="2"/>
+<text class="value" x="232.1" y="884">14</text>
+<text class="label" x="24" y="914">secondary_mushroom / cap-surface</text>
+<rect class="bar" x="210" y="898" width="13.1" height="18" rx="2"/>
+<text class="value" x="231.1" y="912">13</text>
+<text class="label" x="24" y="942">secondary_mushroom / cap-surface</text>
+<rect class="bar alt" x="210" y="926" width="13.1" height="18" rx="2"/>
+<text class="value" x="231.1" y="940">13</text>
+<text class="label" x="24" y="970">census_income_kdd / class_of_wor</text>
+<rect class="bar" x="210" y="954" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="968">11</text>
+<text class="label" x="24" y="998">census_income_kdd / hispanic_ori</text>
+<rect class="bar alt" x="210" y="982" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="996">11</text>
+<text class="label" x="24" y="1026">census_income_kdd / migration_ms</text>
+<rect class="bar" x="210" y="1010" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1024">11</text>
+<text class="label" x="24" y="1054">census_income_kdd / migration_wi</text>
+<rect class="bar alt" x="210" y="1038" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1052">11</text>
+<text class="label" x="24" y="1082">census_income_kdd / class_of_wor</text>
+<rect class="bar" x="210" y="1066" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1080">11</text>
+<text class="label" x="24" y="1110">census_income_kdd / hispanic_ori</text>
+<rect class="bar alt" x="210" y="1094" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1108">11</text>
+<text class="label" x="24" y="1138">census_income_kdd / migration_ms</text>
+<rect class="bar" x="210" y="1122" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1136">11</text>
+<text class="label" x="24" y="1166">census_income_kdd / migration_wi</text>
+<rect class="bar alt" x="210" y="1150" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1164">11</text>
 </svg>
