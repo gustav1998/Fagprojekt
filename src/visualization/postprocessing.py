@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 import sys
 import numpy as np
-from src.data_pipeline.make_dataset import DATASET_CONFIGS
+from src.data_pipeline.make_dataset2 import DATASET_CONFIGS
 import argparse
 
 def generate_plots(results: pd.DataFrame, output_dir: str):
@@ -87,7 +87,6 @@ def calculate_table_metrics(results: pd.DataFrame, cardinalities: str | None, ou
         
         # Sum rows and missing_cells across splits
         total_rows = subset['rows'].sum()
-        total_missing_cells = subset['missing_cells'].sum()
         
         # Features and classes should be constant per dataset, so take the first value
         # Add 1 to features to account for the classification feature
@@ -117,7 +116,7 @@ def calculate_table_metrics(results: pd.DataFrame, cardinalities: str | None, ou
             tensor_size = total_rows * features
         
         # Calculate sparsity and non-zero entries
-        sparsity = total_missing_cells / tensor_size if tensor_size > 0 else 0
+        sparsity = total_rows / tensor_size if tensor_size > 0 else 0
         
         results_list.append({
             'dataset': name,
@@ -144,9 +143,6 @@ def generate_epoch_plots(metrics_path: str, output_dir: str):
                 
                 dataset_and_seed = os.path.basename(root)
                 model_name = os.path.basename(os.path.dirname(root))
-                
-                if "_seed" not in dataset_and_seed:
-                    continue
 
                 print(f"Processing: Model={model_name}, Dataset/Seed={dataset_and_seed}")
 

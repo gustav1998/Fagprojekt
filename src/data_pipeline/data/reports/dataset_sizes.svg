@@ -1,16 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="980" height="990" viewBox="0 0 980 990">
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="150" viewBox="0 0 980 150">
 <style>
 text{font-family:Arial,Helvetica,sans-serif;fill:#172033}
 .title{font-size:22px;font-weight:700}.label{font-size:12px}.value{font-size:12px;fill:#39475f}
 .axis{stroke:#d7deea;stroke-width:1}.bar{fill:#356f8c}.bar.alt{fill:#d18454}
 </style>
-<rect x="0" y="0" width="980" height="990" fill="#ffffff"/>
+<rect x="0" y="0" width="980" height="150" fill="#ffffff"/>
 <text class="title" x="24" y="34">Rows per processed dataset</text>
 <line class="axis" x1="210" y1="46" x2="910" y2="46"/>
-<text class="label" x="24" y="74">census_income_kdd (baseline)</text>
+<text class="label" x="24" y="74">house_votes_84 (baseline)</text>
 <rect class="bar" x="210" y="58" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="72">299,285</text>
-<text class="label" x="24" y="102">census_income_kdd (tensor)</text>
+<text class="value" x="918.0" y="72">435</text>
+<text class="label" x="24" y="102">house_votes_84 (tensor)</text>
 <rect class="bar alt" x="210" y="86" width="700.0" height="18" rx="2"/>
 <text class="value" x="918.0" y="100">299,285</text>
 <text class="label" x="24" y="130">skin_segmentation (baseline)</text>
