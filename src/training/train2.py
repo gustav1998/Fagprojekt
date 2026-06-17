@@ -25,7 +25,7 @@ from src.models.tt import TTClassifier
 from src.models.tr import TRClassifier
 from src.models.rf import DEFAULT_RF_CONFIG, compute_metrics, parse_max_features
 
-# %% default hyperparameters used when none are provided via command line — tuned values from tune_hyperparameters2 override these
+# %% default hyperparameters used when none are provided via command line. Tuned values from tune_hyperparameters2 override these
 
 DEFAULT_TRAINING_CONFIGS = {
     "lr": {
@@ -485,7 +485,7 @@ def main():
     fit_seconds = time.perf_counter() - start_time # time the training process
 
     test_seconds = None
-    if not args.skip_test: # loads best checkpoint if early stopping was used, otherwise uses final weights
+    if not args.skip_test:
         test_start_time = time.perf_counter()
         trainer.test(
             model,

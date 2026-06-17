@@ -72,6 +72,10 @@ def main():
     logger = logging.getLogger(__name__)
     config = DATASET_CONFIGS[args.dataset_name] # looks up that dataset's settings
 
+    if args.dataset_name == "lenses": # lenses collapses to a single usable class after rare-class removal, so it cannot be used
+        logger.warning("Skipping lenses — too few samples per class after rare-class removal.")
+        return
+
     logger.info("Processing dataset: %s", args.dataset_name)
 
     # load whatever raw files exist, then combine them into one pooled dataframe

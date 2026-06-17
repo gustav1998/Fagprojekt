@@ -53,8 +53,8 @@ def parse_args():
 def main():
     args = parse_args()
 
-    selected_datasets = args.datasets or sorted(DATASET_CONFIGS.keys()) # defaults to all 34 datasets if none specified
-    selected_models = args.models or MODELS # defaults to all 7 models if none specified
+    selected_datasets = args.datasets or sorted(DATASET_CONFIGS.keys()) # defaults to all datasets if none specified
+    selected_models = args.models or MODELS # defaults to all models if none specified
     processed_dir = args.processed_root
 
     for di, dataset in enumerate(selected_datasets):

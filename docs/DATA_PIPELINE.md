@@ -332,6 +332,25 @@ uv run python -m src.data_pipeline.make_dataset --dataset house_votes_84 --repre
 ```
 
 
+## 2b. Dataset Creation Command (new pipeline)
+
+File: `src/data_pipeline/make_dataset2.py`
+
+Generates the 80/20 tuning split and 5-fold CV splits for one dataset. The `lenses` dataset is skipped automatically as it collapses to a single class after rare-class removal.
+
+Single dataset:
+
+```bash
+uv run python -m src.data_pipeline.make_dataset2 --dataset house_votes_84 --representation both
+```
+
+All datasets (PowerShell):
+
+```powershell
+foreach ($dataset in (uv run python -c "from src.data_pipeline.dataset_configs import DATASET_CONFIGS; names = sorted(DATASET_CONFIGS); names.remove('lenses'); print(' '.join(names))").Split(' ')) { uv run python -m src.data_pipeline.make_dataset2 --dataset $dataset --representation both }
+```
+
+
 ## 3. Loading Processed Data
 
 File: `src/data_pipeline/load_processed.py`
