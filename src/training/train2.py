@@ -25,7 +25,7 @@ from src.models.tt import TTClassifier
 from src.models.tr import TRClassifier
 from src.models.rf import DEFAULT_RF_CONFIG, compute_metrics, parse_max_features
 
-# %% 
+# %% default hyperparameters used when none are provided via command line — tuned values from tune_hyperparameters2 override these
 
 DEFAULT_TRAINING_CONFIGS = {
     "lr": {
@@ -259,27 +259,29 @@ def _train_rf(args, result_version):
         fold=args.fold,
     )
 
-    if args.mode == "tuning":
+    if args.mode == "tuning": # in tuning mode, tuning_val is used for both validation and test
         train_df = data["train_df"]
         val_df = data["val_df"]
         test_df = data["val_df"]
     else:
-        fold_test_df = data["val_df"]
-        train_indices, val_indices = train_test_split(
+        fold_test_df = data["val_df"] # val_df from load_processed2 is the held-out fold test set
+        train_indices, val_indices = train_test_split( # split fold_train 80/20 internally so RF has a validation set for early stopping
             range(len(data["train_df"])),
             test_size=0.2,
             random_state=args.seed,
         )
         train_df = data["train_df"].iloc[train_indices].reset_index(drop=True)
         val_df = data["train_df"].iloc[val_indices].reset_index(drop=True)
-        test_df = fold_test_df
+        test_df = fold_test_df # the actual held-out fold is used as the test set
 
     metadata = data["metadata"]
 
     X_train = train_df.drop(columns=["target"]).to_numpy()
     y_train = train_df["target"].to_numpy()
+
     X_val = val_df.drop(columns=["target"]).to_numpy()
     y_val = val_df["target"].to_numpy()
+    
     X_test = test_df.drop(columns=["target"]).to_numpy()
     y_test = test_df["target"].to_numpy()
 
@@ -294,13 +296,13 @@ def _train_rf(args, result_version):
 
     fit_start = time.perf_counter()
     rf.fit(X_train, y_train)
-    fit_seconds = time.perf_counter() - fit_start
+    fit_seconds = time.perf_counter() - fit_start # time the training process
 
-    val_metrics = compute_metrics(y_val, rf.predict(X_val))
+    val_metrics = compute_metrics(y_val, rf.predict(X_val)) # evaluate on internal val set (not the held-out fold test)
 
     test_metrics = {}
     test_seconds = None
-    if not args.skip_test:
+    if not args.skip_test: # evaluate on the held-out fold test set and time it
         test_start = time.perf_counter()
         test_metrics = compute_metrics(y_test, rf.predict(X_test))
         test_seconds = time.perf_counter() - test_start
@@ -308,7 +310,7 @@ def _train_rf(args, result_version):
     result_dir = Path("src/summary_results/results") / "rf" / result_version
     result_dir.mkdir(parents=True, exist_ok=True)
 
-    row = {
+    row = { # saves val and test metrics in the same format as the lightning models so summarize_results can read both
         "epoch": 0,
         "step": 0,
         "val_acc": val_metrics["acc"],
@@ -378,11 +380,11 @@ def main():
 
     result_version = build_result_version(args)
 
-    if args.model == "rf":
+    if args.model == "rf": # rf has its own training path that doesn't use lightning
         _train_rf(args, result_version)
         return
 
-    datamodule = TabularDataModule(
+    datamodule = TabularDataModule( # loads the correct splits and prepares dataloaders based on mode and fold
         dataset_name=args.dataset,
         mode=args.mode,
         fold=args.fold,
@@ -447,10 +449,10 @@ def main():
         version=result_version,
     )
 
-    monitor_mode = args.monitor_mode or infer_monitor_mode(args.monitor)
+    monitor_mode = args.monitor_mode or infer_monitor_mode(args.monitor) # infer min/max from metric name if not explicitly set
     callbacks = []
     checkpoint_callback = None
-    if args.early_stopping:
+    if args.early_stopping: # saves the best checkpoint and stops early if the monitored metric stops improving
         checkpoint_callback = ModelCheckpoint(
             dirpath=Path(logger.log_dir) / "checkpoints",
             filename="best",
@@ -483,7 +485,7 @@ def main():
     fit_seconds = time.perf_counter() - start_time # time the training process
 
     test_seconds = None
-    if not args.skip_test:
+    if not args.skip_test: # loads best checkpoint if early stopping was used, otherwise uses final weights
         test_start_time = time.perf_counter()
         trainer.test(
             model,
