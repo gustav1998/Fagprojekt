@@ -1,6 +1,6 @@
 #!/bin/sh
 #BSUB -q gpuv100
-#BSUB -J mba2_rest
+#BSUB -J mba_rest
 #BSUB -n 4
 ### -- select 1 gpu in exclusive process mode with MPS --
 #BSUB -gpu "num=1:mode=exclusive_process:mps=yes"

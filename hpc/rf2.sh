@@ -1,6 +1,6 @@
 #!/bin/sh
 #BSUB -q hpc
-#BSUB -J rf2
+#BSUB -J rf
 #BSUB -n 16
 #BSUB -W 12:00
 #BSUB -R "rusage[mem=4GB]"

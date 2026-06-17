@@ -1,10 +1,10 @@
 #!/bin/sh
 #BSUB -q gpuv100
-#BSUB -J cpd2_census_income_kdd
+#BSUB -J cpd_cen
 #BSUB -n 4
 ### -- select 1 gpu in exclusive process mode with MPS --
 #BSUB -gpu "num=1:mode=exclusive_process:mps=yes"
-#BSUB -W 36:00
+#BSUB -W 24:00
 #BSUB -R "rusage[mem=5GB]"
 #BSUB -R "span[hosts=1]"
 #BSUB -u s245208@dtu.dk
