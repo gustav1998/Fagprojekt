@@ -89,7 +89,7 @@ def parse_args():
     parser.add_argument("--batch-size", type=int, default=512)
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument("--max-mba-parameters", type=int, default=5_000_000, help="Maximum MBA parameters allowed — filters which interaction orders are included in the grid.")
-    parser.add_argument("--max-mba-order", type=int, default=3, help="Maximum MBA interaction order considered.")
+    parser.add_argument("--max-mba-order", type=int, default=2, help="Maximum MBA interaction order considered.")
     parser.add_argument("--accelerator", choices=["auto", "cpu", "gpu"], default="cpu")
     parser.add_argument("--metric", type=str, default="val_loss", help="Validation metric to optimise across combos.")
     parser.add_argument("--metric-mode", choices=["min", "max"], default=None, help="Whether the metric should be minimized or maximized. Inferred from metric name if not set.")
