@@ -14,7 +14,7 @@ from src.data_pipeline.dataset_configs import DATASET_CONFIGS
 
 DEFAULT_PROCESSED_ROOT = Path("src/data_pipeline/data/processed")
 DEFAULT_OUTPUT_DIR = Path("src/data_pipeline/data/reports")
-SPLITS = ("train", "val", "test")
+SPLITS = ("tuning_train", "tuning_val", "fold_1_train", "fold_1_test")
 REPRESENTATIONS = ("tensor", "baseline")
 
 
@@ -294,7 +294,7 @@ def write_dataset_size_plot(summary: pd.DataFrame, output_dir: Path) -> None:
 
 
 def write_majority_share_plot(summary: pd.DataFrame, output_dir: Path) -> None:
-    test_rows = summary[summary["split"] == "test"].copy()
+    test_rows = summary[summary["split"] == "fold_1_test"].copy()
     test_rows["majority_percent"] = test_rows["majority_share"] * 100
     test_rows["label"] = (
         test_rows["dataset"]

@@ -1,0 +1,15 @@
+{
+  "dataset": "house_votes_84",
+  "model": "lr",
+  "seed": 42,
+  "metric": "val_loss",
+  "metric_mode": "min",
+  "best_score": 0.30120187997817993,
+  "best_params": {
+    "learning_rate": 0.01
+  },
+  "num_combos": 3,
+  "epochs": 100,
+  "patience": 15,
+  "batch_size": 512
+}
