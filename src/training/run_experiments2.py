@@ -5,6 +5,7 @@ import subprocess
 import sys
 import argparse
 
+import pandas as pd
 from pathlib import Path
 from src.data_pipeline.dataset_configs import DATASET_CONFIGS
 from src.training.train2 import DEFAULT_TRAINING_CONFIGS
@@ -20,6 +21,19 @@ N_FOLDS = 5
 def run_command(command):
     print(" ".join(command), flush=True)
     subprocess.run(command, check=True)
+
+
+# prints a one-line summary of the key test metrics after each fold completes
+def print_fold_summary(model, dataset, fold, seed):
+    result_dir = Path("src/summary_results/results") / model / f"{dataset}_fold{fold}_seed{seed}"
+    metrics_path = result_dir / "metrics.csv"
+    if not metrics_path.exists():
+        return
+    row = pd.read_csv(metrics_path).iloc[-1]
+    f1 = row.get("test_macro_f1", float("nan"))
+    bal_acc = row.get("test_balanced_acc", float("nan"))
+    acc = row.get("test_acc", float("nan"))
+    print(f"  done — test_macro_f1: {f1:.4f} | test_balanced_acc: {bal_acc:.4f} | test_acc: {acc:.4f}", flush=True)
 
 # %%
 
@@ -94,6 +108,7 @@ def main():
                         if rf_params.get("max_depth") is not None:
                             command.extend(["--max-depth", str(rf_params["max_depth"])])
                     run_command(command)
+                    print_fold_summary(model, dataset, fold, args.seed)
                     continue
 
                 config = DEFAULT_TRAINING_CONFIGS[model]
@@ -133,6 +148,7 @@ def main():
                     command.extend(["--dropout", str(tuned["dropout"])])
 
                 run_command(command)
+                print_fold_summary(model, dataset, fold, args.seed)
 
 
 if __name__ == "__main__":

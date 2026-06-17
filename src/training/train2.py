@@ -20,7 +20,7 @@ from src.models.logistic_regression import LogisticRegression
 from src.models.mlp import MLPClassifier
 from src.models.lightning_module import TabularClassifierModule
 from src.models.cpd import CPDClassifier
-from src.models.mba2 import MBAClassifier
+from src.models.mba import MBAClassifier
 from src.models.tt import TTClassifier
 from src.models.tr import TRClassifier
 from src.models.rf import DEFAULT_RF_CONFIG, compute_metrics, parse_max_features
