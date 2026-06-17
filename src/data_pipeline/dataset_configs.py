@@ -652,3 +652,6 @@ for _dataset_name in [
         "missing_tokens": ["?"],
         "task": "classification",
     }
+
+
+EXCLUDED_DATASETS = {"lenses"}
