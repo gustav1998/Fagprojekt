@@ -69,10 +69,10 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#172033}
 <text class="value" x="283.6" y="604">28,056</text>
 <text class="label" x="24" y="634">nursery (baseline)</text>
 <rect class="bar" x="210" y="618" width="30.3" height="18" rx="2"/>
-<text class="value" x="248.3" y="632">12,960</text>
+<text class="value" x="248.3" y="632">12,958</text>
 <text class="label" x="24" y="662">nursery (tensor)</text>
 <rect class="bar alt" x="210" y="646" width="30.3" height="18" rx="2"/>
-<text class="value" x="248.3" y="660">12,960</text>
+<text class="value" x="248.3" y="660">12,958</text>
 <text class="label" x="24" y="690">asia_lung (baseline)</text>
 <rect class="bar" x="210" y="674" width="11.7" height="18" rx="2"/>
 <text class="value" x="229.7" y="688">5,000</text>

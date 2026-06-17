@@ -9,122 +9,122 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#172033}
 <line class="axis" x1="210" y1="46" x2="910" y2="46"/>
 <text class="label" x="24" y="74">phiusiil_phishing / TLD (tensor)</text>
 <rect class="bar" x="210" y="58" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="72">646</text>
+<text class="value" x="918.0" y="72">697</text>
 <text class="label" x="24" y="102">phiusiil_phishing / TLD (baselin</text>
 <rect class="bar alt" x="210" y="86" width="700.0" height="18" rx="2"/>
-<text class="value" x="918.0" y="100">646</text>
+<text class="value" x="918.0" y="100">697</text>
 <text class="label" x="24" y="130">census_income_kdd / industry_cod</text>
-<rect class="bar" x="210" y="114" width="58.5" height="18" rx="2"/>
-<text class="value" x="276.5" y="128">54</text>
+<rect class="bar" x="210" y="114" width="54.2" height="18" rx="2"/>
+<text class="value" x="272.2" y="128">54</text>
 <text class="label" x="24" y="158">census_income_kdd / industry_cod</text>
-<rect class="bar alt" x="210" y="142" width="58.5" height="18" rx="2"/>
-<text class="value" x="276.5" y="156">54</text>
+<rect class="bar alt" x="210" y="142" width="54.2" height="18" rx="2"/>
+<text class="value" x="272.2" y="156">54</text>
 <text class="label" x="24" y="186">census_income_kdd / previous_res</text>
-<rect class="bar" x="210" y="170" width="56.3" height="18" rx="2"/>
-<text class="value" x="274.3" y="184">52</text>
+<rect class="bar" x="210" y="170" width="52.2" height="18" rx="2"/>
+<text class="value" x="270.2" y="184">52</text>
 <text class="label" x="24" y="214">census_income_kdd / previous_res</text>
-<rect class="bar alt" x="210" y="198" width="56.3" height="18" rx="2"/>
-<text class="value" x="274.3" y="212">52</text>
+<rect class="bar alt" x="210" y="198" width="52.2" height="18" rx="2"/>
+<text class="value" x="270.2" y="212">52</text>
 <text class="label" x="24" y="242">census_income_kdd / occupation_c</text>
-<rect class="bar" x="210" y="226" width="53.1" height="18" rx="2"/>
-<text class="value" x="271.1" y="240">49</text>
+<rect class="bar" x="210" y="226" width="49.2" height="18" rx="2"/>
+<text class="value" x="267.2" y="240">49</text>
 <text class="label" x="24" y="270">census_income_kdd / occupation_c</text>
-<rect class="bar alt" x="210" y="254" width="53.1" height="18" rx="2"/>
-<text class="value" x="271.1" y="268">49</text>
+<rect class="bar alt" x="210" y="254" width="49.2" height="18" rx="2"/>
+<text class="value" x="267.2" y="268">49</text>
 <text class="label" x="24" y="298">census_income_kdd / country_of_b</text>
-<rect class="bar" x="210" y="282" width="47.7" height="18" rx="2"/>
-<text class="value" x="265.7" y="296">44</text>
+<rect class="bar" x="210" y="282" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="296">44</text>
 <text class="label" x="24" y="326">census_income_kdd / country_of_b</text>
-<rect class="bar alt" x="210" y="310" width="47.7" height="18" rx="2"/>
-<text class="value" x="265.7" y="324">44</text>
+<rect class="bar alt" x="210" y="310" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="324">44</text>
 <text class="label" x="24" y="354">census_income_kdd / country_of_b</text>
-<rect class="bar" x="210" y="338" width="47.7" height="18" rx="2"/>
-<text class="value" x="265.7" y="352">44</text>
+<rect class="bar" x="210" y="338" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="352">44</text>
 <text class="label" x="24" y="382">census_income_kdd / country_of_b</text>
-<rect class="bar alt" x="210" y="366" width="47.7" height="18" rx="2"/>
-<text class="value" x="265.7" y="380">44</text>
+<rect class="bar alt" x="210" y="366" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="380">44</text>
 <text class="label" x="24" y="410">census_income_kdd / country_of_b</text>
-<rect class="bar" x="210" y="394" width="47.7" height="18" rx="2"/>
-<text class="value" x="265.7" y="408">44</text>
+<rect class="bar" x="210" y="394" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="408">44</text>
 <text class="label" x="24" y="438">census_income_kdd / country_of_b</text>
-<rect class="bar alt" x="210" y="422" width="47.7" height="18" rx="2"/>
-<text class="value" x="265.7" y="436">44</text>
+<rect class="bar alt" x="210" y="422" width="44.2" height="18" rx="2"/>
+<text class="value" x="262.2" y="436">44</text>
 <text class="label" x="24" y="466">census_income_kdd / household_fa</text>
-<rect class="bar" x="210" y="450" width="43.3" height="18" rx="2"/>
-<text class="value" x="261.3" y="464">40</text>
+<rect class="bar" x="210" y="450" width="40.2" height="18" rx="2"/>
+<text class="value" x="258.2" y="464">40</text>
 <text class="label" x="24" y="494">census_income_kdd / household_fa</text>
-<rect class="bar alt" x="210" y="478" width="43.3" height="18" rx="2"/>
-<text class="value" x="261.3" y="492">40</text>
+<rect class="bar alt" x="210" y="478" width="40.2" height="18" rx="2"/>
+<text class="value" x="258.2" y="492">40</text>
 <text class="label" x="24" y="522">census_income_kdd / major_indust</text>
-<rect class="bar" x="210" y="506" width="28.2" height="18" rx="2"/>
-<text class="value" x="246.2" y="520">26</text>
+<rect class="bar" x="210" y="506" width="26.1" height="18" rx="2"/>
+<text class="value" x="244.1" y="520">26</text>
 <text class="label" x="24" y="550">census_income_kdd / major_indust</text>
-<rect class="bar alt" x="210" y="534" width="28.2" height="18" rx="2"/>
-<text class="value" x="246.2" y="548">26</text>
+<rect class="bar alt" x="210" y="534" width="26.1" height="18" rx="2"/>
+<text class="value" x="244.1" y="548">26</text>
 <text class="label" x="24" y="578">census_income_kdd / education (t</text>
-<rect class="bar" x="210" y="562" width="20.6" height="18" rx="2"/>
-<text class="value" x="238.6" y="576">19</text>
+<rect class="bar" x="210" y="562" width="19.1" height="18" rx="2"/>
+<text class="value" x="237.1" y="576">19</text>
 <text class="label" x="24" y="606">census_income_kdd / education (b</text>
-<rect class="bar alt" x="210" y="590" width="20.6" height="18" rx="2"/>
-<text class="value" x="238.6" y="604">19</text>
+<rect class="bar alt" x="210" y="590" width="19.1" height="18" rx="2"/>
+<text class="value" x="237.1" y="604">19</text>
 <text class="label" x="24" y="634">census_income_kdd / major_occupa</text>
-<rect class="bar" x="210" y="618" width="18.4" height="18" rx="2"/>
-<text class="value" x="236.4" y="632">17</text>
+<rect class="bar" x="210" y="618" width="17.1" height="18" rx="2"/>
+<text class="value" x="235.1" y="632">17</text>
 <text class="label" x="24" y="662">census_income_kdd / major_occupa</text>
-<rect class="bar alt" x="210" y="646" width="18.4" height="18" rx="2"/>
-<text class="value" x="236.4" y="660">17</text>
+<rect class="bar alt" x="210" y="646" width="17.1" height="18" rx="2"/>
+<text class="value" x="235.1" y="660">17</text>
 <text class="label" x="24" y="690">credit_approval / A6 (tensor)</text>
-<rect class="bar" x="210" y="674" width="17.3" height="18" rx="2"/>
-<text class="value" x="235.3" y="688">16</text>
+<rect class="bar" x="210" y="674" width="16.1" height="18" rx="2"/>
+<text class="value" x="234.1" y="688">16</text>
 <text class="label" x="24" y="718">credit_approval / A6 (baseline)</text>
-<rect class="bar alt" x="210" y="702" width="17.3" height="18" rx="2"/>
-<text class="value" x="235.3" y="716">16</text>
+<rect class="bar alt" x="210" y="702" width="16.1" height="18" rx="2"/>
+<text class="value" x="234.1" y="716">16</text>
 <text class="label" x="24" y="746">secondary_mushroom / stem-color </text>
-<rect class="bar" x="210" y="730" width="16.3" height="18" rx="2"/>
-<text class="value" x="234.3" y="744">15</text>
+<rect class="bar" x="210" y="730" width="15.1" height="18" rx="2"/>
+<text class="value" x="233.1" y="744">15</text>
 <text class="label" x="24" y="774">secondary_mushroom / stem-color </text>
-<rect class="bar alt" x="210" y="758" width="16.3" height="18" rx="2"/>
-<text class="value" x="234.3" y="772">15</text>
+<rect class="bar alt" x="210" y="758" width="15.1" height="18" rx="2"/>
+<text class="value" x="233.1" y="772">15</text>
 <text class="label" x="24" y="802">secondary_mushroom / cap-color (</text>
-<rect class="bar" x="210" y="786" width="15.2" height="18" rx="2"/>
-<text class="value" x="233.2" y="800">14</text>
+<rect class="bar" x="210" y="786" width="14.1" height="18" rx="2"/>
+<text class="value" x="232.1" y="800">14</text>
 <text class="label" x="24" y="830">secondary_mushroom / gill-color </text>
-<rect class="bar alt" x="210" y="814" width="15.2" height="18" rx="2"/>
-<text class="value" x="233.2" y="828">14</text>
+<rect class="bar alt" x="210" y="814" width="14.1" height="18" rx="2"/>
+<text class="value" x="232.1" y="828">14</text>
 <text class="label" x="24" y="858">secondary_mushroom / cap-color (</text>
-<rect class="bar" x="210" y="842" width="15.2" height="18" rx="2"/>
-<text class="value" x="233.2" y="856">14</text>
+<rect class="bar" x="210" y="842" width="14.1" height="18" rx="2"/>
+<text class="value" x="232.1" y="856">14</text>
 <text class="label" x="24" y="886">secondary_mushroom / gill-color </text>
-<rect class="bar alt" x="210" y="870" width="15.2" height="18" rx="2"/>
-<text class="value" x="233.2" y="884">14</text>
+<rect class="bar alt" x="210" y="870" width="14.1" height="18" rx="2"/>
+<text class="value" x="232.1" y="884">14</text>
 <text class="label" x="24" y="914">secondary_mushroom / cap-surface</text>
-<rect class="bar" x="210" y="898" width="14.1" height="18" rx="2"/>
-<text class="value" x="232.1" y="912">13</text>
+<rect class="bar" x="210" y="898" width="13.1" height="18" rx="2"/>
+<text class="value" x="231.1" y="912">13</text>
 <text class="label" x="24" y="942">secondary_mushroom / cap-surface</text>
-<rect class="bar alt" x="210" y="926" width="14.1" height="18" rx="2"/>
-<text class="value" x="232.1" y="940">13</text>
+<rect class="bar alt" x="210" y="926" width="13.1" height="18" rx="2"/>
+<text class="value" x="231.1" y="940">13</text>
 <text class="label" x="24" y="970">census_income_kdd / class_of_wor</text>
-<rect class="bar" x="210" y="954" width="11.9" height="18" rx="2"/>
-<text class="value" x="229.9" y="968">11</text>
+<rect class="bar" x="210" y="954" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="968">11</text>
 <text class="label" x="24" y="998">census_income_kdd / hispanic_ori</text>
-<rect class="bar alt" x="210" y="982" width="11.9" height="18" rx="2"/>
-<text class="value" x="229.9" y="996">11</text>
+<rect class="bar alt" x="210" y="982" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="996">11</text>
 <text class="label" x="24" y="1026">census_income_kdd / migration_ms</text>
-<rect class="bar" x="210" y="1010" width="11.9" height="18" rx="2"/>
-<text class="value" x="229.9" y="1024">11</text>
+<rect class="bar" x="210" y="1010" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1024">11</text>
 <text class="label" x="24" y="1054">census_income_kdd / migration_wi</text>
-<rect class="bar alt" x="210" y="1038" width="11.9" height="18" rx="2"/>
-<text class="value" x="229.9" y="1052">11</text>
+<rect class="bar alt" x="210" y="1038" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1052">11</text>
 <text class="label" x="24" y="1082">census_income_kdd / class_of_wor</text>
-<rect class="bar" x="210" y="1066" width="11.9" height="18" rx="2"/>
-<text class="value" x="229.9" y="1080">11</text>
+<rect class="bar" x="210" y="1066" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1080">11</text>
 <text class="label" x="24" y="1110">census_income_kdd / hispanic_ori</text>
-<rect class="bar alt" x="210" y="1094" width="11.9" height="18" rx="2"/>
-<text class="value" x="229.9" y="1108">11</text>
+<rect class="bar alt" x="210" y="1094" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1108">11</text>
 <text class="label" x="24" y="1138">census_income_kdd / migration_ms</text>
-<rect class="bar" x="210" y="1122" width="11.9" height="18" rx="2"/>
-<text class="value" x="229.9" y="1136">11</text>
+<rect class="bar" x="210" y="1122" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1136">11</text>
 <text class="label" x="24" y="1166">census_income_kdd / migration_wi</text>
-<rect class="bar alt" x="210" y="1150" width="11.9" height="18" rx="2"/>
-<text class="value" x="229.9" y="1164">11</text>
+<rect class="bar alt" x="210" y="1150" width="11.0" height="18" rx="2"/>
+<text class="value" x="229.0" y="1164">11</text>
 </svg>
