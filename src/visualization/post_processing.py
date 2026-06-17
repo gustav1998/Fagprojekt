@@ -36,6 +36,17 @@ def generate_plots(results: pd.DataFrame, output_dir: str):
     plt.savefig(os.path.join(output_dir, 'plots/non_zero_entries_boxplot.png'))
     plt.close()
 
+    # Generate bar plot for non-zero entries per dataset
+    plt.figure(figsize=(10, 6))
+    metrics.groupby('dataset')['non_zero_entries'].sum().plot(kind='bar')
+    plt.title('Total Non-Zero Entries per Dataset')
+    plt.xlabel('Dataset')
+    plt.ylabel('Total Non-Zero Entries')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'plots/non_zero_entries_barplot.png'))
+    plt.close()
+
 def calculate_table_metrics(results: pd.DataFrame, cardinalities: str | None, output_dir: str) -> pd.DataFrame:
     '''
     Calculate the relevant metrics aggregated per dataset. An example of the input is given below:
