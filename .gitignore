@@ -94,3 +94,6 @@ target/
 
 # Mypy cache
 .mypy_cache/
+
+# Unused/outdated files
+/src/old_files

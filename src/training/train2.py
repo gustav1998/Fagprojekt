@@ -19,8 +19,8 @@ from src.data_pipeline.load_processed2 import load_processed_dataset
 from src.models.logistic_regression import LogisticRegression
 from src.models.mlp import MLPClassifier
 from src.models.lightning_module import TabularClassifierModule
-from src.models.cpd import CPDClassifier
-from src.models.mba import MBAClassifier
+from src.models.cpd2 import ClassParafacClassifier
+from src.models.mba2 import MBAClassifier
 from src.models.tt import TTClassifier
 from src.models.tr import TRClassifier
 from src.models.rf import DEFAULT_RF_CONFIG, compute_metrics, parse_max_features
@@ -410,7 +410,7 @@ def main():
             dropout=args.dropout,
         )
     elif args.model == "cpd":
-        base_model = CPDClassifier(
+        base_model = ClassParafacClassifier(
             feature_dims=datamodule.cardinalities,
             rank=args.rank,
             num_classes=datamodule.num_classes,
