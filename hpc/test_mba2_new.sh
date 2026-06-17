@@ -49,7 +49,7 @@ python3 -m src.training.run_experiments2 \
 
 git config user.email "245208@dtu.dk"
 git config user.name "Anya-Helle-Pritzl"
-git add src/summary_results/results/
+git add -f src/summary_results/results/
 git commit -m "test: new MBA2 timing on connect_4 (5-fold CV)"
 git fetch origin
 git rebase origin/main

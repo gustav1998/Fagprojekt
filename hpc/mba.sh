@@ -40,7 +40,7 @@ python3 -m src.training.run_experiments \
 
 git config user.email "<your-dtu-email>"
 git config user.name "<your-name>"
-git add src/summary_results/results/
+git add -f src/summary_results/results/
 git commit -m "MBA results: all datasets"
 git fetch origin
 git rebase origin/main
