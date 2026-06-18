@@ -2,8 +2,8 @@
 #BSUB -q hpc
 #BSUB -J rf
 #BSUB -n 16
-#BSUB -W 12:00
-#BSUB -R "rusage[mem=4GB]"
+#BSUB -W 6:00
+#BSUB -R "rusage[mem=1GB]"
 #BSUB -R "span[hosts=1]"
 #BSUB -u s245208@dtu.dk
 #BSUB -B
