@@ -21,7 +21,7 @@ from src.models.mlp import MLPClassifier
 from src.models.lightning_module import TabularClassifierModule
 from src.models.cpd2 import ClassParafacClassifier
 from src.models.mba2 import MBAClassifier
-from src.models.tt import TTClassifier
+from src.models.tt2 import ClassTTClassifier
 from src.models.tr import TRClassifier
 from src.models.rf import DEFAULT_RF_CONFIG, compute_metrics, parse_max_features
 
@@ -422,7 +422,7 @@ def main():
             num_classes=datamodule.num_classes,
         )
     elif args.model == "tt":
-        base_model = TTClassifier(
+        base_model = ClassTTClassifier(
             feature_dims=datamodule.cardinalities,
             rank=args.rank,
             num_classes=datamodule.num_classes,
