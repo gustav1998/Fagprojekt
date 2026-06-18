@@ -1,0 +1,16 @@
+{
+  "dataset": "credit_approval",
+  "model": "mba",
+  "seed": 42,
+  "metric": "val_loss",
+  "metric_mode": "min",
+  "best_score": 0.6030790209770203,
+  "best_params": {
+    "interaction_order": 2,
+    "learning_rate": 0.001
+  },
+  "num_combos": 6,
+  "epochs": 60,
+  "patience": 15,
+  "batch_size": 512
+}
