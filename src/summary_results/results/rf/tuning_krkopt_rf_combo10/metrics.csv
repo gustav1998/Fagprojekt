@@ -1,0 +1,2 @@
+epoch,step,val_acc,val_balanced_acc,val_macro_precision,val_macro_recall,val_macro_f1,val_weighted_f1,test_acc,test_loss,test_balanced_acc,test_macro_precision,test_macro_recall,test_macro_f1,test_weighted_f1
+0,0,0.34925160370634356,0.25970162875596325,0.2771583493410302,0.25970162875596325,0.2425655537726904,0.3087181449230039,,,,,,,
