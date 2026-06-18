@@ -88,16 +88,7 @@ python3 -m src.training.run_experiments2 \
     --accelerator gpu \
     --num-workers 4
 
-find src/summary_results/results/ -name "*.ckpt" -delete
-git config user.email "s245208@dtu.dk"
-git config user.name "Anya-Helle-Pritzl"
-git add -f $(find src/summary_results/results/ -name "*.json")
-git commit -m "TT2 results: remaining 27 datasets"
-for i in 1 2 3 4 5; do
-    git fetch origin
-    if git rebase origin/main && git push; then
-        break
-    fi
-    git rebase --abort 2>/dev/null || true
-    sleep 30
+for dataset in asia_lung balance_scale car_evaluation cleveland conf_ad connect_4 coronary credit_approval dmft german_gss hayesroth house_votes_84 krkopt led7 mofn nursery parity5p5 ppd primary_tumor ptumor secondary_mushroom sensorless_drive sensory shuttle three_of_nine vehicle xd6; do
+    find src/summary_results/results/tt/${dataset}* -name "*.ckpt" -delete 2>/dev/null || true
+    find src/summary_results/results/tuning_${dataset}_tt* -name "*.ckpt" -delete 2>/dev/null || true
 done

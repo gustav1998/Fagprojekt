@@ -90,16 +90,4 @@ python3 -m src.training.run_experiments2 \
     --seed 42 \
     --skip-preprocessing
 
-find src/summary_results/results/ -name "*.ckpt" -delete
-git config user.email "s245208@dtu.dk"
-git config user.name "Anya-Helle-Pritzl"
-git add -f $(find src/summary_results/results/ -name "*.json")
-git commit -m "RF2 results: all 31 datasets"
-for i in 1 2 3 4 5; do
-    git fetch origin
-    if git rebase origin/main && git push; then
-        break
-    fi
-    git rebase --abort 2>/dev/null || true
-    sleep 30
-done
+find src/summary_results/results/rf/ -name "model.joblib" -delete 2>/dev/null || true

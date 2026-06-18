@@ -36,16 +36,5 @@ python3 -m src.training.run_experiments2 \
     --accelerator gpu \
     --num-workers 4
 
-find src/summary_results/results/ -name "*.ckpt" -delete
-git config user.email "s245208@dtu.dk"
-git config user.name "Anya-Helle-Pritzl"
-git add -f $(find src/summary_results/results/ -name "*.json")
-git commit -m "MLP2 results: phiusiil_phishing"
-for i in 1 2 3 4 5; do
-    git fetch origin
-    if git rebase origin/main && git push; then
-        break
-    fi
-    git rebase --abort 2>/dev/null || true
-    sleep 30
-done
+find src/summary_results/results/mlp/phiusiil_phishing* -name "*.ckpt" -delete 2>/dev/null || true
+find src/summary_results/results/tuning_phiusiil_phishing_mlp* -name "*.ckpt" -delete 2>/dev/null || true
