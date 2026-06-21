@@ -40,7 +40,7 @@ class ClassParafacClassifier(nn.Module):
             ]
         )
 
-        self.class_weights = nn.Parameter(torch.empty(num_classes, rank))
+        self.class_weights = nn.Parameter(torch.empty(num_classes, rank)) #might be redundant
         self.class_bias = nn.Parameter(torch.empty(num_classes))
 
         self.reset_parameters()
