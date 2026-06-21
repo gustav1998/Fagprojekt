@@ -442,6 +442,11 @@ def main():
         num_classes=datamodule.num_classes,
     )
 
+    # delete stale metrics.csv before creating the logger to avoid CSVLogger append bug
+    stale_metrics = Path("src/summary_results/results") / args.model / result_version / "metrics.csv"
+    if stale_metrics.exists():
+        stale_metrics.unlink()
+
     # saves results:
     logger = CSVLogger(
         save_dir="src/summary_results/results",
