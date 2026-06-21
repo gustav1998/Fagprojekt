@@ -1,0 +1,16 @@
+{
+  "dataset": "census_income_kdd",
+  "model": "tt",
+  "seed": 42,
+  "metric": "val_loss",
+  "metric_mode": "min",
+  "best_score": 0.23264801502227783,
+  "best_params": {
+    "learning_rate": 0.01,
+    "rank": 4
+  },
+  "num_combos": 12,
+  "epochs": 60,
+  "patience": 15,
+  "batch_size": 512
+}

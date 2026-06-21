@@ -1,0 +1,15 @@
+{
+  "dataset": "asia_lung",
+  "model": "lr",
+  "seed": 42,
+  "metric": "val_loss",
+  "metric_mode": "min",
+  "best_score": 0.02550705336034298,
+  "best_params": {
+    "learning_rate": 0.01
+  },
+  "num_combos": 3,
+  "epochs": 100,
+  "patience": 15,
+  "batch_size": 512
+}

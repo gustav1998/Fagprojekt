@@ -1,0 +1,16 @@
+{
+  "dataset": "skin_segmentation",
+  "model": "tt",
+  "seed": 42,
+  "metric": "val_loss",
+  "metric_mode": "min",
+  "best_score": 0.02287246286869049,
+  "best_params": {
+    "learning_rate": 0.001,
+    "rank": 16
+  },
+  "num_combos": 12,
+  "epochs": 60,
+  "patience": 15,
+  "batch_size": 512
+}

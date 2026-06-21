@@ -1,0 +1,16 @@
+{
+  "dataset": "vehicle",
+  "model": "tr",
+  "seed": 42,
+  "metric": "val_loss",
+  "metric_mode": "min",
+  "best_score": 0.31610479950904846,
+  "best_params": {
+    "learning_rate": 0.01,
+    "rank": 32
+  },
+  "num_combos": 12,
+  "epochs": 60,
+  "patience": 15,
+  "batch_size": 512
+}

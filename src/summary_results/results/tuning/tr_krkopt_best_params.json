@@ -1,0 +1,16 @@
+{
+  "dataset": "krkopt",
+  "model": "tr",
+  "seed": 42,
+  "metric": "val_loss",
+  "metric_mode": "min",
+  "best_score": 1.1707032918930054,
+  "best_params": {
+    "learning_rate": 0.001,
+    "rank": 16
+  },
+  "num_combos": 12,
+  "epochs": 60,
+  "patience": 15,
+  "batch_size": 512
+}
