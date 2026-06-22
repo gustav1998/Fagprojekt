@@ -79,6 +79,7 @@ target/
 # generated experiment outputs
 /src/summary_results/results/
 /src/data_pipeline/data/processed/
+/results/
 #/src/data_pipeline/data/reports/
 
 # superseded by make_dataset2.py / preprocessing2.py during the K-fold rewrite
