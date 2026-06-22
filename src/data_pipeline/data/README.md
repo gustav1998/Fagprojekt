@@ -73,7 +73,7 @@ src/data_pipeline/data/raw/large_datasets/README.md
 
 ## Processed Data
 
-Processed train, validation, and test splits are stored under:
+Processed tuning and K-fold splits are stored under:
 
 ```text
 src/data_pipeline/data/processed/
@@ -82,34 +82,27 @@ src/data_pipeline/data/processed/
 Each dataset has two processed representations:
 
 ```text
-<dataset>_baseline_<split>.csv
-<dataset>_tensor_<split>.csv
-```
-
-where `<split>` is one of:
-
-```text
-train
-val
-test
+<dataset>_baseline_tuning_train.csv
+<dataset>_baseline_tuning_val.csv
+<dataset>_baseline_fold_1_train.csv
+<dataset>_baseline_fold_1_test.csv
+...
+<dataset>_tensor_tuning_train.csv
+<dataset>_tensor_tuning_val.csv
+<dataset>_tensor_fold_1_train.csv
+<dataset>_tensor_fold_1_test.csv
 ```
 
 The baseline representation is used by logistic regression and the MLP. The
-tensor representation is used by CPD, MBA, TT, and TR.
+tensor representation is used by CPD, MBA, TT, and TR. Random Forest uses the
+baseline CSV files directly.
 
-Preprocessing is fitted on the training split only. The fitted category
-mappings, numerical fill values, and tensor discretization bins are then reused
-for validation and test splits.
+The current K-fold pipeline fits preprocessing metadata once on the cleaned
+pooled dataset, then applies it to the tuning split and all folds.
 
 Rows with missing target labels are dropped before splitting. Datasets can also
 define a minimum target-class count when very rare classes cannot be split
 reliably.
-
-Seeded experiment splits are stored in folders such as:
-
-```text
-src/data_pipeline/data/processed/seed_42/
-```
 
 Hayes-Roth keeps using the labeled `hayes-roth.data` file because the
 companion `hayes-roth.test` file does not include labels in the same
@@ -120,19 +113,13 @@ supervised-learning format.
 To regenerate processed files from the raw data, run:
 
 ```bash
-uv run python -m src.data_pipeline.make_dataset --dataset car_evaluation --representation both
+uv run python -m src.data_pipeline.make_dataset2 --dataset car_evaluation --representation both
 ```
 
-For seeded experiment folders, use the experiment runner:
-
-```bash
-uv run python -m src.training.run_experiments --dataset car_evaluation --seed 42
-```
-
-### Generating All Processed Datasets (K-fold pipeline)
+### Generating All Processed Datasets
 
 To regenerate processed data for every dataset at once using the new
-tuning-split + 5-fold pipeline (`make_dataset2.py`), run:
+tuning-split + 5-fold pipeline, run:
 
 ```bash
 for dataset in $(uv run python -c "from src.data_pipeline.dataset_configs import DATASET_CONFIGS; names = sorted(DATASET_CONFIGS); names.remove('lenses'); print(' '.join(names))"); do
@@ -148,7 +135,7 @@ filtering and is excluded from the K-fold evaluation pipeline.
 To generate CSV summaries and SVG plots for the processed datasets, run:
 
 ```bash
-uv run python -m src.data_pipeline.describe_datasets --representation both --seed 42
+uv run python -m src.data_pipeline.describe_datasets --representation both
 ```
 
 The generated report is written to:

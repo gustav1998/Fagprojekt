@@ -21,7 +21,7 @@ import pandas as pd
 from scipy.stats import friedmanchisquare, rankdata, studentized_range
 
 
-MODELS = ("lr", "mlp", "cpd", "mba", "tt", "tt3", "tr", "rf")
+MODELS = ("lr", "mlp", "cpd", "mba", "tt", "tr", "rf")
 FOLD_PATTERN = re.compile(
     r"(?P<dataset>.+)_fold(?P<fold>\d+)_seed(?P<seed>-?\d+)$"
 )

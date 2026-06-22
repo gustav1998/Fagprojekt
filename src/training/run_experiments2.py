@@ -12,7 +12,7 @@ from src.training.train2 import DEFAULT_TRAINING_CONFIGS
 
 # %%
 
-MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tt3", "tr", "rf"]
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr", "rf"]
 N_FOLDS = 5
 
 # %%
@@ -138,7 +138,7 @@ def main():
                     command.append("--disable-early-stopping")
                 if args.monitor_mode is not None:
                     command.extend(["--monitor-mode", args.monitor_mode])
-                if model in {"cpd", "tt", "tt3", "tr"}: # rank is only used by tensor decomposition models
+                if model in {"cpd", "tt", "tr"}: # rank is only used by tensor decomposition models
                     command.extend(["--rank", str(tuned.get("rank") or args.rank or config["rank"])])
                 if model == "mba": # interaction_order is only used by mba
                     command.extend(["--interaction-order", str(tuned.get("interaction_order") or args.interaction_order or config["interaction_order"])])

@@ -1,2 +1,0 @@
-metric,n_datasets,n_models,statistic,p_value
-test_acc,30,7,46.5413533834586,2.309638082632136e-08

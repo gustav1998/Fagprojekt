@@ -268,7 +268,7 @@ Like logistic regression, the MLP uses the baseline input representation.
 
 ## CPD Classifier
 
-File: `src/models/cpd.py`
+File: `src/models/cpd2.py`
 
 The CPD classifier is a supervised tensor model for discrete inputs. It does
 not model the input distribution. Instead, it directly parameterizes the class
@@ -372,7 +372,7 @@ z_c(x) = sum_r lambda_{c,r} prod_d A^{(d)}_{x_d,r} + b_c.
 
 ## Tensor-Train Classifier
 
-File: `src/models/tt.py`
+File: `src/models/tt2.py`
 
 The tensor-train classifier also works on discrete feature indices. Instead of
 multiplying rank vectors elementwise like CPD, it contracts a chain of small
@@ -463,7 +463,7 @@ z(x) = q(x) W + b.
 
 ## Tensor-Ring Classifier
 
-File: `src/models/tr.py`
+File: `src/models/tr2.py`
 
 The tensor-ring classifier is similar to the tensor-train classifier, but every
 feature core is a rank-by-rank matrix. The contraction is closed as a ring
@@ -550,7 +550,7 @@ z_c(x) = trace(Q(x) W_c) + b_c.
 
 ## MBA classifier
 
-File: `src/models/mba.py`
+File: `src/models/mba2.py`
 
 The MBA classifier is a supervised model for discrete inputs. It does not learn
 a joint density over features and labels. Instead, it directly parameterizes one
