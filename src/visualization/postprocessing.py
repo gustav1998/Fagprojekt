@@ -24,7 +24,8 @@ N_FOLDS = 5
 RESULTS_DIR = Path("src/summary_results/results")
 OUTPUT_DIR = Path("src/visualization/postprocessing")
 DATASET_REPORTS_DIR = Path("src/data_pipeline/data/reports")
-EXCLUDED_DATASETS = {"lenses"}
+DATASET_RAW_DIR = Path("src/data_pipeline/data/raw")
+EXCLUDED_DATASETS = {"lenses", "monk"}
 EXCLUDED_PREFIXES = ("monk",)
 
 TRAINING_METRICS = [
@@ -551,7 +552,6 @@ def friedman_nemenyi_tests(
 
     return results
 
-
 def calculate_table_metrics(
     results: pd.DataFrame | None = None,
     cardinalities: str | None = None,
@@ -567,6 +567,20 @@ def calculate_table_metrics(
 
     results = pd.read_csv(dataset_summary_path)
     cardinalities_df = pd.read_csv(cardinalities) if cardinalities is not None else None
+    
+    # 1. Run our newly optimized accurate unique non-zero row calculator
+    # Define the caching path cleanly using the output_dir variable
+    cache_path = Path(output_dir) / "non_zero_values.csv"
+
+    # Check if the calculated file already exists
+    if cache_path.exists():
+        non_zero_df = pd.read_csv(cache_path)
+    else:
+        non_zero_df = _calculate_non_zero_values(output_dir=output_dir)
+
+    # Set the index to 'dataset' for quick O(1) dictionary-like lookups
+    non_zero_lookup = non_zero_df.set_index("dataset")["non_zero_values"].to_dict()
+
     rows = []
 
     for dataset_name in results["dataset"].unique():
@@ -574,9 +588,15 @@ def calculate_table_metrics(
         first_representation = dataset_subset["representation"].iloc[0]
         subset = dataset_subset[dataset_subset["representation"] == first_representation]
 
-        total_rows = subset["rows"].sum()
         features = subset["features"].iloc[0] + 1
         classes = subset["classes"].iloc[0]
+
+        # 2. Use our unique non-zero row calculation. Fall back to old method if missing.
+        if dataset_name in non_zero_lookup:
+            non_zero_values = non_zero_lookup[dataset_name]
+        else:
+            print(f"Warning: {dataset_name} missing from non-zero rows calculation. Using raw subset fallback.")
+            non_zero_values = subset["rows"].sum()
 
         tensor_size = None
         if cardinalities_df is not None:
@@ -592,19 +612,20 @@ def calculate_table_metrics(
                 tensor_size = int(np.prod(cardinality_values.to_numpy()) * classes)
 
         if tensor_size is None:
-            tensor_size = total_rows * features
+            tensor_size = non_zero_values * features
 
         rows.append(
             {
                 "dataset": dataset_name,
                 "features": features,
-                "non_zero_entries": total_rows,
+                "non_zero_entries": non_zero_values,
                 "tensor_size": tensor_size,
-                "sparsity": total_rows / tensor_size if tensor_size > 0 else 0,
+                "sparsity": non_zero_values / tensor_size if tensor_size > 0 else 0,
                 "classes": classes,
             }
         )
 
+    # Convert results into a finalized summary metrics table layout
     return pd.DataFrame(rows)
 
 
@@ -688,6 +709,120 @@ def save_completeness(
     return completeness
 
 
+def _calculate_non_zero_values(
+    results: Path = DATASET_RAW_DIR, 
+    output_dir: str | Path = OUTPUT_DIR
+) -> pd.DataFrame:
+    """
+    Helper function to calculate unique non-zero values for each dataset.
+    The function reads each dataset's raw CSV file, counts the non-zero-values,
+    and saves the results in a dataframe.
+    """
+    # 1. Map dataset config keys to their real file stems and unique custom rules
+    PARSING_RULES = {
+        "balance_scale": {"stem": "balance-scale", "header": None},
+        "car_evaluation": {"stem": "car", "header": None},
+        "krkopt": {"stem": "krkopt", "header": None},
+        "house_votes_84": {"stem": "house-votes-84", "header": None},
+        "credit_approval": {"stem": "crx", "header": None},
+        "hayesroth": {"stem": "hayes-roth", "header": None},
+        "nursery": {"stem": "nursery", "header": None},
+        "primary_tumor": {"stem": "primary-tumor", "header": None},
+        "skin_segmentation": {"stem": "Skin_NonSkin", "header": None, "sep": r"\s+"},
+        "census_income_kdd": {"stem": "census-income", "header": None},
+        "connect_4": {"stem": "connect-4", "header": None},
+        "sensorless_drive": {"stem": "Sensorless_drive_diagnosis", "header": None, "sep": r"\s+"},
+        
+        # Files requiring rows skipped
+        "phiusiil_phishing": {"stem": "PhiUSIIL_Phishing_URL_Dataset", "header": 0, "skiprows": [1]},
+        "rt_iot2022": {"stem": "RT_IOT2022", "header": 0, "skiprows": [1]},
+        "secondary_mushroom": {"stem": "secondary_data", "header": 0, "skiprows": [1]},
+        
+        # Split train/test sets (we handle these by looking for the stem prefixes)
+        "aps_failure": {"stem": "aps_failure", "header": 0, "skiprows": 21, "na_values": "na"},
+        "shuttle": {"stem": "shuttle", "header": None, "sep": r"\s+"},
+    }
+
+    records = []
+    base_path = Path(results)
+
+    # 2. Extract files dynamically from DATASET_REPORTS_DIR (if it exists)
+    # These all match config keys directly, have a header, and skip the first row.
+    report_files = {}
+    try:
+        if 'DATASET_REPORTS_DIR' in globals() and DATASET_REPORTS_DIR.exists():
+            for file_path in DATASET_REPORTS_DIR.glob("*.csv"):
+                report_files[file_path.stem] = file_path
+    except NameError:
+        pass # Handle case where variable isn't defined yet
+
+    # 3. Loop through every configuration target you want to analyze
+    for config_name in DATASET_CONFIGS.keys():
+        target_file = None
+        parse_kwargs = {"header": 0}  # default fallback parameters
+
+        # Scenario A: Is it in the reports directory folder?
+        if config_name in report_files:
+            target_file = report_files[config_name]
+            parse_kwargs.update({"header": 0, "skiprows": [1]})
+            
+        # Scenario B: Is it an explicitly mapped file rules dictionary entry?
+        elif config_name in PARSING_RULES:
+            rules = PARSING_RULES[config_name]
+            file_stem = rules["stem"]
+            
+            # Extensions we actually want to read as datasets
+            VALID_DATA_EXTENSIONS = {".data", ".csv", ".txt", ".trn", ".tst", ".test", ""}
+            
+            # Find the actual file recursively in raw data matching this stem
+            for p in base_path.rglob("*"):
+                if p.is_file() and p.suffix in VALID_DATA_EXTENSIONS:
+                    # Check if the file name starts with or strictly matches the stem
+                    # This prevents matching "balance-scale.names" if "balance-scale.data" exists
+                    if p.name.startswith(file_stem) or file_stem == p.stem:
+                        target_file = p
+                        # Merge rules layout into pandas parser execution args
+                        parse_kwargs.update({k: v for k, v in rules.items() if k != "stem"})
+                        break
+
+        # Scenario C: Fallback check if file stem matches the config name exactly
+        if not target_file:
+            for p in base_path.rglob("*"):
+                if p.is_file() and p.stem == config_name:
+                    target_file = p
+                    break
+
+        # 4. Process the file if found, otherwise skip gracefully
+        if target_file and target_file.exists():
+            try:
+                # Read dataset based on dynamic kwargs rules configurations
+                df = pd.read_csv(target_file, **parse_kwargs)
+                
+                # 1. Drop duplicate rows to keep only unique entries
+                unique_rows_df = df.drop_duplicates()
+
+                # 2. Check which of these unique rows are NOT entirely made of zeros
+                # We check if a row has ANY value not equal to 0. 
+                # Rows that are all zeros will return False and get filtered out.
+                is_non_zero_row = (unique_rows_df.to_numpy() != 0).any(axis=1)
+                non_zero_count = is_non_zero_row.sum()
+
+                records.append({
+                    "dataset": config_name,
+                    "non_zero_values": int(non_zero_count)  # This now represents unique non-zero rows
+                })
+                print(f"✅ Processed {config_name} via {target_file.name}")
+            except Exception as e:
+                print(f"❌ Failed parsing layout structure for {config_name} ({target_file.name}): {e}")
+        else:
+            print(f"⚠️ Could not locate data storage files matching configuration target: {config_name}")
+
+    # 5. Build dynamic table data layout and return results
+    dataset_non_zero_counts = pd.DataFrame(records, columns=["dataset", "non_zero_values"])
+    
+    return dataset_non_zero_counts
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Postprocess experiment results.")
     subparsers = parser.add_subparsers(dest="command")
@@ -728,12 +863,16 @@ def build_parser() -> argparse.ArgumentParser:
     stats.add_argument("--allow-incomplete", action="store_true")
 
     table_metrics = subparsers.add_parser("dataset-metrics")
-    table_metrics.add_argument("--cardinalities", default=None)
+    table_metrics.add_argument("--cardinalities", default=DATASET_REPORTS_DIR / "feature_cardinalities.csv")
     table_metrics.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
 
     legacy = subparsers.add_parser("legacy-epoch-plots")
     legacy.add_argument("--metrics-path", type=Path, default=RESULTS_DIR)
     legacy.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
+
+    non_zero_values = subparsers.add_parser("calculate-non-zero")
+    non_zero_values.add_argument("--datasets-path", nargs="+", default=DATASET_RAW_DIR)
+    non_zero_values.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
 
     return parser
 
@@ -797,6 +936,14 @@ def main() -> None:
     elif args.command == "legacy-epoch-plots":
         generate_epoch_plots(args.metrics_path, args.output_dir)
         print(f"Saved epoch plots under {args.output_dir}")
+    elif args.command == "calculate-non-zero":
+        output = _calculate_non_zero_values(
+            results=args.datasets_path,
+            output_dir=args.output_dir,
+        )
+        output_path = args.output_dir / "non_zero_values.csv"
+        output.to_csv(output_path, index=False)
+        print(f"Saved {output_path} with {len(output)} rows.")
     else:
         parser.print_help()
 
