@@ -217,6 +217,34 @@ def build_aggregate_summary(summary: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def print_win_counts(aggregate: pd.DataFrame) -> None:
+    """Print how many datasets each model wins on balanced accuracy."""
+    bal_acc_cols = {model: f"{model}_balanced_acc_mean" for model in MODELS}
+    available = {m: col for m, col in bal_acc_cols.items() if col in aggregate.columns}
+
+    if not available:
+        print("No balanced accuracy columns found.")
+        return
+
+    scores = aggregate[[col for col in available.values()]].copy()
+    scores.columns = list(available.keys())
+    scores.index = aggregate["dataset"]
+
+    winner = scores.idxmax(axis=1)
+    win_counts = winner.value_counts()
+
+    print("\nWin counts (best mean balanced accuracy per dataset):")
+    for model in MODELS:
+        count = win_counts.get(model, 0)
+        print(f"  {model:6s}: {count:2d} datasets")
+
+    avg_rank = scores.rank(axis=1, ascending=False).mean()
+    print("\nAverage rank across datasets (1 = best):")
+    for model in MODELS:
+        if model in avg_rank:
+            print(f"  {model:6s}: {avg_rank[model]:.2f}")
+
+
 @click.command()
 @click.option(
     "--results-dir",
@@ -265,6 +293,7 @@ def main(
             f"Saved {aggregate_output} with "
             f"{len(aggregate)} aggregated datasets."
         )
+        print_win_counts(aggregate)
 
 
 if __name__ == "__main__":
