@@ -8,13 +8,14 @@ import click
 import pandas as pd
 
 
-MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr", "rf"]
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tt3", "tr", "rf"]
 MODEL_LABELS = {
     "lr": "LR",
     "mlp": "MLP",
     "cpd": "CPD",
     "mba": "MBA",
     "tt": "TT",
+    "tt3": "TT3",
     "tr": "TR",
     "rf": "RF",
 }

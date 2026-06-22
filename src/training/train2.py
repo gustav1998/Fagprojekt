@@ -22,6 +22,7 @@ from src.models.lightning_module import TabularClassifierModule
 from src.models.cpd2 import ClassParafacClassifier
 from src.models.mba2 import MBAClassifier
 from src.models.tt2 import ClassTTClassifier
+from src.models.tt3 import ClassTTUniformClassifier
 from src.models.tr2 import ClassTRClassifier
 from src.models.rf import DEFAULT_RF_CONFIG, compute_metrics, parse_max_features
 
@@ -51,6 +52,11 @@ DEFAULT_TRAINING_CONFIGS = {
         "learning_rate": 1e-2,
         "rank": 16,
     },
+    "tt3": {
+        "epochs": 60,
+        "learning_rate": 1e-2,
+        "rank": 2,
+    },
     "tr": {
         "epochs": 60,
         "learning_rate": 1e-2,
@@ -78,10 +84,10 @@ def parse_args():
         "--model",
         type=str,
         required=True,
-        choices=["lr", "mlp", "cpd", "mba", "tt", "tr", "rf"],
+        choices=["lr", "mlp", "cpd", "mba", "tt", "tt3", "tr", "rf"],
         help=(
             "Model to train (lr=logistic, mlp=neural net, "
-            "cpd/mba/tt/tr=tensor classifiers, rf=random forest)"
+            "cpd/mba/tt/tt3/tr=tensor classifiers, rf=random forest)"
         ),
     )
     parser.add_argument("--batch-size", type=int, default=256)
@@ -125,7 +131,7 @@ def parse_args():
         "--rank",
         type=int,
         default=None,
-        help="Tensor rank for CPD, TT, and TR. Defaults depend on model.",
+        help="Tensor rank for CPD, TT, TT3, and TR. Defaults depend on model.",
     )
     parser.add_argument(
         "--interaction-order",
@@ -427,6 +433,12 @@ def main():
             rank=args.rank,
             num_classes=datamodule.num_classes,
         )
+    elif args.model == "tt3":
+        base_model = ClassTTUniformClassifier(
+            feature_dims=datamodule.cardinalities,
+            rank=args.rank,
+            num_classes=datamodule.num_classes,
+        )
     elif args.model == "tr":
         base_model = ClassTRClassifier(
             feature_dims=datamodule.cardinalities,
@@ -508,7 +520,7 @@ def main():
         "seed": args.seed,
         "epochs": args.epochs,
         "learning_rate": args.learning_rate,
-        "rank": args.rank if args.model in {"cpd", "tt", "tr"} else None,
+        "rank": args.rank if args.model in {"cpd", "tt", "tt3", "tr"} else None,
         "interaction_order": args.interaction_order if args.model == "mba" else None,
         "batch_size": args.batch_size,
         "num_workers": args.num_workers,
