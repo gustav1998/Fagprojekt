@@ -1,131 +1,102 @@
 from __future__ import annotations
 
-from html import escape
 from pathlib import Path
-from typing import Iterable
 
 import click
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import numpy as np
 import pandas as pd
 
 
-MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tt3", "tr", "rf"]
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr", "rf"]
 MODEL_LABELS = {
     "lr": "LR",
     "mlp": "MLP",
     "cpd": "CPD",
     "mba": "MBA",
     "tt": "TT",
-    "tt3": "TT3",
     "tr": "TR",
     "rf": "RF",
 }
 
-WHITE = "#ffffff"
-INK = "#1f2933"
-MUTED = "#6b7280"
-GRID = "#e5e7eb"
-MISSING = "#f3f4f6"
-BLUE_LIGHT = "#dbeafe"
-BLUE_DARK = "#1d4ed8"
-GOLD = "#d97706"
-NEGATIVE = "#f8d7da"
-POSITIVE = "#dbeafe"
+
+def load_tuning_sensitivity(results_dir: Path) -> pd.DataFrame:
+    rows = []
+    for model in ["cpd", "tt", "tr", "mba"]:
+        for combo_dir in sorted((results_dir / model).glob("tuning_*_combo*")):
+            meta = combo_dir / "run_metadata.json"
+            if not meta.exists():
+                continue
+            import json
+            m = json.loads(meta.read_text(encoding="utf-8"))
+            hyperparam = m.get("interaction_order") if model == "mba" else m.get("rank")
+            rows.append({
+                "model": model,
+                "dataset": m["dataset"],
+                "hyperparam": hyperparam,
+                "learning_rate": m["learning_rate"],
+                "val_loss": m["best_model_score"],
+            })
+    df = pd.DataFrame(rows)
+    return df.groupby(["model", "dataset", "hyperparam"])["val_loss"].min().reset_index()
 
 
-def metric_columns(summary: pd.DataFrame, suffix: str) -> list[str]:
-    columns = []
-    for model in MODELS:
-        column = model if suffix == "accuracy" else f"{model}_{suffix}"
-        if column in summary.columns:
-            columns.append(column)
-    return columns
+def draw_sensitivity_plot(tuning_df: pd.DataFrame, output_path: Path) -> None:
+    colors = {"cpd": "#1d4ed8", "tt": "#d97706", "tr": "#16a34a"}
+    rank_models = ["cpd", "tr", "tt"]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.3, 3.2), gridspec_kw={"width_ratios": [3, 1]})
+
+    # left: rank sensitivity for CPD, TT, TR
+    for model in rank_models:
+        sub = tuning_df[tuning_df["model"] == model]
+        grouped = sub.groupby("hyperparam")["val_loss"]
+        means = grouped.mean()
+        stds = grouped.std()
+        x = means.index.astype(int)
+        ax1.plot(x, means.values, marker="o", label=MODEL_LABELS[model], color=colors[model], linewidth=1.8)
+
+    ax1.set_xlabel("Rank", fontsize=9)
+    ax1.set_ylabel("Mean validation loss", fontsize=9)
+    ax1.set_title("Rank sensitivity — CPD, TT, TR", fontsize=9, fontweight="bold", loc="left")
+    ax1.set_xticks([4, 8, 16, 32])
+    ax1.legend(fontsize=8, frameon=False)
+    ax1.spines["top"].set_visible(False)
+    ax1.spines["right"].set_visible(False)
+    ax1.tick_params(labelsize=8)
+    ax1.grid(axis="y", linestyle="--", linewidth=0.5, alpha=0.5)
+
+    # right: order sensitivity for MBA
+    mba = tuning_df[tuning_df["model"] == "mba"]
+    grouped = mba.groupby("hyperparam")["val_loss"]
+    means = grouped.mean()
+    stds = grouped.std()
+    x = means.index.astype(int)
+    ax2.plot(x, means.values, marker="o", color="#9333ea", linewidth=1.8)
+    ax2.set_xlabel("Interaction order", fontsize=9)
+    ax2.set_title("MBA", fontsize=9, fontweight="bold", loc="left")
+    ax2.set_xticks([1, 2])
+    ax2.set_ylim(ax1.get_ylim())
+    ax2.spines["top"].set_visible(False)
+    ax2.spines["right"].set_visible(False)
+    ax2.tick_params(labelsize=8)
+    ax2.grid(axis="y", linestyle="--", linewidth=0.5, alpha=0.5)
+
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved {output_path}")
 
 
-def aggregate_by_dataset(summary: pd.DataFrame) -> pd.DataFrame:
-    numeric_columns = summary.select_dtypes(include="number").columns.tolist()
-    grouped = summary.groupby("dataset", dropna=False)[numeric_columns].mean()
-    grouped = grouped.reset_index()
-
-    score_columns = metric_columns(grouped, "macro_f1")
-    if not score_columns:
-        score_columns = metric_columns(grouped, "accuracy")
-    if score_columns:
-        grouped["_sort_score"] = grouped[score_columns].max(axis=1, skipna=True)
-        grouped = grouped.sort_values(["_sort_score", "dataset"], ascending=[False, True])
-        grouped = grouped.drop(columns=["_sort_score"])
-    else:
-        grouped = grouped.sort_values("dataset")
-
-    return grouped.reset_index(drop=True)
-
-
-def available_models(data: pd.DataFrame, columns: Iterable[str]) -> list[str]:
-    present = []
-    column_set = set(columns)
-    for model in MODELS:
-        direct = model
-        if direct in column_set and data[direct].notna().any():
-            present.append(model)
-            continue
-        for column in column_set:
-            if column.startswith(f"{model}_") and data[column].notna().any():
-                present.append(model)
-                break
-    return present
-
-
-def interpolate_color(value: float, min_value: float, max_value: float) -> str:
-    if pd.isna(value):
-        return MISSING
-    if max_value <= min_value:
-        fraction = 0.65
-    else:
-        fraction = (value - min_value) / (max_value - min_value)
-    fraction = max(0.0, min(1.0, fraction))
-
-    start = tuple(int(BLUE_LIGHT[i : i + 2], 16) for i in (1, 3, 5))
-    end = tuple(int(BLUE_DARK[i : i + 2], 16) for i in (1, 3, 5))
-    rgb = tuple(round(start[i] + (end[i] - start[i]) * fraction) for i in range(3))
-    return f"#{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x}"
-
-
-def signed_color(value: float, min_value: float, max_value: float) -> str:
-    if pd.isna(value):
-        return MISSING
-    if value < 0:
-        return NEGATIVE
-    return interpolate_color(value, 0.0, max(max_value, 0.01))
-
-
-def text(
-    parts: list[str],
-    x: float,
-    y: float,
-    value: str,
-    *,
-    size: int = 12,
-    fill: str = INK,
-    anchor: str = "start",
-    weight: str = "400",
-) -> None:
-    parts.append(
-        f'<text x="{x:.1f}" y="{y:.1f}" font-family="Arial, sans-serif" '
-        f'font-size="{size}" font-weight="{weight}" fill="{fill}" '
-        f'text-anchor="{anchor}">{escape(value)}</text>'
-    )
-
-
-def save_svg(path: Path, width: int, height: int, body: list[str]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    svg = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-        f'viewBox="0 0 {width} {height}">',
-        f'<rect width="{width}" height="{height}" fill="{WHITE}"/>',
-        *body,
-        "</svg>",
-        "",
-    ]
-    path.write_text("\n".join(svg), encoding="utf-8")
+def load_aggregate(aggregate_path: Path) -> pd.DataFrame:
+    df = pd.read_csv(aggregate_path)
+    rename = {}
+    for col in df.columns:
+        if col.endswith("_mean"):
+            rename[col] = col[: -len("_mean")]
+    return df.rename(columns=rename)
 
 
 def draw_heatmap(
@@ -133,122 +104,217 @@ def draw_heatmap(
     *,
     value_suffix: str,
     title: str,
-    subtitle: str,
     output_path: Path,
-    signed: bool = False,
 ) -> None:
     models = [
-        model
-        for model in MODELS
-        if (model if value_suffix == "accuracy" else f"{model}_{value_suffix}") in data
-        and data[(model if value_suffix == "accuracy" else f"{model}_{value_suffix}")].notna().any()
+        m for m in MODELS
+        if (m if value_suffix == "accuracy" else f"{m}_{value_suffix}") in data.columns
+        and data[(m if value_suffix == "accuracy" else f"{m}_{value_suffix}")].notna().any()
     ]
     if not models:
         return
 
-    datasets = data["dataset"].astype(str).tolist()
-    left = 190
-    top = 105
-    cell_width = 82
-    cell_height = 30
-    right = 35
-    bottom = 45
-    width = left + len(models) * cell_width + right
-    height = top + len(datasets) * cell_height + bottom
-
     columns = [
-        model if value_suffix == "accuracy" else f"{model}_{value_suffix}"
-        for model in models
+        m if value_suffix == "accuracy" else f"{m}_{value_suffix}"
+        for m in models
     ]
-    values = data[columns].to_numpy().flatten()
-    values = pd.Series(values).dropna()
-    min_value = min(0.0, float(values.min())) if signed and not values.empty else 0.0
-    max_value = float(values.max()) if not values.empty else 1.0
+    labels = [MODEL_LABELS[m] for m in models]
+    datasets = data["dataset"].astype(str).tolist()
 
-    body: list[str] = []
-    text(body, 28, 36, title, size=22, weight="700")
-    text(body, 28, 62, subtitle, size=12, fill=MUTED)
+    matrix = data[columns].to_numpy(dtype=float)
 
-    for idx, model in enumerate(models):
-        x = left + idx * cell_width + cell_width / 2
-        text(body, x, top - 16, MODEL_LABELS[model], size=12, anchor="middle", weight="700")
+    n_rows, n_cols = len(datasets), len(models)
 
-    for row_idx, row in data.iterrows():
-        y = top + row_idx * cell_height
-        text(body, left - 12, y + 20, str(row["dataset"]), size=12, anchor="end")
-        for col_idx, model in enumerate(models):
-            column = model if value_suffix == "accuracy" else f"{model}_{value_suffix}"
-            value = row[column]
-            x = left + col_idx * cell_width
-            fill = signed_color(value, min_value, max_value) if signed else interpolate_color(value, min_value, max_value)
-            body.append(
-                f'<rect x="{x:.1f}" y="{y:.1f}" width="{cell_width - 4}" '
-                f'height="{cell_height - 4}" rx="3" fill="{fill}"/>'
+    # Design at actual output size so LaTeX doesn't scale it down.
+    # A4 text width with standard margins ≈ 6.3 inches.
+    fig_w = 6.3
+    row_h = 0.27
+    fig_h = n_rows * row_h + 1.2
+
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
+
+    cmap = plt.get_cmap("Blues")
+    vmin = np.nanmin(matrix)
+    vmax = np.nanmax(matrix)
+    im = ax.imshow(matrix, aspect="auto", cmap=cmap, vmin=vmin, vmax=vmax)
+
+    ax.set_xticks(range(n_cols))
+    ax.set_xticklabels(labels, fontsize=9, fontweight="bold")
+    ax.xaxis.set_ticks_position("top")
+    ax.xaxis.set_label_position("top")
+
+    ax.set_yticks(range(n_rows))
+    ax.set_yticklabels(datasets, fontsize=8)
+
+    ax.tick_params(length=0)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    # annotate cells; bold the best value in each row
+    threshold = vmin + (vmax - vmin) * 0.65
+    for row in range(n_rows):
+        best_col = int(np.nanargmax(matrix[row]))
+        for col in range(n_cols):
+            val = matrix[row, col]
+            if np.isnan(val):
+                continue
+            color = "white" if val > threshold else "black"
+            weight = "bold" if col == best_col else "normal"
+            ax.text(
+                col, row, f"{val:.2f}",
+                ha="center", va="center",
+                fontsize=7.5, color=color, fontweight=weight,
             )
-            label = "" if pd.isna(value) else f"{value:.2f}"
-            text(
-                body,
-                x + (cell_width - 4) / 2,
-                y + 18,
-                label,
-                size=11,
-                anchor="middle",
-                fill=WHITE if not pd.isna(value) and value > max_value * 0.65 else INK,
-                weight="700" if not pd.isna(value) else "400",
-            )
 
-    save_svg(output_path, width, height, body)
+    fig.tight_layout()
+    fig.subplots_adjust(top=0.92)
+    fig.text(0.02, 0.97, title, fontsize=11, fontweight="bold", va="top")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved {output_path}")
+
+
+def write_cpd_vs_mba_table(data: pd.DataFrame, *, metric: str, output_path: Path) -> None:
+    cpd_col = f"cpd_{metric}"
+    mba_col = f"mba_{metric}"
+    if cpd_col not in data.columns or mba_col not in data.columns:
+        return
+
+    cpd_wins = 0
+    mba_wins = 0
+
+    lines = []
+    lines.append(r"\begin{tabular}{lcc}")
+    lines.append(r"\toprule")
+    lines.append(r"Dataset & CPD & MBA \\")
+    lines.append(r"\midrule")
+
+    for _, row in data.iterrows():
+        dataset = str(row["dataset"]).replace("_", r"\_")
+        cpd = row[cpd_col]
+        mba = row[mba_col]
+        if pd.isna(cpd) or pd.isna(mba):
+            continue
+        cpd_str = f"{cpd:.3f}"
+        mba_str = f"{mba:.3f}"
+        if cpd > mba:
+            cpd_str = rf"\textbf{{{cpd_str}}}"
+            cpd_wins += 1
+        elif mba > cpd:
+            mba_str = rf"\textbf{{{mba_str}}}"
+            mba_wins += 1
+        lines.append(rf"{dataset} & {cpd_str} & {mba_str} \\")
+
+    lines.append(r"\midrule")
+    lines.append(rf"\textbf{{Wins}} & \textbf{{{cpd_wins}}} & \textbf{{{mba_wins}}} \\")
+    lines.append(r"\bottomrule")
+    lines.append(r"\end{tabular}")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text("\n".join(lines), encoding="utf-8")
+    print(f"  Saved {output_path}")
+
+
+def _bold_higher(a_str, b_str, a_val, b_val, a_wins, b_wins, higher_is_better=True):
+    if a_str == b_str:
+        return a_str, b_str, a_wins, b_wins
+    if higher_is_better:
+        if a_val > b_val:
+            return rf"\textbf{{{a_str}}}", b_str, a_wins + 1, b_wins
+        else:
+            return a_str, rf"\textbf{{{b_str}}}", a_wins, b_wins + 1
+    else:
+        if a_val < b_val:
+            return rf"\textbf{{{a_str}}}", b_str, a_wins + 1, b_wins
+        else:
+            return a_str, rf"\textbf{{{b_str}}}", a_wins, b_wins + 1
+
+
+def write_cpd_vs_mba_appendix_table(data: pd.DataFrame, output_path: Path) -> None:
+    needed = ["cpd_balanced_acc", "mba_balanced_acc", "cpd_macro_f1", "mba_macro_f1", "cpd_loss", "mba_loss"]
+    if not all(c in data.columns for c in needed):
+        return
+
+    wins = {"cpd_acc": 0, "mba_acc": 0, "cpd_f1": 0, "mba_f1": 0, "cpd_loss": 0, "mba_loss": 0}
+
+    lines = []
+    lines.append(r"\begin{tabular}{lcccccc}")
+    lines.append(r"\toprule")
+    lines.append(r" & \multicolumn{2}{c}{Balanced accuracy} & \multicolumn{2}{c}{Macro F1} & \multicolumn{2}{c}{Cross-entropy loss} \\")
+    lines.append(r"\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}")
+    lines.append(r"Dataset & CPD & MBA & CPD & MBA & CPD & MBA \\")
+    lines.append(r"\midrule")
+
+    for _, row in data.iterrows():
+        dataset = str(row["dataset"]).replace("_", r"\_")
+        if pd.isna(row["cpd_balanced_acc"]):
+            continue
+
+        ca, ma = f"{row['cpd_balanced_acc']:.3f}", f"{row['mba_balanced_acc']:.3f}"
+        cf, mf = f"{row['cpd_macro_f1']:.3f}", f"{row['mba_macro_f1']:.3f}"
+        cl, ml = f"{row['cpd_loss']:.3f}", f"{row['mba_loss']:.3f}"
+
+        ca, ma, wins["cpd_acc"], wins["mba_acc"] = _bold_higher(ca, ma, row["cpd_balanced_acc"], row["mba_balanced_acc"], wins["cpd_acc"], wins["mba_acc"])
+        cf, mf, wins["cpd_f1"], wins["mba_f1"] = _bold_higher(cf, mf, row["cpd_macro_f1"], row["mba_macro_f1"], wins["cpd_f1"], wins["mba_f1"])
+        cl, ml, wins["cpd_loss"], wins["mba_loss"] = _bold_higher(cl, ml, row["cpd_loss"], row["mba_loss"], wins["cpd_loss"], wins["mba_loss"], higher_is_better=False)
+
+        lines.append(rf"{dataset} & {ca} & {ma} & {cf} & {mf} & {cl} & {ml} \\")
+
+    lines.append(r"\midrule")
+    lines.append(
+        rf"\textbf{{Wins}} & \textbf{{{wins['cpd_acc']}}} & \textbf{{{wins['mba_acc']}}} "
+        rf"& \textbf{{{wins['cpd_f1']}}} & \textbf{{{wins['mba_f1']}}} "
+        rf"& \textbf{{{wins['cpd_loss']}}} & \textbf{{{wins['mba_loss']}}} \\"
+    )
+    lines.append(r"\bottomrule")
+    lines.append(r"\end{tabular}")
+    lines.append(r"\caption{CPD vs MBA across all 32 datasets for balanced accuracy, macro F1, and cross-entropy loss. Bold indicates the better score per metric (higher for accuracy and F1, lower for loss). Ties are left unbolded.}")
+    lines.append(r"\label{tab:cpd_vs_mba_full}")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text("\n".join(lines), encoding="utf-8")
+    print(f"  Saved {output_path}")
 
 
 def draw_fit_time_bar(data: pd.DataFrame, output_path: Path) -> None:
     rows = []
     for model in MODELS:
-        column = f"{model}_fit_seconds"
-        if column not in data.columns:
+        col = f"{model}_fit_seconds"
+        if col not in data.columns:
             continue
-        value = data[column].mean(skipna=True)
-        if pd.notna(value):
-            rows.append((MODEL_LABELS[model], float(value)))
+        val = data[col].mean(skipna=True)
+        if pd.notna(val):
+            rows.append((MODEL_LABELS[model], float(val)))
 
     if not rows:
         return
 
-    rows.sort(key=lambda item: item[1], reverse=True)
-    left = 120
-    top = 105
-    bar_height = 28
-    gap = 12
-    chart_width = 520
-    width = 720
-    height = top + len(rows) * (bar_height + gap) + 55
-    max_value = max(value for _, value in rows)
+    rows.sort(key=lambda x: x[1], reverse=True)
+    names = [r[0] for r in rows]
+    values = [r[1] for r in rows]
 
-    body: list[str] = []
-    text(body, 28, 36, "Mean fit time by model", size=22, weight="700")
-    text(body, 28, 62, "Seconds averaged across available dataset/seed runs", size=12, fill=MUTED)
-    body.append(
-        f'<line x1="{left}" y1="{top - 12}" x2="{left + chart_width}" '
-        f'y2="{top - 12}" stroke="{GRID}" stroke-width="1"/>'
-    )
-
-    for idx, (label, value) in enumerate(rows):
-        y = top + idx * (bar_height + gap)
-        width_value = 0 if max_value == 0 else chart_width * value / max_value
-        text(body, left - 14, y + 19, label, size=12, anchor="end", weight="700")
-        body.append(
-            f'<rect x="{left}" y="{y}" width="{width_value:.1f}" '
-            f'height="{bar_height}" rx="3" fill="{GOLD}"/>'
-        )
-        text(body, left + width_value + 8, y + 19, f"{value:.1f}s", size=12, fill=INK)
-
-    save_svg(output_path, width, height, body)
+    fig, ax = plt.subplots(figsize=(7, 4))
+    bars = ax.barh(names, values, color="#d97706")
+    ax.set_xlabel("Seconds")
+    ax.set_title("Mean fit time by model", fontweight="bold")
+    for bar, val in zip(bars, values):
+        ax.text(bar.get_width() + max(values) * 0.01, bar.get_y() + bar.get_height() / 2,
+                f"{val:.1f}s", va="center", fontsize=9)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved {output_path}")
 
 
 @click.command()
 @click.option(
-    "--summary",
+    "--aggregate-summary",
     type=click.Path(path_type=Path),
-    default=Path("src/summary_results/results/benchmark_summary.csv"),
+    default=Path("src/summary_results/results/benchmark_summary_aggregate.csv"),
     show_default=True,
 )
 @click.option(
@@ -257,45 +323,43 @@ def draw_fit_time_bar(data: pd.DataFrame, output_path: Path) -> None:
     default=Path("src/summary_results/results/plots"),
     show_default=True,
 )
-def main(summary: Path, output_dir: Path) -> None:
-    """Create SVG plots from benchmark summary CSVs."""
-    if not summary.exists():
+def main(aggregate_summary: Path, output_dir: Path) -> None:
+    """Create PDF plots from the aggregated benchmark summary."""
+    if not aggregate_summary.exists():
         raise click.ClickException(
-            f"Could not find {summary}. Run src.summary_results.summarize_results first."
+            f"Could not find {aggregate_summary}. Run summarize_results first."
         )
 
-    raw_summary = pd.read_csv(summary)
-    if raw_summary.empty:
-        raise click.ClickException(f"{summary} has no rows to plot.")
+    data = load_aggregate(aggregate_summary)
+    data = data.sort_values("dataset").reset_index(drop=True)
 
-    data = aggregate_by_dataset(raw_summary)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    tuning_df = load_tuning_sensitivity(aggregate_summary.parent)
+    draw_sensitivity_plot(tuning_df, output_dir / "hyperparameter_sensitivity.pdf")
 
-    draw_heatmap(
-        data,
-        value_suffix="macro_f1",
-        title="Macro F1 by dataset and model",
-        subtitle="Mean test macro F1 across available seeds; higher is better",
-        output_path=output_dir / "macro_f1_by_dataset.svg",
-    )
     draw_heatmap(
         data,
         value_suffix="balanced_acc",
         title="Balanced accuracy by dataset and model",
-        subtitle="Mean test balanced accuracy across available seeds; higher is better",
-        output_path=output_dir / "balanced_accuracy_by_dataset.svg",
+        output_path=output_dir / "balanced_accuracy_by_dataset.pdf",
     )
     draw_heatmap(
         data,
-        value_suffix="minus_majority",
-        title="Accuracy above majority baseline",
-        subtitle="Mean test accuracy minus majority-class accuracy; values above 0 beat the baseline",
-        output_path=output_dir / "accuracy_minus_majority.svg",
-        signed=True,
+        value_suffix="macro_f1",
+        title="Macro F1 by dataset and model",
+        output_path=output_dir / "macro_f1_by_dataset.pdf",
     )
-    draw_fit_time_bar(data, output_dir / "fit_time_by_model.svg")
+    draw_fit_time_bar(data, output_dir / "fit_time_by_model.pdf")
 
-    print(f"Saved result plots to {output_dir}")
+    tables_dir = output_dir.parent / "tables"
+    write_cpd_vs_mba_table(
+        data,
+        metric="balanced_acc",
+        output_path=tables_dir / "cpd_vs_mba_balanced_acc.tex",
+    )
+    write_cpd_vs_mba_appendix_table(
+        data,
+        output_path=tables_dir / "cpd_vs_mba_appendix.tex",
+    )
 
 
 if __name__ == "__main__":
