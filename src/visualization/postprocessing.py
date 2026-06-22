@@ -20,7 +20,7 @@ except ImportError:  # Optional dependency; Friedman still works without it.
     sp = None
 
 
-MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tt3", "tr", "rf"]
+MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tr", "rf"]
 N_FOLDS = 5
 RESULTS_DIR = Path("src/summary_results/results")
 OUTPUT_DIR = Path("src/visualization/postprocessing")
