@@ -21,11 +21,13 @@ import pandas as pd
 from scipy.stats import friedmanchisquare, rankdata, studentized_range
 
 
-MODELS = ("lr", "mlp", "cpd", "mba", "tt", "tr", "rf")
+MODELS = ("lr", "mlp", "cpd", "mba", "tt", "tt3", "tr", "rf")
 FOLD_PATTERN = re.compile(
     r"(?P<dataset>.+)_fold(?P<fold>\d+)_seed(?P<seed>-?\d+)$"
 )
 
+
+# Shared file helpers
 
 def ensure_output_dir(output_dir: Path) -> Path:
     """Create the output folder if needed and return it."""
@@ -48,8 +50,11 @@ def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def final_non_null_row(metrics: pd.DataFrame, columns: Iterable[str]) -> pd.Series:
-    """Return the last row that contains at least one of the requested columns."""
+def get_final_metric_row(
+    metrics: pd.DataFrame,
+    columns: Iterable[str],
+) -> pd.Series:
+    """Return the last row with at least one useful metric value."""
     available = [column for column in columns if column in metrics.columns]
     if not available:
         return metrics.iloc[-1]
@@ -72,11 +77,13 @@ def parse_fold_version(version: str) -> tuple[str | None, int | None, int | None
     )
 
 
-def load_fold_results(
+# Step 1: Read result files
+
+def read_fold_results(
     results_root: Path = Path("src/summary_results/results"),
     models: Iterable[str] = MODELS,
 ) -> pd.DataFrame:
-    """Load one final metric row per model/dataset/fold run."""
+    """Read one final metric row per model, dataset, fold, and seed."""
     rows: list[dict] = []
     for model in models:
         model_dir = results_root / model
@@ -89,7 +96,7 @@ def load_fold_results(
                 continue
 
             metrics = pd.read_csv(metrics_path)
-            final = final_non_null_row(
+            final = get_final_metric_row(
                 metrics,
                 [
                     "test_acc",
@@ -156,7 +163,7 @@ def load_fold_results(
     return frame.sort_values(["dataset", "model", "fold"]).reset_index(drop=True)
 
 
-def load_tuning_results(
+def read_tuning_results(
     dataset: str,
     model: str,
     results_root: Path = Path("src/summary_results/results"),
@@ -209,7 +216,9 @@ def load_tuning_results(
     return frame.sort_values(["combo", "epoch", "step"]).reset_index(drop=True)
 
 
-def plot_tuning_data(
+# Step 2: Make optional plots
+
+def plot_tuning_curves(
     dataset: str,
     model: str,
     metric: str = "val_loss",
@@ -217,7 +226,7 @@ def plot_tuning_data(
     output_dir: Path = Path("results"),
 ) -> pd.DataFrame:
     """Plot tuning curves for every grid-search combination."""
-    data = load_tuning_results(dataset, model, results_root)
+    data = read_tuning_results(dataset, model, results_root)
     if data.empty:
         raise ValueError(f"No tuning data found for {model} on {dataset}.")
     if metric not in data.columns:
@@ -235,11 +244,24 @@ def plot_tuning_data(
             continue
         x_axis = combo_data["epoch"].fillna(combo_data["step"])
         label_parts = [f"combo {combo}"]
-        for param in ["learning_rate", "rank", "interaction_order", "hidden_dim", "dropout"]:
-            value = combo_data[param].dropna().iloc[0] if combo_data[param].notna().any() else None
+        for param in [
+            "learning_rate",
+            "rank",
+            "interaction_order",
+            "hidden_dim",
+            "dropout",
+        ]:
+            values = combo_data[param].dropna()
+            value = values.iloc[0] if not values.empty else None
             if value is not None:
                 label_parts.append(f"{param}={value:g}")
-        ax.plot(x_axis, combo_data[metric], linewidth=1.5, alpha=0.85, label=", ".join(label_parts))
+        ax.plot(
+            x_axis,
+            combo_data[metric],
+            linewidth=1.5,
+            alpha=0.85,
+            label=", ".join(label_parts),
+        )
 
     ax.set_title(f"Tuning {metric}: {model.upper()} on {dataset}")
     ax.set_xlabel("Epoch")
@@ -250,13 +272,13 @@ def plot_tuning_data(
     return data
 
 
-def plot_dataset_model_metrics(
+def plot_dataset_summary(
     dataset: str,
     results_root: Path = Path("src/summary_results/results"),
     output_dir: Path = Path("results"),
 ) -> pd.DataFrame:
     """Plot all model accuracies and losses for one dataset across folds."""
-    data = load_fold_results(results_root)
+    data = read_fold_results(results_root)
     data = data[data["dataset"] == dataset].copy()
     if data.empty:
         raise ValueError(f"No fold results found for dataset '{dataset}'.")
@@ -277,14 +299,25 @@ def plot_dataset_model_metrics(
     summary.to_csv(output_dir / f"{dataset}_model_accuracy_loss.csv", index=False)
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 5), facecolor="white")
-    axes[0].bar(summary["model"], summary["accuracy_mean"], yerr=summary["accuracy_std"], capsize=4)
+    axes[0].bar(
+        summary["model"],
+        summary["accuracy_mean"],
+        yerr=summary["accuracy_std"],
+        capsize=4,
+    )
     axes[0].set_title(f"{dataset}: accuracy by model")
     axes[0].set_ylabel("Mean test accuracy")
     axes[0].set_ylim(0, 1)
     axes[0].grid(axis="y", alpha=0.25)
 
     loss_data = summary.dropna(subset=["loss_mean"])
-    axes[1].bar(loss_data["model"], loss_data["loss_mean"], yerr=loss_data["loss_std"], capsize=4, color="#b66a50")
+    axes[1].bar(
+        loss_data["model"],
+        loss_data["loss_mean"],
+        yerr=loss_data["loss_std"],
+        capsize=4,
+        color="#b66a50",
+    )
     axes[1].set_title(f"{dataset}: loss by model")
     axes[1].set_ylabel("Mean test loss")
     axes[1].grid(axis="y", alpha=0.25)
@@ -293,12 +326,14 @@ def plot_dataset_model_metrics(
     return summary
 
 
-def build_accuracy_loss_tables(
+# Step 3: Summarize result tables
+
+def summarize_accuracy_and_loss(
     results_root: Path = Path("src/summary_results/results"),
     output_dir: Path = Path("results"),
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Average accuracy/loss across folds for all datasets and models."""
-    data = load_fold_results(results_root)
+    data = read_fold_results(results_root)
     if data.empty:
         raise ValueError("No fold results found.")
 
@@ -331,17 +366,20 @@ def build_accuracy_loss_tables(
     )
 
     ensure_output_dir(output_dir)
-    dataset_model.to_csv(output_dir / "accuracy_loss_by_dataset_model.csv", index=False)
+    dataset_model.to_csv(
+        output_dir / "accuracy_loss_by_dataset_model.csv",
+        index=False,
+    )
     overall.to_csv(output_dir / "accuracy_loss_overall_by_model.csv", index=False)
     return dataset_model, overall
 
 
-def build_timing_tables(
+def summarize_training_time(
     results_root: Path = Path("src/summary_results/results"),
     output_dir: Path = Path("results"),
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Average fit/test time across folds for all datasets and models."""
-    data = load_fold_results(results_root)
+    data = read_fold_results(results_root)
     if data.empty:
         raise ValueError("No fold results found.")
 
@@ -375,7 +413,13 @@ def build_timing_tables(
     return dataset_model, overall
 
 
-def _metric_matrix(data: pd.DataFrame, metric: str, higher_is_better: bool) -> pd.DataFrame:
+# Step 4: Run statistical tests
+
+def build_metric_matrix(
+    data: pd.DataFrame,
+    metric: str,
+    higher_is_better: bool,
+) -> pd.DataFrame:
     """Build a complete dataset x model metric matrix."""
     dataset_model = data.groupby(["dataset", "model"], as_index=False)[metric].mean()
     matrix = dataset_model.pivot(index="dataset", columns="model", values=metric)
@@ -395,13 +439,13 @@ def run_friedman_nemenyi_tests(
 
     The test uses one score per dataset/model, averaged across folds first.
     """
-    data = load_fold_results(results_root)
+    data = read_fold_results(results_root)
     if data.empty:
         raise ValueError("No fold results found.")
     if metric not in data.columns:
         raise ValueError(f"Metric '{metric}' is not available.")
 
-    matrix = _metric_matrix(data, metric, higher_is_better)
+    matrix = build_metric_matrix(data, metric, higher_is_better)
     if matrix.shape[0] < 2 or matrix.shape[1] < 3:
         raise ValueError(
             "Friedman/Nemenyi needs at least 2 complete datasets and 3 models."
@@ -446,7 +490,11 @@ def run_friedman_nemenyi_tests(
         for model_b in matrix.columns:
             diff = abs(rank_values[model_a] - rank_values[model_b])
             q_stat = diff * scale * math.sqrt(2)
-            nemenyi.loc[model_a, model_b] = studentized_range.sf(q_stat, n_models, np.inf)
+            nemenyi.loc[model_a, model_b] = studentized_range.sf(
+                q_stat,
+                n_models,
+                np.inf,
+            )
 
     ensure_output_dir(output_dir)
     friedman.to_csv(output_dir / f"friedman_{metric}.csv", index=False)
@@ -455,6 +503,8 @@ def run_friedman_nemenyi_tests(
     matrix.to_csv(output_dir / f"statistical_test_matrix_{metric}.csv")
     return friedman, average_ranks, nemenyi
 
+
+# Step 5: Command-line entry points
 
 def run_all(
     dataset: str | None,
@@ -467,11 +517,11 @@ def run_all(
     """Run all available tables and optional dataset/model plots."""
     ensure_output_dir(output_dir)
     if dataset and model:
-        plot_tuning_data(dataset, model, tuning_metric, results_root, output_dir)
+        plot_tuning_curves(dataset, model, tuning_metric, results_root, output_dir)
     if dataset:
-        plot_dataset_model_metrics(dataset, results_root, output_dir)
-    build_accuracy_loss_tables(results_root, output_dir)
-    build_timing_tables(results_root, output_dir)
+        plot_dataset_summary(dataset, results_root, output_dir)
+    summarize_accuracy_and_loss(results_root, output_dir)
+    summarize_training_time(results_root, output_dir)
     run_friedman_nemenyi_tests(stats_metric, True, results_root, output_dir)
 
 
@@ -508,7 +558,7 @@ def main() -> None:
     if args.command == "tuning":
         if not args.dataset or not args.model:
             raise SystemExit("--dataset and --model are required for tuning plots.")
-        plot_tuning_data(
+        plot_tuning_curves(
             args.dataset,
             args.model,
             args.tuning_metric,
@@ -518,11 +568,11 @@ def main() -> None:
     elif args.command == "dataset":
         if not args.dataset:
             raise SystemExit("--dataset is required for dataset plots.")
-        plot_dataset_model_metrics(args.dataset, args.results_root, args.output_dir)
+        plot_dataset_summary(args.dataset, args.results_root, args.output_dir)
     elif args.command == "tables":
-        build_accuracy_loss_tables(args.results_root, args.output_dir)
+        summarize_accuracy_and_loss(args.results_root, args.output_dir)
     elif args.command == "timing":
-        build_timing_tables(args.results_root, args.output_dir)
+        summarize_training_time(args.results_root, args.output_dir)
     elif args.command == "stats":
         run_friedman_nemenyi_tests(
             args.stats_metric,

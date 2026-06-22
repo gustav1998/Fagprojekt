@@ -22,6 +22,7 @@ PARAM_GRIDS = {
     "mlp": {"learning_rate": [1e-4, 1e-3, 1e-2], "hidden_dim": [64, 128, 256], "dropout": [0.0, 0.1, 0.3]},        # 27 combos
     "cpd": {"learning_rate": [1e-4, 1e-3, 1e-2], "rank": [4, 8, 16, 32]},                                          # 12 combos
     "tt":  {"learning_rate": [1e-4, 1e-3, 1e-2], "rank": [4, 8, 16, 32]},                                          # 12 combos
+    "tt3": {"learning_rate": [1e-4, 1e-3, 1e-2], "rank": [1, 2, 4]},                                                # 9 combos
     "tr":  {"learning_rate": [1e-4, 1e-3, 1e-2], "rank": [4, 8, 16, 32]},                                          # 12 combos
     "mba": {"learning_rate": [1e-4, 1e-3, 1e-2]},  # interaction_order added dynamically per dataset based on parameter budget
     "rf":  {"max_depth": [None, 5, 10, 20], "max_features": ["sqrt", "log2", 0.5], "min_samples_leaf": [1, 4, 8]},  # 36 combos

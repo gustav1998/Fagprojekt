@@ -12,7 +12,7 @@ from src.data_pipeline.encoding import one_hot_encode_features
 
 
 ONE_HOT_MODELS = {"lr", "mlp"}
-TENSOR_MODELS = {"cpd", "mba", "tt", "tr"}
+TENSOR_MODELS = {"cpd", "mba", "tt", "tt3", "tr"}
 
 # %% Sets the representation for each models depending on whether they are on hot encoded or tensor models
 
