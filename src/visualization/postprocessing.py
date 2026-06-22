@@ -5,6 +5,7 @@ import json
 import re
 from pathlib import Path
 from typing import Iterable
+import math
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -602,14 +603,13 @@ def calculate_table_metrics(
         if cardinalities_df is not None:
             dataset_cards = cardinalities_df[
                 (cardinalities_df["dataset"] == dataset_name)
-                & (cardinalities_df["representation"] == "tensor")
             ]
             cardinality_values = pd.to_numeric(
                 dataset_cards["cardinality"],
                 errors="coerce",
             ).dropna()
             if not cardinality_values.empty:
-                tensor_size = int(np.prod(cardinality_values.to_numpy()) * classes)
+                tensor_size = math.prod(cardinality_values.to_list()) * int(classes)
 
         if tensor_size is None:
             tensor_size = non_zero_values * features
@@ -863,7 +863,7 @@ def build_parser() -> argparse.ArgumentParser:
     stats.add_argument("--allow-incomplete", action="store_true")
 
     table_metrics = subparsers.add_parser("dataset-metrics")
-    table_metrics.add_argument("--cardinalities", default=DATASET_REPORTS_DIR / "feature_cardinalities.csv")
+    table_metrics.add_argument("--cardinalities", default=DATASET_REPORTS_DIR / "true_cardinalities.csv") # updated feature mapping
     table_metrics.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
 
     legacy = subparsers.add_parser("legacy-epoch-plots")
