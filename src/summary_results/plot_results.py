@@ -38,11 +38,16 @@ def load_tuning_sensitivity(results_dir: Path) -> pd.DataFrame:
                 "learning_rate": m["learning_rate"],
                 "val_loss": m["best_model_score"],
             })
+    if not rows:
+        return pd.DataFrame(columns=["model", "dataset", "hyperparam", "val_loss"])
     df = pd.DataFrame(rows)
     return df.groupby(["model", "dataset", "hyperparam"])["val_loss"].min().reset_index()
 
 
 def draw_sensitivity_plot(tuning_df: pd.DataFrame, output_path: Path) -> None:
+    if tuning_df.empty:
+        print("  Skipping sensitivity plot — no tuning data found")
+        return
     colors = {"cpd": "#1d4ed8", "tt": "#d97706", "tr": "#16a34a"}
     rank_models = ["cpd", "tr", "tt"]
 
@@ -277,6 +282,127 @@ def write_cpd_vs_mba_appendix_table(data: pd.DataFrame, output_path: Path) -> No
     print(f"  Saved {output_path}")
 
 
+def draw_model_boxplot(data: pd.DataFrame, output_path: Path) -> None:
+    models = [m for m in MODELS if f"{m}_balanced_acc" in data.columns and data[f"{m}_balanced_acc"].notna().any()]
+    matrix = data[[f"{m}_balanced_acc" for m in models]].dropna().copy()
+    matrix.columns = [MODEL_LABELS[m] for m in models]
+
+    medians = matrix.median().sort_values(ascending=False)
+    matrix = matrix[medians.index]
+
+    fig, ax = plt.subplots(figsize=(6.3, 3.5))
+    ax.boxplot(
+        [matrix[col].values for col in matrix.columns],
+        tick_labels=matrix.columns,
+        patch_artist=True,
+        medianprops=dict(color="black", linewidth=1.5),
+        boxprops=dict(facecolor="#dbeafe", linewidth=1),
+        whiskerprops=dict(linewidth=1),
+        capprops=dict(linewidth=1),
+        flierprops=dict(marker="o", markersize=3, linestyle="none", markerfacecolor="#999"),
+    )
+    ax.set_ylabel("Balanced accuracy", fontsize=9)
+    ax.set_ylim(-0.05, 1.1)
+    ax.grid(axis="y", linestyle="--", linewidth=0.5, alpha=0.5)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.tick_params(labelsize=8.5)
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved {output_path}")
+
+
+def draw_cd_diagram(data: pd.DataFrame, output_path: Path) -> None:
+    import scikit_posthocs as sp
+
+    models = [m for m in MODELS if f"{m}_balanced_acc" in data.columns and data[f"{m}_balanced_acc"].notna().any()]
+    matrix = data[[f"{m}_balanced_acc" for m in models]].dropna().copy()
+    matrix.columns = models
+    n = len(matrix)
+    k = len(models)
+
+    rank_matrix = matrix.rank(axis=1, ascending=False, method="average")
+    mean_ranks = rank_matrix.mean().sort_values()
+    sorted_models = mean_ranks.index.tolist()
+
+    nemenyi = sp.posthoc_nemenyi_friedman(matrix[sorted_models].values)
+    nemenyi.index = sorted_models
+    nemenyi.columns = sorted_models
+
+    # find clique spans: for each i, extend as far right as all pairs non-sig
+    raw_spans = []
+    seen = set()
+    for i in range(k):
+        j_max = i
+        for j in range(i + 1, k):
+            all_ns = all(
+                nemenyi.loc[sorted_models[a], sorted_models[b]] >= 0.05
+                for a in range(i, j + 1)
+                for b in range(a + 1, j + 1)
+            )
+            if all_ns:
+                j_max = j
+        if j_max > i:
+            key = (sorted_models[i], sorted_models[j_max])
+            if key not in seen:
+                seen.add(key)
+                raw_spans.append((mean_ranks[sorted_models[i]], mean_ranks[sorted_models[j_max]]))
+
+    # remove spans fully contained within another span
+    spans = []
+    for span in raw_spans:
+        subsumed = any(
+            other[0] <= span[0] and other[1] >= span[1] and other != span
+            for other in raw_spans
+        )
+        if not subsumed:
+            spans.append(span)
+
+    # critical difference (q_alpha for k=7, alpha=0.05)
+    q_alpha = 2.949
+    cd = q_alpha * np.sqrt(k * (k + 1) / (6 * n))
+
+    fig, ax = plt.subplots(figsize=(6.3, 2.6))
+    ax.set_xlim(0.5, k + 0.5)
+    ax.set_ylim(-0.55, 0.75)
+    ax.axis("off")
+
+    axis_y = 0.25
+    ax.plot([1, k], [axis_y, axis_y], "k-", linewidth=1.5, zorder=2)
+
+    for idx, model in enumerate(sorted_models):
+        rank = mean_ranks[model]
+        label = MODEL_LABELS[model]
+        ax.plot([rank, rank], [axis_y - 0.04, axis_y + 0.04], "k-", linewidth=1, zorder=3)
+        if idx % 2 == 0:
+            ax.text(rank, axis_y + 0.07, label, ha="center", va="bottom", fontsize=9, fontweight="bold")
+            ax.text(rank, axis_y + 0.20, f"{rank:.2f}", ha="center", va="bottom", fontsize=7, color="#666")
+        else:
+            ax.text(rank, axis_y - 0.07, label, ha="center", va="top", fontsize=9, fontweight="bold")
+            ax.text(rank, axis_y - 0.20, f"{rank:.2f}", ha="center", va="top", fontsize=7, color="#666")
+
+    for i, (r1, r2) in enumerate(spans):
+        y = axis_y - 0.38 - i * 0.10
+        ax.plot([r1, r2], [y, y], "k-", linewidth=4, solid_capstyle="butt", zorder=2)
+
+    # CD bar top right
+    cd_right = k - 0.1
+    cd_left = cd_right - cd
+    bar_y = axis_y + 0.58
+    ax.annotate("", xy=(cd_left, bar_y), xytext=(cd_right, bar_y),
+                arrowprops=dict(arrowstyle="<->", color="black", lw=1.2))
+    ax.text((cd_left + cd_right) / 2, bar_y + 0.05, f"CD = {cd:.2f}", ha="center", va="bottom", fontsize=7.5)
+
+    ax.text(1, bar_y, "← better", ha="left", va="center", fontsize=7.5, style="italic")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved {output_path}")
+
+
 def draw_fit_time_bar(data: pd.DataFrame, output_path: Path) -> None:
     rows = []
     for model in MODELS:
@@ -349,6 +475,8 @@ def main(aggregate_summary: Path, output_dir: Path) -> None:
         output_path=output_dir / "macro_f1_by_dataset.pdf",
     )
     draw_fit_time_bar(data, output_dir / "fit_time_by_model.pdf")
+    draw_model_boxplot(data, output_dir / "model_boxplot.pdf")
+    draw_cd_diagram(data, output_dir / "cd_diagram.pdf")
 
     tables_dir = output_dir.parent / "tables"
     write_cpd_vs_mba_table(
