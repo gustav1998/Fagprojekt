@@ -11,6 +11,7 @@ import pandas as pd
 MODELS = ["lr", "mlp", "cpd", "mba", "tt", "tt3", "tr", "rf"]
 
 SEEDED_VERSION_PATTERN = re.compile(r"(?P<dataset>.+)_seed(?P<seed>-?\d+)$") # Pattern to extract dataset name and seed from Lightning result version strings, e.g. "dataset_seed42"
+FOLD_PATTERN = re.compile(r"^(?P<base>.+)_fold(?P<fold>\d+)$") # Pattern to extract base dataset name and fold number, e.g. "census_income_kdd_fold1" -> base="census_income_kdd", fold=1
 
 # Metrics to extract from Lightning logs for the final test epoch of each run. These will be included in the summary table.
 TEST_METRICS = [
@@ -42,7 +43,7 @@ def read_final_test_metrics(results_dir: Path) -> pd.DataFrame:
     # Read final test metrics from Lightning CSV logs
     rows: list[dict[str, float | str]] = []
 
-    # Iterate over all metrics.csv files in the results directory, extract the model name, dataset name, seed, and final test metrics for each run. 
+    # Iterate over all metrics.csv files in the results directory, extract the model name, dataset name, seed, and final test metrics for each run.
     # If available, also extract metadata fields from the corresponding run_metadata.json file.
     for path in sorted(results_dir.glob("*/*/metrics.csv")):
         model, version = path.parts[-3], path.parts[-2]
@@ -81,7 +82,8 @@ def read_final_test_metrics(results_dir: Path) -> pd.DataFrame:
 
     return pd.DataFrame(rows)
 
-# Compute majority-class accuracy from processed test splits
+# Compute majority-class accuracy from processed test splits.
+# Processed files are named {base_dataset}_{representation}_fold_{n}_test.csv directly in processed_dir.
 def read_majority_baselines(
     processed_dir: Path,
     runs: pd.DataFrame,
@@ -94,15 +96,16 @@ def read_majority_baselines(
         .drop_duplicates()
         .itertuples(index=False)
     ):
-        seed = int(run.seed) if pd.notna(run.seed) else None
-        seed_dir = (
-            processed_dir / f"seed_{seed}"
-            if seed is not None
-            else processed_dir
-        )
-        test_path = seed_dir / f"{run.dataset}_tensor_test.csv"
+        fold_match = FOLD_PATTERN.fullmatch(str(run.dataset))
+        if fold_match is None:
+            continue
+
+        base = fold_match.group("base")
+        fold = fold_match.group("fold")
+
+        test_path = processed_dir / f"{base}_tensor_fold_{fold}_test.csv"
         if not test_path.exists():
-            test_path = seed_dir / f"{run.dataset}_baseline_test.csv"
+            test_path = processed_dir / f"{base}_baseline_fold_{fold}_test.csv"
         if not test_path.exists():
             continue
 
@@ -121,21 +124,25 @@ def read_majority_baselines(
 
     return pd.DataFrame(rows)
 
-# Build a summary table by merging the final test metrics with the majority-class baselines for each dataset and seed. 
+# Build a summary table by merging the final test metrics with the majority-class baselines for each dataset and seed.
 # The summary includes the test accuracy for each model, as well as the best model and its accuracy compared to the majority baseline
 def build_summary(results_dir: Path, processed_dir: Path) -> pd.DataFrame:
     """Build one benchmark summary table."""
     metrics = read_final_test_metrics(results_dir)
-    baselines = read_majority_baselines(processed_dir, metrics).set_index(
-        ["dataset", "seed"]
-    )
 
     accuracy_table = metrics.pivot(
         index=["dataset", "seed"],
         columns="model",
         values="test_acc",
     ).reindex(columns=MODELS)
-    summary = baselines.join(accuracy_table)
+
+    baselines_df = read_majority_baselines(processed_dir, metrics)
+    if not baselines_df.empty:
+        baselines = baselines_df.set_index(["dataset", "seed"])
+        summary = baselines.join(accuracy_table)
+    else:
+        summary = accuracy_table.copy()
+
     metric_suffixes = {
         "test_balanced_acc": "balanced_acc",
         "test_macro_precision": "macro_precision",
@@ -159,21 +166,17 @@ def build_summary(results_dir: Path, processed_dir: Path) -> pd.DataFrame:
 
     summary["best_model"] = accuracy_table.idxmax(axis=1)
     summary["best_acc"] = accuracy_table.max(axis=1)
-    summary["best_minus_majority"] = (
-        summary["best_acc"] - summary["majority_acc"]
-    )
 
-    for model in MODELS:
-        summary[f"{model}_minus_majority"] = (
-            summary[model] - summary["majority_acc"]
-        )
+    if "majority_acc" in summary.columns:
+        summary["best_minus_majority"] = summary["best_acc"] - summary["majority_acc"]
+        for model in MODELS:
+            summary[f"{model}_minus_majority"] = summary[model] - summary["majority_acc"]
 
     return summary.reset_index()
 
-# Build an aggregate summary by grouping the seeded benchmark results by dataset and computing the mean and standard deviation for each metric across seeds. 
-# The aggregate summary includes the average test accuracy for each model, as well as the average best model and its accuracy compared to the majority baseline, along with the number of runs for each dataset.
+# Build an aggregate summary by grouping fold results by base dataset name and computing mean and std across folds.
 def build_aggregate_summary(summary: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate seeded benchmark results by dataset."""
+    """Aggregate fold results by base dataset name (strips _fold{N} suffix)."""
     metric_columns = [
         column
         for column in summary.columns
@@ -195,12 +198,23 @@ def build_aggregate_summary(summary: pd.DataFrame) -> pd.DataFrame:
         or column in {"majority_acc", "best_acc", "best_minus_majority"}
     ]
 
-    grouped = summary.groupby("dataset", dropna=False)
+    def strip_fold(name):
+        match = FOLD_PATTERN.fullmatch(str(name))
+        if match:
+            return match.group("base")
+        return name
+
+    summary = summary.copy()
+    summary["base_dataset"] = summary["dataset"].apply(strip_fold)
+
+    grouped = summary.groupby("base_dataset", dropna=False)
     means = grouped[metric_columns].mean().add_suffix("_mean")
     stds = grouped[metric_columns].std(ddof=0).add_suffix("_std")
-    counts = grouped.size().rename("n_runs")
+    counts = grouped.size().rename("n_folds")
 
-    return pd.concat([counts, means, stds], axis=1).reset_index()
+    return pd.concat([counts, means, stds], axis=1).reset_index().rename(
+        columns={"base_dataset": "dataset"}
+    )
 
 
 @click.command()
