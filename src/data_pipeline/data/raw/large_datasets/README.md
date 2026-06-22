@@ -21,5 +21,5 @@ Place each dataset in the folder shown below before running preprocessing.
 Example preprocessing command:
 
 ```bash
-uv run python -m src.data_pipeline.make_dataset --dataset connect_4 --representation both --output-dir src/data_pipeline/data/processed/seed_42 --seed 42
+uv run python -m src.data_pipeline.make_dataset2 --dataset connect_4 --representation both
 ```

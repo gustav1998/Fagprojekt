@@ -1,242 +1,181 @@
 Fagprojekt
 ==========
 
-This project compares supervised classifiers for discrete/tabular data.
+This repository contains the code used for the project experiments on
+classification methods for discrete/tabular data.
 
-The current implemented models are:
+Implemented models:
 
 - `lr`: logistic regression baseline
 - `mlp`: multilayer perceptron baseline
-- `cpd`: supervised CPD tensor classifier
-- `mba`: supervised many-body approximation classifier
-- `tt`: supervised tensor-train classifier
-- `tr`: supervised tensor-ring classifier
-
-Planned models from the project report are:
-
 - `rf`: random forest baseline
+- `cpd`: class-specific PARAFAC/CPD tensor classifier
+- `mba`: many-body approximation classifier
+- `tt`: class-specific tensor-train classifier
+- `tr`: class-specific tensor-ring classifier
 
-Project Idea
-------------
+All models are supervised classifiers. Given an input
 
-All models are trained as supervised classifiers. Given an input
+```text
+x = (x_1, ..., x_D)
+```
 
-    x = (x_1, ..., x_D)
+the model returns one logit per class. Probabilities are obtained with softmax
+and training uses cross-entropy loss.
 
-each model returns one logit per class. The class probabilities are computed with
-softmax:
+Repository Layout
+-----------------
 
-    P(y = c | x) = softmax(logits)_c
+```text
+docs/                         Project/code documentation
+hpc/                          DTU HPC job scripts
+src/data_pipeline/            Raw loading, K-fold preprocessing, dataset reports
+src/models/                   Model implementations
+src/training/                 Training, grid search, K-fold experiment runner
+src/summary_results/          Result summarization, plotting, statistical tests
+src/data_pipeline/data/raw/   Raw datasets used by the project
+```
 
-The tensor models differ only in how the class logits are parameterized:
+Generated files are ignored by Git:
 
-- CPD uses a low-rank product of feature factors.
-- MBA uses interaction terms up to a chosen order.
-- TT uses a tensor-train contraction of feature cores.
-- TR uses a tensor-ring contraction with class-specific closing matrices.
-
-See `docs/MODEL_DESCRIPTIONS.md` for a code-by-code explanation of the implemented
-models and the corresponding mathematical formulas.
-
-Documentation
--------------
-
-The code documentation is split by area:
-
-- `docs/MODEL_DESCRIPTIONS.md`: model definitions, forward passes, loss, and optimizer.
-- `docs/DATA_PIPELINE.md`: raw loading, preprocessing, splitting, processed data loading, and DataLoaders.
-- `docs/TRAINING_AND_EXPERIMENTS.md`: single training runs and multi-run experiments.
-- `docs/RESULTS_AND_SUMMARIES.md`: metric logs, majority baselines, and benchmark summaries.
-- `docs/CONFIGURATION_AND_UTILITIES.md`: dataset configs, one-hot encoding, package setup, and environment checks.
+```text
+src/data_pipeline/data/processed/
+src/summary_results/results/
+results/
+```
 
 Setup
 -----
 
-The repository includes `.python-version` with Python 3.12. This avoids
-bleeding-edge Python compatibility issues while still working on older Intel
-Macs through the PyTorch version markers in `pyproject.toml`.
+The project uses Python 3.12 and `uv`.
 
-The simplest cross-platform setup is to sync the locked environment and run the
-smoke test through `uv`:
+```bash
+uv sync
+uv run python test_environment.py
+```
 
-    uv sync
-    uv run python test_environment.py
+On Windows PowerShell, a manually activated environment can be started with:
 
-If you prefer to activate the virtual environment manually, create it first:
-
-    uv venv .venv
-
-On macOS/Linux:
-
-    source .venv/bin/activate
-
-On Windows PowerShell:
-
-    .venv\Scripts\Activate.ps1
-
-On Windows Command Prompt:
-
-    .venv\Scripts\activate.bat
-
-Then install the project and run the environment check:
-
-    uv pip install -e .
-    python test_environment.py
+```powershell
+.venv\Scripts\Activate.ps1
+```
 
 Data
 ----
 
-Raw datasets live in `src/data_pipeline/data/raw`. Processed splits live in `src/data_pipeline/data/processed`.
+Raw datasets live in:
 
-Create processed train/validation/test splits for one dataset:
+```text
+src/data_pipeline/data/raw/
+```
 
-    uv run python -m src.data_pipeline.make_dataset --dataset car_evaluation --representation both
+Dataset paths and column settings are defined in:
 
-The supported dataset names are defined in `src/data_pipeline/dataset_configs.py`.
+```text
+src/data_pipeline/dataset_configs.py
+```
 
-Additional report datasets should be downloaded manually and saved as CSV files
-under:
+Generate the current tuning split plus 5-fold CV splits for one dataset:
 
-    src/data_pipeline/data/raw/report_datasets/
+```bash
+uv run python -m src.data_pipeline.make_dataset2 \
+  --dataset car_evaluation \
+  --representation both
+```
 
-Each CSV should use `class` as the target column name. After placing a file,
-create processed splits in the usual way:
+Generate processed files for all configured datasets except `lenses`, which is
+excluded from the K-fold pipeline after rare-class filtering:
 
-    uv run python -m src.data_pipeline.make_dataset --dataset asia_lung --representation both
-
-The OpenML report datasets use these sources and expected local filenames:
-
-| Dataset | Source | Expected file |
-| --- | --- | --- |
-| `asia_lung` | OpenML dataset 43151: `https://www.openml.org/d/43151` | `src/data_pipeline/data/raw/report_datasets/asia_lung.csv` |
-| `cleveland` | OpenML dataset 40711: `https://www.openml.org/d/40711` | `src/data_pipeline/data/raw/report_datasets/cleveland.csv` |
-| `conf_ad` | OpenML dataset 41538: `https://www.openml.org/d/41538` | `src/data_pipeline/data/raw/report_datasets/conf_ad.csv` |
-| `coronary` | OpenML dataset 43154: `https://www.openml.org/d/43154` | `src/data_pipeline/data/raw/report_datasets/coronary.csv` |
-| `dmft` | OpenML dataset 469: `https://www.openml.org/d/469` | `src/data_pipeline/data/raw/report_datasets/dmft.csv` |
-| `german_gss` | OpenML dataset 1025: `https://www.openml.org/d/1025` | `src/data_pipeline/data/raw/report_datasets/german_gss.csv` |
-| `led7` | OpenML dataset 40678: `https://www.openml.org/d/40678` | `src/data_pipeline/data/raw/report_datasets/led7.csv` |
-| `mofn` | OpenML dataset 40680: `https://www.openml.org/d/40680` | `src/data_pipeline/data/raw/report_datasets/mofn.csv` |
-| `ppd` | OpenML dataset 40683: `https://www.openml.org/d/40683` | `src/data_pipeline/data/raw/report_datasets/ppd.csv` |
-| `ptumor` | OpenML dataset 1003: `https://www.openml.org/d/1003` | `src/data_pipeline/data/raw/report_datasets/ptumor.csv` |
-| `sensory` | OpenML dataset 826: `https://www.openml.org/d/826` | `src/data_pipeline/data/raw/report_datasets/sensory.csv` |
-| `three_of_nine` | OpenML dataset 40690: `https://www.openml.org/d/40690` | `src/data_pipeline/data/raw/report_datasets/three_of_nine.csv` |
-| `vehicle` | OpenML dataset 835: `https://www.openml.org/d/835` | `src/data_pipeline/data/raw/report_datasets/vehicle.csv` |
-| `xd6` | OpenML dataset 40693: `https://www.openml.org/d/40693` | `src/data_pipeline/data/raw/report_datasets/xd6.csv` |
-
-`parity5p5` is already available locally. If it needs to be recreated later,
-download `parity5+5` from PMLB and save it as:
-
-    src/data_pipeline/data/raw/report_datasets/parity5p5.csv
+```bash
+for dataset in $(uv run python -c "from src.data_pipeline.dataset_configs import DATASET_CONFIGS; names = sorted(DATASET_CONFIGS); names.remove('lenses'); print(' '.join(names))"); do
+  uv run python -m src.data_pipeline.make_dataset2 --dataset "$dataset" --representation both
+done
+```
 
 Training
 --------
 
-Train and test one model on one dataset:
+Train one model on one held-out fold:
 
-    uv run python -m src.training.train --dataset car_evaluation --model cpd
+```bash
+uv run python -m src.training.train2 \
+  --dataset car_evaluation \
+  --model cpd \
+  --mode fold \
+  --fold 1 \
+  --seed 42
+```
 
-Useful examples:
+Run a small local smoke experiment:
 
-    uv run python -m src.training.train --dataset car_evaluation --model lr
-    uv run python -m src.training.train --dataset car_evaluation --model mlp
-    uv run python -m src.training.train --dataset car_evaluation --model cpd --rank 32
-    uv run python -m src.training.train --dataset car_evaluation --model mba --interaction-order 2
-    uv run python -m src.training.train --dataset car_evaluation --model tt --rank 32
-    uv run python -m src.training.train --dataset car_evaluation --model tr --rank 32
+```bash
+uv run python -m src.training.run_experiments2 \
+  --dataset house_votes_84 \
+  --model lr \
+  --model mba \
+  --epochs 1 \
+  --interaction-order 1 \
+  --accelerator cpu
+```
 
-Run a seeded experiment. This writes results to
-`src/summary_results/results/<model>/<dataset>_seed<seed>/metrics.csv`:
+Run grid-search tuning on the tuning split:
 
-    uv run python -m src.training.train --dataset car_evaluation --model cpd --seed 42
+```bash
+uv run python -m src.training.tune_hyperparameters2 \
+  --dataset house_votes_84 \
+  --model cpd \
+  --accelerator cpu
+```
 
-Run multiple datasets, models, and seeds:
+Run the K-fold benchmark. If processed files already exist, use
+`--skip-preprocessing`:
 
-    uv run python -m src.training.run_experiments --seed 1 --seed 2 --seed 3
-
-The default DataLoader worker count is `0`, which is safe because processed
-data is already loaded into memory before training. For large runs, you can try
-more workers:
-
-    uv run python -m src.training.run_experiments --num-workers 4 --seed 1 --seed 2 --seed 3
-
-Limit a multi-seed run to selected datasets or models by repeating options:
-
-    uv run python -m src.training.run_experiments \
-      --dataset car_evaluation \
-      --dataset asia_lung \
-      --model cpd \
-      --model mba \
-      --model tt \
-      --model tr \
-      --seed 1 \
-      --seed 2 \
-      --seed 3
-
-Model Inputs
-------------
-
-The data module chooses the feature representation from the model name:
-
-- `lr` and `mlp` use the `baseline` representation: categorical features are one-hot encoded and numerical features stay numerical.
-- `cpd`, `mba`, `tt`, and `tr` use the `tensor` representation: all features are integer indices. Numerical features are discretized during preprocessing.
-
-Default Hyperparameters
------------------------
-
-The training CLI uses model-specific defaults:
-
-- `lr`: 100 epochs, learning rate `1e-3`
-- `mlp`: 100 epochs, learning rate `1e-3`
-- `cpd`: 60 epochs, learning rate `1e-2`, rank 16
-- `mba`: 60 epochs, learning rate `1e-2`, interaction order 2
-- `tt`: 60 epochs, learning rate `1e-2`, rank 16
-- `tr`: 60 epochs, learning rate `1e-2`, rank 16
-
-The CPD defaults are intentionally stronger than the old smoke-test settings.
-With `1e-3`, CPD tended to collapse to the majority class.
-
-Training uses early stopping by default. The best validation checkpoint is
-tested instead of the final epoch:
-
-    uv run python -m src.training.train --dataset car_evaluation --model cpd --epochs 150 --patience 15
-
-Disable early stopping only for controlled comparisons:
-
-    uv run python -m src.training.train --dataset car_evaluation --model cpd --disable-early-stopping
-
-Optional hyperparameter tuning is separate from normal training:
-
-    uv run python -m src.training.tune_hyperparameters --dataset car_evaluation --model cpd --trials 25
-
-The tuning script optimizes validation performance and writes best parameters
-under `src/summary_results/results/tuning/`. Final benchmarks should use fixed settings.
-For MBA, tuning only samples interaction orders that fit under
-`--max-mba-order` and `--max-mba-parameters`, which prevents very wide
-datasets from creating unreasonably large explicit interaction tables.
+```bash
+uv run python -m src.training.run_experiments2 \
+  --skip-preprocessing \
+  --accelerator cpu
+```
 
 Results
 -------
 
-Lightning writes metrics to:
+Training writes logs under:
 
-    src/summary_results/results/<model>/<dataset>/metrics.csv
+```text
+src/summary_results/results/<model>/<dataset>_fold<fold>_seed<seed>/
+```
 
-Build a summary table with test accuracy, balanced accuracy, macro/weighted F1,
-majority-class baseline, parameter counts, timings, and best model per dataset:
+Analysis outputs for the report are written to:
 
-    uv run python -m src.summary_results.summarize_results
+```text
+results/
+```
 
-When seeded result folders are present, the summary also writes:
+Generate all main tables and plots:
 
-    src/summary_results/results/benchmark_summary_aggregate.csv
+```bash
+uv run python -m src.summary_results.analyze_results all \
+  --dataset house_votes_84 \
+  --model cpd
+```
 
-Create SVG plots from the summary table:
+Useful individual commands:
 
-    uv run python -m src.summary_results.plot_results
+```bash
+uv run python -m src.summary_results.analyze_results tables
+uv run python -m src.summary_results.analyze_results timing
+uv run python -m src.summary_results.analyze_results stats --stats-metric test_acc
+uv run python -m src.summary_results.analyze_results stats --stats-metric test_loss --lower-is-better
+```
 
-The plots are written to:
+Documentation
+-------------
 
-    src/summary_results/results/plots/
+Start with:
 
-Current results should be treated as preliminary because not all planned models,
-datasets, and metrics have been run yet.
+- `docs/README.md`
+- `docs/MODEL_DESCRIPTIONS.md`
+- `docs/DATA_PIPELINE.md`
+- `docs/TRAINING_AND_EXPERIMENTS.md`
+- `docs/RESULTS_AND_SUMMARIES.md`
+- `docs/AI_USAGE.md`

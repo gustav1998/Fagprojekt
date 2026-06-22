@@ -1,42 +1,40 @@
 # Source Code Documentation
 
-This folder explains the project code from top to bottom. The documents use
-code snippets first, then explain what the code computes or controls.
+This folder explains the active project code used for the report submission.
 
 ## Documents
 
-- `docs/MODEL_DESCRIPTIONS.md` explains the classifiers and shared Lightning
-  training wrapper.
-- `docs/DATA_PIPELINE.md` explains raw dataset loading, preprocessing,
-  splitting, processed data loading, dataset inspection, and the Lightning data
-  module.
-- `docs/TRAINING_AND_EXPERIMENTS.md` explains the command-line training script,
-  the multi-run experiment script, early stopping, and optional tuning.
-- `docs/RESULTS_AND_SUMMARIES.md` explains how logged metrics are turned into
-  benchmark summary tables.
-- `docs/CONFIGURATION_AND_UTILITIES.md` explains dataset configuration,
-  one-hot encoding, package configuration, and the environment smoke test.
-- `docs/AI_USAGE.md` records how AI assistance was used and verified during
-  the project.
-- `docs/CODING_CHECKLIST.md` tracks coding tasks that remain before the project
-  is ready.
+- `MODEL_DESCRIPTIONS.md`: model formulas, forward passes, loss, and optimizer.
+- `DATA_PIPELINE.md`: raw data loading, tuning split, 5-fold CV preprocessing,
+  and DataLoaders.
+- `TRAINING_AND_EXPERIMENTS.md`: single-fold training, grid-search tuning, and
+  K-fold experiment runs.
+- `RESULTS_AND_SUMMARIES.md`: result logs, plots, summary tables, timing tables,
+  and Friedman/Nemenyi tests.
+- `CONFIGURATION_AND_UTILITIES.md`: dataset configs, one-hot encoding,
+  dependencies, and environment checks.
+- `HPC_JOBS.md`: current notes for running model jobs on the HPC.
+- `AI_USAGE.md`: how AI assistance was used and verified.
 
-## Project Flow
+## Active Project Flow
 
 ```text
 raw CSV files
-    -> src.data_pipeline.make_dataset
-    -> processed train/val/test CSV files and metadata
-    -> src.training.train
-    -> Lightning training logs under src/summary_results/results/
-    -> src.summary_results.summarize_results
-    -> benchmark summary CSV files
+    -> src.data_pipeline.make_dataset2
+    -> tuning split + 5-fold processed CSV files
+    -> src.training.tune_hyperparameters2
+    -> best parameter JSON files
+    -> src.training.run_experiments2
+    -> fold logs under src/summary_results/results/
+    -> src.summary_results.analyze_results
+    -> report tables/plots under results/
 ```
 
 The baseline models use one-hot encoded input:
 
 ```text
 lr, mlp -> baseline representation
+rf      -> baseline representation as stored in processed CSV files
 ```
 
 The tensor models use integer-valued feature indices:

@@ -3,81 +3,74 @@
 ```mermaid
 flowchart TD
     subgraph HPC["hpc/ job scripts"]
-        RF_SH[rf.sh]
-        LR_SH[lr.sh]
-        MLP_SH[mlp.sh]
-        CPD_SH[cpd.sh]
-        MBA_SH[mba.sh]
-        TT_SH[tt.sh]
-        TR_SH[tr.sh]
+        JOBS["model-specific .sh files"]
     end
 
     subgraph Training["src/training/"]
-        TUNE[tune_hyperparameters.py]
-        RUNEXP[run_experiments.py]
-        TRAIN[train.py]
+        TUNE["tune_hyperparameters2.py"]
+        RUNEXP["run_experiments2.py"]
+        TRAIN["train2.py"]
     end
 
     subgraph DataPipeline["src/data_pipeline/"]
-        CONFIGS[dataset_configs.py]
-        MAKE[make_dataset.py]
-        PREP[preprocessing.py]
-        LOAD[load_processed.py]
-        DATAMOD[datamodule.py]
-        ENC[encoding.py]
+        CONFIGS["dataset_configs.py"]
+        MAKE["make_dataset2.py"]
+        PREP["preprocessing2.py"]
+        LOAD["load_processed2.py"]
+        DATAMOD["datamodule2.py"]
+        ENC["encoding.py"]
     end
 
     subgraph Models["src/models/"]
-        LIGHTNING[lightning_module.py]
-        LR_M[logistic_regression.py]
-        MLP_M[mlp.py]
-        CPD_M[cpd.py]
-        MBA_M[mba.py]
-        TT_M[tt.py]
-        TR_M[tr.py]
-        RF_M[rf.py]
+        LIGHTNING["lightning_module.py"]
+        LR["logistic_regression.py"]
+        MLP["mlp.py"]
+        RF["rf.py"]
+        CPD["cpd2.py"]
+        MBA["mba2.py"]
+        TT["tt2.py"]
+        TR["tr2.py"]
     end
 
-    subgraph Summary["src/summary_results/"]
-        SUMM[summarize_results.py]
-        PLOT[plot_results.py]
+    subgraph Analysis["src/summary_results/"]
+        ANALYZE["analyze_results.py"]
     end
 
-    subgraph Files["results/ files"]
-        METRICS[metrics.csv]
-        META[run_metadata.json]
-        BENCHSUM[benchmark_summary.csv]
+    subgraph Generated["generated outputs"]
+        PROCESSED["src/data_pipeline/data/processed/"]
+        LOGS["src/summary_results/results/"]
+        REPORT["results/"]
     end
 
-    RF_SH  -->|subprocess| TUNE & RUNEXP
-    LR_SH  -->|subprocess| TUNE & RUNEXP
-    MLP_SH -->|subprocess| TUNE & RUNEXP
-    CPD_SH -->|subprocess| TUNE & RUNEXP
-    MBA_SH -->|subprocess| TUNE & RUNEXP
-    TT_SH  -->|subprocess| TUNE & RUNEXP
-    TR_SH  -->|subprocess| TUNE & RUNEXP
+    JOBS --> TUNE
+    JOBS --> RUNEXP
 
-    TUNE -->|import| CONFIGS & RUNEXP & TRAIN
-    TUNE -->|subprocess| MAKE & TRAIN
+    TUNE --> CONFIGS
+    TUNE --> MAKE
+    TUNE --> TRAIN
 
-    RUNEXP -->|import| CONFIGS & TRAIN
-    RUNEXP -->|subprocess| TRAIN
+    RUNEXP --> CONFIGS
+    RUNEXP --> MAKE
+    RUNEXP --> TRAIN
 
-    TRAIN -->|import| DATAMOD & LOAD
-    TRAIN -->|import| LR_M & MLP_M & CPD_M & MBA_M & TT_M & TR_M & RF_M
-    TRAIN -->|writes| METRICS & META
+    MAKE --> CONFIGS
+    MAKE --> PREP
+    MAKE --> PROCESSED
 
-    DATAMOD -->|import| LOAD & ENC
-    MAKE    -->|import| CONFIGS & PREP
+    TRAIN --> DATAMOD
+    TRAIN --> LR
+    TRAIN --> MLP
+    TRAIN --> RF
+    TRAIN --> CPD
+    TRAIN --> MBA
+    TRAIN --> TT
+    TRAIN --> TR
+    TRAIN --> LOGS
 
-    LR_M  -->|import| LIGHTNING
-    MLP_M -->|import| LIGHTNING
-    CPD_M -->|import| LIGHTNING
-    MBA_M -->|import| LIGHTNING
-    TT_M  -->|import| LIGHTNING
-    TR_M  -->|import| LIGHTNING
+    DATAMOD --> LOAD
+    DATAMOD --> ENC
+    LOAD --> PROCESSED
 
-    SUMM -->|reads| METRICS & META
-    SUMM -->|writes| BENCHSUM
-    PLOT -->|reads| BENCHSUM
+    ANALYZE --> LOGS
+    ANALYZE --> REPORT
 ```
