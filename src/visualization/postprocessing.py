@@ -618,7 +618,7 @@ def calculate_table_metrics(
             {
                 "dataset": dataset_name,
                 "features": features,
-                "non_zero_entries": non_zero_values,
+                "non_zero_values": non_zero_values,
                 "tensor_size": tensor_size,
                 "sparsity": non_zero_values / tensor_size if tensor_size > 0 else 0,
                 "classes": classes,
